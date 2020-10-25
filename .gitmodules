@@ -1,0 +1,3 @@
+[submodule "database"]
+	path = database
+	url = git@gitlab.com:koleg1/database.git
