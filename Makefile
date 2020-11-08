@@ -13,14 +13,24 @@ help: ## 💡This help.
 init: ## Clone all git submodules
 	@echo "+ $@"
 	@git submodule update --init --recursive
+	@npm i
 
 build: ## Local build with npm/typescript
 	@echo "+ $@"
+	@npm i
+	@npm run prebuild
+	@npm run prestart
 
-start: ## Cloud start with okteto/npm
+start: ## Start with node
+	@npm run start
+
+up: ## Cloud start with okteto/npm
 	@echo "+ $@"
-	@okteto up
+	@okteto up --namespace develop
 
+shell: ## Cloud shell with okteto
+	@echo "+ $@"
+	@okteto exec bash
 
 docker-build: ## Build container docker
 	@echo "+ $@"

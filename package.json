@@ -1,10 +1,10 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "engines" : {
-    "node" : "12.19.0"
+  "engines": {
+    "node": "12.19.0"
   },
-"  engineStrict" : true,
+  "  engineStrict": true,
   "description": "Typescript API for koleg",
   "main": "dist/index.js",
   "scripts": {
