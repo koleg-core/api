@@ -1,0 +1,788 @@
+---
+swagger: "2.0"
+info:
+  description: Koleg project API
+  version: 1.0.0
+  title: Koleg
+  termsOfService: ""
+  contact:
+    email: aurelien.satger@etu.u-bordeaux.fr
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+
+paths:
+  ##############################
+  ####### AUTHENTICATION #######
+  ##############################
+
+  /auth/login:
+    get:
+      tags:
+        - Authentication
+      summary: Logs user into the system with jwt
+      operationId: login
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          type: string
+          format: password
+      responses:
+        "200":
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              type: integer
+              format: int32
+              description: calls per hour allowed by the user
+            X-Expires-After:
+              type: string
+              format: date-time
+              description: date in UTC when token expires
+
+  /auth/logout:
+    get:
+      tags:
+        - Authentication
+      summary: Logs out current logged in user session
+      operationId: logout
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  /auth/reset_password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset password
+      description: Reset password.
+      operationId: resetPassword
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: email
+          description: User email.
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        "200":
+          description: Email sent to user email adresse.
+        "400":
+          description: Invalid password.
+        "404":
+          description: User not found with this id.
+
+  ######################
+  ####### GROUPS #######
+  ######################
+
+  /groups:
+    post:
+      tags:
+        - Groups
+      summary: Add group
+      description: Add group.
+      operationId: addGroup
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: group
+          description: Created group object
+          required: true
+          schema:
+            $ref: "#/definitions/Group"
+      responses:
+        "200":
+          description: Group successfully created.
+        "400":
+          description: Invalid group object.
+        default:
+          description: An error occured.
+    get:
+      tags:
+        - Groups
+      summary: Get groups
+      description: Get all groups.
+      operationId: getGroups
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: items_number
+          description: Specify items number to fetch.
+          default: 20
+          minimum: 20
+          maximum: 100
+          multipleOf: 10
+          type: integer
+      responses:
+        "200":
+          description: Groups successfully fetched.
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Group"
+        "404":
+          description: No groups found.
+        default:
+          description: An error occured.
+  /groups/{id}:
+    get:
+      tags:
+        - Groups
+      summary: Get a group
+      description: Get a group details by group id.
+      operationId: getGroup
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The group id that need to be fetched.
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: Group successfully fetched.
+          schema:
+            $ref: "#/definitions/Group"
+        "404":
+          description: No group found with this id.
+        "400":
+          description: Invalid group id.
+        default:
+          description: An error occured.
+    put:
+      tags:
+        - Groups
+      summary: Update group
+      description: Update group details by group id.
+      operationId: updateGroup
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The group id that need to be updated.
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: Group successfully updated.
+          schema:
+            $ref: "#/definitions/Group"
+        "404":
+          description: No group found with this id.
+        "400":
+          description: Invalid group object.
+        default:
+          description: An error occured.
+    delete:
+      tags:
+        - Groups
+      summary: Delete group
+      description: Delete group by group id.
+      operationId: deleteGroup
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The group id that need to be deleted.
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: Group successfully deleted.
+        "404":
+          description: No group found with this id.
+        "400":
+          description: Invalid group id.
+        default:
+          description: An error occured.
+  /groups/{id}/upload_image:
+    post:
+      tags:
+        - Groups
+      summary: Upload group image
+      description: Upload group image.
+      operationId: uploadGroupImage
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: id
+          in: path
+          description: The group id that need to be updated.
+          required: true
+          type: string
+        - name: file
+          in: formData
+          description: The uploaded file.
+          required: true
+          type: file
+          x-mimetype: image/*
+      responses:
+        "200":
+          description: Group image successfully uploaded.
+        "400":
+          description: Invalid image.
+        "404":
+          description: Group not found with this id.
+
+  ######################
+  ####### JOBS #########
+  ######################
+
+  /jobs:
+    post:
+      tags:
+        - Jobs
+      summary: Add job
+      description: Add job.
+      operationId: addJob
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: job
+          description: Created job object
+          required: true
+          schema:
+            $ref: "#/definitions/Job"
+      responses:
+        "200":
+          description: Job successfully created.
+        "400":
+          description: Invalid job object.
+        default:
+          description: An error occured.
+    get:
+      tags:
+        - Jobs
+      summary: Get jobs
+      description: Get all jobs.
+      operationId: getJobs
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: items_number
+          description: Specify items number to fetch.
+          default: 20
+          minimum: 20
+          maximum: 100
+          multipleOf: 10
+          type: integer
+      responses:
+        "200":
+          description: Jobs successfully fetched.
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Job"
+        "404":
+          description: No jobs found.
+        default:
+          description: An error occured.
+  /jobs/{id}:
+    get:
+      tags:
+        - Jobs
+      summary: Get a job
+      description: Get a job details by job id.
+      operationId: getJob
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The job id that need to be fetched.
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: Job successfully fetched.
+          schema:
+            $ref: "#/definitions/Job"
+        "404":
+          description: No job found with this id.
+        "400":
+          description: Invalid job id.
+        default:
+          description: An error occured.
+    put:
+      tags:
+        - Jobs
+      summary: Update job
+      description: Update jo  details by job id.
+      operationId: updateJob
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The job id that need to be updated.
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: Job successfully updated.
+          schema:
+            $ref: "#/definitions/Job"
+        "404":
+          description: No job found with this id.
+        "400":
+          description: Invalid job object.
+        default:
+          description: An error occured.
+    delete:
+      tags:
+        - Jobs
+      summary: Delete job
+      description: Delete job by job id.
+      operationId: deleteJob
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The job id that need to be deleted.
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: Job successfully deleted.
+        "404":
+          description: No job found with this id.
+        "400":
+          description: Invalid job id.
+        default:
+          description: An error occured.
+
+  ######################
+  ####### USERS ########
+  ######################
+
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Add user
+      description: Add user.
+      operationId: addUser
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Created user object
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: User successfully created.
+        "400":
+          description: Invalid user object.
+        default:
+          description: An error occured.
+    get:
+      tags:
+        - Users
+      summary: Get users
+      description: Get all users.
+      operationId: getUsers
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: items_number
+          description: Specify items number to fetch.
+          default: 20
+          minimum: 20
+          maximum: 100
+          multipleOf: 10
+          type: integer
+      responses:
+        "200":
+          description: Users successfully fetched.
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/User"
+        "404":
+          description: No users found.
+        default:
+          description: An error occured.
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get user by user id
+      description: Get user details by user id.
+      operationId: getUserById
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: The id that needs to be fetched.
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: User successfully fetched.
+          schema:
+            $ref: "#/definitions/User"
+        "404":
+          description: No user found with this id.
+        "400":
+          description: Invalid user id.
+        default:
+          description: An error occured.
+    put:
+      tags:
+        - Users
+      summary: Update user
+      description: Update user by user id.
+      operationId: updateUser
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: User id that need to be updated.
+          required: true
+          type: integer
+        - in: body
+          name: body
+          description: Updated user object.
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: User successfully updated.
+          schema:
+            $ref: "#/definitions/User"
+        "404":
+          description: No user found with this id.
+        "400":
+          description: Invalid user object.
+        default:
+          description: An error occured.
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      description: Delete user by user id.
+      operationId: deleteUser
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: The user id that needs to be deleted.
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: User successfully deleted.
+        "404":
+          description: No user found with this id.
+        "400":
+          description: Invalid user id.
+        default:
+          description: An error occured.
+  /users/{id}/vcard:
+    get:
+      tags:
+        - Users
+      summary: Get user vCard
+      description: Get user vCard by user id.
+      operationId: getUserVCardById
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: The id that needs to be fetched.
+          required: true
+          type: string
+      responses:
+        "200":
+          description: User vCard successfully fetched.
+          schema:
+            type: file
+        "400":
+          description: Invalid user id supplied.
+        "404":
+          description: User not found with this id.
+  /users/{id}/upload_image:
+    post:
+      tags:
+        - Users
+      summary: Upload user image
+      description: Upload user image.
+      operationId: uploadUserImage
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: id
+          in: path
+          description: The user id that need to be updated.
+          required: true
+          type: string
+        - name: file
+          in: formData
+          description: The uploaded file.
+          required: true
+          type: file
+          x-mimetype: image/*
+      responses:
+        "200":
+          description: User image successfully uploaded.
+        "400":
+          description: Invalid image.
+        "404":
+          description: User not found with this id.
+  /users/{id}/rights:
+    get:
+      tags:
+        - Users
+      summary: Get user rights
+      description: Get user rights
+      parameters:
+        - name: id
+          in: path
+          description: The user id that need to be fetched.
+          required: true
+          type: string
+      responses:
+        "200":
+          description: User rights successfully fetched.
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Right"
+        "404":
+          description: No rights found with this id.
+        "400":
+          description: Invalid user id.
+        default:
+          description: An error occured.
+    put:
+      tags:
+        - Users
+      summary: Update user rights
+      description: Update user rights
+      operationId: updateUserRights
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: User id that need to be updated.
+          required: true
+          type: integer
+        - in: body
+          name: body
+          description: Updated rights array object.
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Right"
+      responses:
+        "200":
+          description: User rights successfully updated.
+          schema:
+            $ref: "#/definitions/Right"
+        "404":
+          description: No user found with this id.
+        "400":
+          description: Invalid user rights object.
+        default:
+          description: An error occured.
+  /users/search:
+    get:
+      tags:
+        - Users
+      summary: Search users by query
+      description: Search users by query
+      operationId: searchUsers
+      produces:
+        - application/json
+      parameters:
+        - name: query
+          in: query
+          description: The search query that needs to be fetched.
+          required: true
+          type: string
+        - name: filters
+          in: query
+          description: The search filters to apply to query.
+          required: true
+          type: string
+        - in: query
+          name: items_number
+          description: Specify items number to fetch.
+          default: 20
+          minimum: 20
+          maximum: 100
+          multipleOf: 10
+          type: integer
+      responses:
+        "200":
+          description: Users successfully fetched.
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/User"
+        "400":
+          description: Invalid query parameters.
+        "404":
+          description: No users found.
+
+######################
+####### MODELS #######
+######################
+
+definitions:
+  Group:
+    type: object
+    properties:
+      id:
+        type: number
+      name:
+        type: string
+      description:
+        type: string
+      img_url:
+        type: string
+      groups:
+        $ref: "#/definitions/Group"
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      uuid:
+        type: string
+        format: uuid
+      firstName:
+        type: string
+      lastName:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+        format: password
+      password_datelimit:
+        type: string
+        format: date-time
+      birthdate:
+        type: string
+        format: date-time
+      email:
+        type: string
+        format: email
+      img_url:
+        type: string
+      ssh_key:
+        type: string
+      job:
+        $ref: "#/definitions/Job"
+      creation_date:
+        type: string
+        format: date-time
+      update_date:
+        type: string
+        format: date-time
+      expiration_date:
+        type: string
+        format: date-time
+      phones:
+        type: array
+        items:
+          $ref: "#/definitions/Phone"
+  Job:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+  Phone:
+    type: object
+    properties:
+      id:
+        type: integer
+      value:
+        type: string
+        format: phone
+      phoneType:
+        $ref: "#/definitions/PhoneType"
+  PhoneType:
+    type: string
+    enum:
+      - PHONE_HOME
+      - PHONE_WORK
+      - PHONE_CELL_HOME
+      - PHONE_CELL_WORK
+  RightAction:
+    type: string
+    enum:
+      - ALL
+      - CREATE
+      - UPDATE
+      - DELETE
+      - READ
+      - READ_RIGHTS
+      - WRITE_RIGHTS
+  Right:
+    type: object
+    properties:
+      id:
+        type: integer
+      role:
+        type: string
+      resource:
+        type: string
+      action:
+        $ref: "#/definitions/RightAction"
+      attributes:
+        type: array
+        items:
+          type: string
+
+externalDocs:
+  description: Find out more about Swagger
+  url: "http://swagger.io"

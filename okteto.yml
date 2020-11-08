@@ -1,8 +1,8 @@
-name: api:${USER}
+name: api-${USER}
 image: okteto/node:12.19.0
-command: npm start
+command: bash
 sync:
-- .:/usr/src/app
+  - .:/usr/src/app
 forward:
-- 9229:9229
-- 3000:3000
+  - 9229:9229
+  - 3000:3000
