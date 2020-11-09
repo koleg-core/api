@@ -34,8 +34,8 @@ tags:
     description: Everything about users.
 
 ##### TODO #####
-#  - utiliser APIResponse pour les retours de requête
-#  - gérer la pagination
+# - utiliser APIResponse pour les retours de requête
+# - gérer la pagination
 ################
 
 paths:
@@ -313,6 +313,83 @@ paths:
         404:
           description: Group not found with this id.
           content: {}
+  /groups/{id}/rights:
+    get:
+      tags:
+        - Groups
+      summary: Get group rights
+      operationId: gegGroupRights
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      description: Get group rights.
+      parameters:
+        - name: id
+          in: path
+          description: The group id that need to be fetched.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Group rights successfully fetched.
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Right"
+        400:
+          description: Invalid group id.
+          content: {}
+        404:
+          description: No rights found with this id.
+          content: {}
+        default:
+          description: An error occured.
+          content: {}
+    put:
+      tags:
+        - Groups
+      summary: Update group rights
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      description: Update group rights
+      operationId: updateGroupRights
+      parameters:
+        - name: id
+          in: path
+          description: Group id that need to be updated.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated rights array object.
+        content:
+          "*/*":
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Right"
+        required: true
+      responses:
+        200:
+          description: Group rights successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Right"
+        400:
+          description: Invalid group rights object.
+          content: {}
+        404:
+          description: No group found with this id.
+          content: {}
+        default:
+          description: An error occured.
+          content: {}
+      x-codegen-request-body-name: body
 
   ##################
   ###### JOBS ######
@@ -719,10 +796,11 @@ paths:
       tags:
         - Users
       summary: Get user rights
+      operationId: getUserRights
       security:
         - BearerAuth: []
         - ApiKeyAuth: []
-      description: Get user rights
+      description: Get user rights.
       parameters:
         - name: id
           in: path
