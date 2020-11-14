@@ -34,8 +34,7 @@ tags:
     description: Everything about users.
 
 ##### TODO #####
-# - utiliser APIResponse pour les retours de requête
-# - gérer la pagination
+# - ajouter search/ sur Jobs et Groups
 ################
 
 paths:
@@ -61,21 +60,37 @@ paths:
             format: password
       responses:
         200:
-          description: successful operation
+          description: Success.
           headers:
             X-Rate-Limit:
-              description: calls per hour allowed by the user
+              description: Calls per hour allowed by the user
               schema:
                 type: integer
                 format: int32
             X-Expires-After:
-              description: date in UTC when token expires
+              description: Date in UTC when token expires
               schema:
                 type: string
                 format: date-time
-          content: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  loggedUser:
+                    $ref: "#/components/schemas/UserRead"
+        400:
+          $ref: "#/components/responses/BadRequest"
         401:
-          $ref: "#/components/responses/UnauthorizedError"
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
+        default:
+          $ref: "#/components/responses/Default"
   /auth/logout:
     get:
       tags:
@@ -83,9 +98,18 @@ paths:
       summary: Logs out current logged in user session
       operationId: logout
       responses:
+        200:
+          $ref: "#/components/responses/Success"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: successful operation
-          content: {}
+          $ref: "#/components/responses/Default"
   /auth/reset_password:
     post:
       tags:
@@ -96,21 +120,24 @@ paths:
       requestBody:
         description: User email.
         content:
-          "*/*":
+          "application/json":
             schema:
               type: string
               format: email
         required: true
       responses:
         200:
-          description: Email sent to user email adresse.
-          content: {}
+          $ref: "#/components/responses/Success"
         400:
-          description: Invalid password.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: User not found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
+        default:
+          $ref: "#/components/responses/Default"
       x-codegen-request-body-name: email
 
   ##################
@@ -124,7 +151,6 @@ paths:
       summary: Get groups
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Get all groups.
       operationId: getGroups
       parameters:
@@ -132,33 +158,42 @@ paths:
           in: query
           description: Specify items number to fetch.
           schema:
-            multipleOf: 10.0
-            maximum: 100
-            minimum: 20
-            type: integer
-            default: 20
+            $ref: "#/components/schemas/QueryLimit"
+        - name: page
+          in: query
+          description: Specify wich page to query
+          schema:
+            $ref: "#/components/schemas/QueryPage"
       responses:
         200:
-          description: Groups successfully fetched.
+          description: Success
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Group"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  groups:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Group"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No groups found.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
     post:
       tags:
         - Groups
       summary: Add group
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Add group.
       operationId: addGroup
       requestBody:
@@ -170,14 +205,17 @@ paths:
         required: true
       responses:
         200:
-          description: Group successfully created.
-          content: {}
+          $ref: "#/components/responses/Success"
         400:
-          description: Invalid group object.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
       x-codegen-request-body-name: group
   /groups/{id}:
     get:
@@ -186,7 +224,6 @@ paths:
       summary: Get a group
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Get a group details by group id.
       operationId: getGroup
       parameters:
@@ -198,27 +235,32 @@ paths:
             type: integer
       responses:
         200:
-          description: Group successfully fetched.
+          description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Group"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  group:
+                    $ref: "#/components/schemas/Group"
         400:
-          description: Invalid group id.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No group found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
     put:
       tags:
         - Groups
       summary: Update group
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Update group details by group id.
       operationId: updateGroup
       parameters:
@@ -230,27 +272,32 @@ paths:
             type: integer
       responses:
         200:
-          description: Group successfully updated.
+          description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Group"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  updatedGroup:
+                    $ref: "#/components/schemas/Group"
         400:
-          description: Invalid group object.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No group found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
     delete:
       tags:
         - Groups
       summary: Delete group
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Delete group by group id.
       operationId: deleteGroup
       parameters:
@@ -259,20 +306,21 @@ paths:
           description: The group id that need to be deleted.
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         200:
-          description: Group successfully deleted.
-          content: {}
+          $ref: "#/components/responses/Success"
         400:
-          description: Invalid group id.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No group found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
   /groups/{id}/upload_image:
     post:
       tags:
@@ -280,7 +328,6 @@ paths:
       summary: Upload group image
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Upload group image.
       operationId: uploadGroupImage
       parameters:
@@ -290,29 +337,26 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
       requestBody:
         content:
-          multipart/form-data:
+          image/*:
             schema:
-              required:
-                - file
-              properties:
-                file:
-                  type: string
-                  description: The uploaded file.
-                  format: binary
-                  x-mimetype: image/*
+              $ref: "#/components/schemas/Image"
         required: true
       responses:
         200:
-          description: Group image successfully uploaded.
-          content: {}
+          $ref: "#/components/responses/Success"
         400:
-          description: Invalid image.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: Group not found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
+        default:
+          $ref: "#/components/responses/Default"
   /groups/{id}/rights:
     get:
       tags:
@@ -321,7 +365,6 @@ paths:
       operationId: gegGroupRights
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Get group rights.
       parameters:
         - name: id
@@ -330,31 +373,37 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
       responses:
         200:
-          description: Group rights successfully fetched.
+          description: Success.
           content:
-            "*/*":
+            application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Right"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  rights:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Right"
         400:
-          description: Invalid group id.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No rights found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
     put:
       tags:
         - Groups
       summary: Update group rights
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Update group rights
       operationId: updateGroupRights
       parameters:
@@ -363,11 +412,12 @@ paths:
           description: Group id that need to be updated.
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         description: Updated rights array object.
         content:
-          "*/*":
+          application/json:
             schema:
               type: array
               items:
@@ -375,20 +425,28 @@ paths:
         required: true
       responses:
         200:
-          description: Group rights successfully updated.
+          description: Success.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Right"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  rights:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Right"
         400:
-          description: Invalid group rights object.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No group found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
       x-codegen-request-body-name: body
 
   ##################
@@ -402,7 +460,6 @@ paths:
       summary: Get jobs
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Get all jobs.
       operationId: getJobs
       parameters:
@@ -415,28 +472,44 @@ paths:
             minimum: 20
             type: integer
             default: 20
+        - name: page
+          in: query
+          description: Specify wich page to query
+          schema:
+            maximum: 1000
+            minimum: 0
+            type: integer
+            default: 0
       responses:
         200:
-          description: Jobs successfully fetched.
+          description: Success.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Job"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Job"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No jobs found.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
     post:
       tags:
         - Jobs
       summary: Add job
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Add job.
       operationId: addJob
       requestBody:
@@ -448,14 +521,17 @@ paths:
         required: true
       responses:
         200:
-          description: Job successfully created.
-          content: {}
+          $ref: "#/components/responses/Success"
         400:
-          description: Invalid job object.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
       x-codegen-request-body-name: job
   /jobs/{id}:
     get:
@@ -464,7 +540,6 @@ paths:
       summary: Get a job
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Get a job details by job id.
       operationId: getJob
       parameters:
@@ -473,30 +548,36 @@ paths:
           description: The job id that need to be fetched.
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         200:
-          description: Job successfully fetched.
+          description: Success.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Job"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  job:
+                    $ref: "#/components/schemas/Job"
         400:
-          description: Invalid job id.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No job found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
     put:
       tags:
         - Jobs
       summary: Update job
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Update jo  details by job id.
       operationId: updateJob
       parameters:
@@ -508,27 +589,32 @@ paths:
             type: integer
       responses:
         200:
-          description: Job successfully updated.
+          description: Success.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Job"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  updatedJob:
+                    $ref: "#/components/schemas/Job"
         400:
-          description: Invalid job object.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No job found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
     delete:
       tags:
         - Jobs
       summary: Delete job
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Delete job by job id.
       operationId: deleteJob
       parameters:
@@ -537,20 +623,21 @@ paths:
           description: The job id that need to be deleted.
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         200:
-          description: Job successfully deleted.
-          content: {}
+          $ref: "#/components/responses/Success"
         400:
-          description: Invalid job id.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No job found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
 
   ##################
   ###### USERS #####
@@ -563,60 +650,83 @@ paths:
       summary: Get users
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
-      description: Get all users.
+      description: Get all or search users.
       operationId: getUsers
       parameters:
+        - name: query
+          in: query
+          description: Users prototypes that needs to be fetched.
+          required: true
+          schema:
+            type: array
+            items:
+              oneOf:
+                - $ref: "#/components/schemas/UserBase"
+                - $ref: "#/components/schemas/UserRead"
         - name: items_number
           in: query
           description: Specify items number to fetch.
           schema:
-            multipleOf: 10.0
-            maximum: 100
-            minimum: 20
-            type: integer
-            default: 20
+            $ref: "#/components/schemas/QueryLimit"
+        - name: page
+          in: query
+          description: Specify wich page to query
+          schema:
+            $ref: "#/components/schemas/QueryPage"
       responses:
         200:
-          description: Users successfully fetched.
+          description: Success.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: "#/components/schemas/UserBase"
+                        - $ref: "#/components/schemas/UserRead"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No users found.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
     post:
       tags:
         - Users
       summary: Add user
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Add user.
       operationId: addUser
       requestBody:
         description: Created user object
         content:
-          "*/*":
+          application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/UserWrite"
         required: true
       responses:
         200:
-          description: User successfully created.
-          content: {}
+          $ref: "#/components/responses/Success"
         400:
-          description: Invalid user object.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
       x-codegen-request-body-name: body
   /users/{id}:
     get:
@@ -625,7 +735,6 @@ paths:
       summary: Get user by user id
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Get user details by user id.
       operationId: getUserById
       parameters:
@@ -634,30 +743,36 @@ paths:
           description: The id that needs to be fetched.
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         200:
-          description: User successfully fetched.
+          description: Success.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/UserRead"
         400:
-          description: Invalid user id.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No user found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
     put:
       tags:
         - Users
       summary: Update user
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Update user by user id.
       operationId: updateUser
       parameters:
@@ -670,26 +785,32 @@ paths:
       requestBody:
         description: Updated user object.
         content:
-          "*/*":
+          application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/UserWrite"
         required: true
       responses:
         200:
-          description: User successfully updated.
+          description: Success.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  updatedUser:
+                    $ref: "#/components/schemas/UserRead"
         400:
-          description: Invalid user object.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No user found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
       x-codegen-request-body-name: body
     delete:
       tags:
@@ -697,7 +818,6 @@ paths:
       summary: Delete user
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Delete user by user id.
       operationId: deleteUser
       parameters:
@@ -709,17 +829,17 @@ paths:
             type: integer
       responses:
         200:
-          description: User successfully deleted.
-          content: {}
+          $ref: "#/components/responses/Success"
         400:
-          description: Invalid user id.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No user found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
   /users/{id}/vcard:
     get:
       tags:
@@ -727,7 +847,6 @@ paths:
       summary: Get user vCard
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Get user vCard by user id.
       operationId: getUserVCardById
       parameters:
@@ -737,20 +856,29 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
       responses:
         200:
-          description: User vCard successfully fetched.
+          description: Success.
           content:
             application/json:
               schema:
-                type: string
-                format: binary
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  vcardUrl:
+                    type: string
         400:
-          description: Invalid user id supplied.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: User not found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
+        default:
+          $ref: "#/components/responses/Default"
   /users/{id}/upload_image:
     post:
       tags:
@@ -758,7 +886,6 @@ paths:
       summary: Upload user image
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Upload user image.
       operationId: uploadUserImage
       parameters:
@@ -768,29 +895,26 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
       requestBody:
         content:
-          multipart/form-data:
+          image/*:
             schema:
-              required:
-                - file
-              properties:
-                file:
-                  type: string
-                  description: The uploaded file.
-                  format: binary
-                  x-mimetype: image/*
+              $ref: "#/components/schemas/Image"
         required: true
       responses:
         200:
-          description: User image successfully uploaded.
-          content: {}
+          $ref: "#/components/responses/Success"
         400:
-          description: Invalid image.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: User not found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
+        default:
+          $ref: "#/components/responses/Default"
   /users/{id}/rights:
     get:
       tags:
@@ -799,7 +923,6 @@ paths:
       operationId: getUserRights
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Get user rights.
       parameters:
         - name: id
@@ -808,31 +931,37 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
       responses:
         200:
-          description: User rights successfully fetched.
+          description: Success.
           content:
-            "*/*":
+            application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Right"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  rights:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Right"
         400:
-          description: Invalid user id.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No rights found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
     put:
       tags:
         - Users
       summary: Update user rights
       security:
         - BearerAuth: []
-        - ApiKeyAuth: []
       description: Update user rights
       operationId: updateUserRights
       parameters:
@@ -845,7 +974,7 @@ paths:
       requestBody:
         description: Updated rights array object.
         content:
-          "*/*":
+          "application/json":
             schema:
               type: array
               items:
@@ -853,68 +982,29 @@ paths:
         required: true
       responses:
         200:
-          description: User rights successfully updated.
+          description: Success.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Right"
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                type: object
+                properties:
+                  updatedRights:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Right"
         400:
-          description: Invalid user rights object.
-          content: {}
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
         404:
-          description: No user found with this id.
-          content: {}
+          $ref: "#/components/responses/NotFound"
+        "5XX":
+          $ref: "#/components/responses/Internal"
         default:
-          description: An error occured.
-          content: {}
+          $ref: "#/components/responses/Default"
       x-codegen-request-body-name: body
-  /users/search:
-    get:
-      tags:
-        - Users
-      summary: Search users by query
-      security:
-        - BearerAuth: []
-        - ApiKeyAuth: []
-      description: Search users by query
-      operationId: searchUsers
-      parameters:
-        - name: query
-          in: query
-          description: The search query that needs to be fetched.
-          required: true
-          schema:
-            type: string
-        - name: filters
-          in: query
-          description: The search filters to apply to query.
-          required: true
-          schema:
-            type: string
-        - name: items_number
-          in: query
-          description: Specify items number to fetch.
-          schema:
-            multipleOf: 10.0
-            maximum: 100
-            minimum: 20
-            type: integer
-            default: 20
-      responses:
-        200:
-          description: Users successfully fetched.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
-        400:
-          description: Invalid query parameters.
-          content: {}
-        404:
-          description: No users found.
-          content: {}
 
 components:
   securitySchemes:
@@ -924,8 +1014,38 @@ components:
       bearerFormat: JWT
 
   responses:
-    UnauthorizedError:
-      description: Access token is missing or invalid
+    Success:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiResponse"
+    BadRequest:
+      description: Bad request. User ID must be an integer and larger than 0.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiResponse"
+    Unauthorized:
+      description: Authorization information is missing or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiResponse"
+    NotFound:
+      description: Parameters not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiResponse"
+    Internal:
+      description: Unexpected internal error.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiResponse"
+    Default:
+      description: An unknown error occured
 
   schemas:
     Group:
@@ -941,27 +1061,19 @@ components:
           type: string
         groups:
           $ref: "#/components/schemas/Group"
-    User:
+    UserBase:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-        uuid:
-          type: string
-          format: uuid
         firstName:
           type: string
         lastName:
           type: string
         username:
           type: string
-        password:
-          type: string
-          format: password
         password_datelimit:
           type: string
           format: date-time
+          nullable: true
         birthdate:
           type: string
           format: date-time
@@ -972,8 +1084,35 @@ components:
           type: string
         ssh_key:
           type: string
+          nullable: true
         job:
           $ref: "#/components/schemas/Job"
+        expiration_date:
+          type: string
+          format: date-time
+          nullable: true
+        phones:
+          type: array
+          items:
+            $ref: "#/components/schemas/Phone"
+            nullable: true
+    UserWrite:
+      allOf:
+        - $ref: "#/components/schemas/UserBase"
+      type: object
+      properties:
+        passwordHash:
+          type: string
+          format: password
+          nullable: true
+    UserRead:
+      allOf:
+        - $ref: "#/components/schemas/UserBase"
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
         creation_date:
           type: string
           format: date-time
@@ -991,14 +1130,16 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         name:
           type: string
     Phone:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         value:
           type: string
           format: phone
@@ -1025,7 +1166,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         role:
           type: string
         resource:
@@ -1036,13 +1178,41 @@ components:
           type: array
           items:
             type: string
+    Image:
+      type: string
+      format: binary
+    RequestStatus:
+      type: string
+      enum:
+        - OK
+        - KO
+    # Search query request parameters
+    QueryPage:
+      maximum: 1000
+      minimum: 0
+      type: integer
+      default: 0
+    QueryLimit:
+      type: integer
+      minimum: 1
+      multipleOf: 10.0
+      maximum: 100
+      default: 20
+
+    # Request response
     ApiResponse:
       type: object
+      required:
+        - code
+        - status
+        - message
       properties:
         code:
           type: integer
           format: int32
-        type:
-          type: string
+          minimum: 100
+          maximum: 600
+        status:
+          $ref: "#/components/schemas/RequestStatus"
         message:
           type: string
