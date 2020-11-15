@@ -12,7 +12,7 @@ info:
   version: 1.0.0
 externalDocs:
   description: Find out more about Swagger
-  url: http://swagger.io
+  url: https://gitlab.com/koleg1/api/-/blob/develop/swagger/swagger.yml
 servers:
   - url: http://localhost:8080/v1
     description: Local development server
@@ -32,10 +32,6 @@ tags:
     description: Everything abouts jobs.
   - name: Users
     description: Everything about users.
-
-##### TODO #####
-# - ajouter search/ sur Jobs et Groups
-################
 
 paths:
   /auth/login:
@@ -154,6 +150,11 @@ paths:
       description: Get all groups.
       operationId: getGroups
       parameters:
+        - name: name
+          in: query
+          description: Groupe name to research
+          schema:
+            type: string
         - name: items_number
           in: query
           description: Specify items number to fetch.
@@ -216,7 +217,6 @@ paths:
           $ref: "#/components/responses/Internal"
         default:
           $ref: "#/components/responses/Default"
-      x-codegen-request-body-name: group
   /groups/{id}:
     get:
       tags:
@@ -232,7 +232,8 @@ paths:
           description: The group id that need to be fetched.
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         200:
           description: Success
@@ -653,16 +654,28 @@ paths:
       description: Get all or search users.
       operationId: getUsers
       parameters:
-        - name: query
+        - name: first_name
           in: query
-          description: Users prototypes that needs to be fetched.
-          required: true
+          description: Users name to search.
           schema:
-            type: array
-            items:
-              oneOf:
-                - $ref: "#/components/schemas/UserBase"
-                - $ref: "#/components/schemas/UserRead"
+            type: string
+        - name: last_name
+          in: query
+          description: Users name to search.
+          schema:
+            type: string
+        - name: phone
+          in: query
+          description: Search user by phone number.
+          schema:
+            type: string
+            # https://regex101.com/r/64YEwu/3
+            pattern: ^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$
+        - name: show_disabled
+          in: query
+          description: Show disabled users. Only admins parameter.
+          schema:
+            type: boolean
         - name: items_number
           in: query
           description: Specify items number to fetch.
@@ -1091,11 +1104,16 @@ components:
           type: string
           format: date-time
           nullable: true
+        removal_date:
+          type: string
+          format: date-time
+          nullable: true
         phones:
           type: array
           items:
             $ref: "#/components/schemas/Phone"
             nullable: true
+    # User object used for creation
     UserWrite:
       allOf:
         - $ref: "#/components/schemas/UserBase"
@@ -1105,6 +1123,7 @@ components:
           type: string
           format: password
           nullable: true
+    # User object used for reading
     UserRead:
       allOf:
         - $ref: "#/components/schemas/UserBase"
@@ -1142,7 +1161,7 @@ components:
           format: uuid
         value:
           type: string
-          format: phone
+          pattern: ^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$
         phoneType:
           $ref: "#/components/schemas/PhoneType"
     PhoneType:
