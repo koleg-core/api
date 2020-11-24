@@ -1,71 +1,63 @@
-import { default as slugify } from 'slugify'
+import { default as slugify } from 'slugify';
 
 export class UserIdentity {
-    readonly _firstname: string
-    readonly _lastname: string
-    readonly _username: string
-    readonly _email: string
+
+    private readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     constructor(
-        firstname: string,
-        lastname: string,
-        username: string = null,
-        email: string = null
+        readonly firstName: string,
+        readonly lastName: string,
+        readonly username: string = null,
+        readonly email: string = null
     ) {
-        if(firstname && firstname.length > 0) {
-            this._lastname = lastname
-        } else {
-            throw new Error('Invalid arguement firstname: string')
-        }
-        if(lastname && lastname.length > 0) {
-            this._lastname = lastname
-        } else {
-            throw new Error('Invalid arguement lastname: string')
+        if (!this.firstName) {
+            throw new Error('Invalid argument firstname: string');
         }
 
-        if(!username) {
-            const fullName: string = this.fullName()
-            this._username = this.usernameConstraint(fullName)
+        if (!this.lastName) {
+            throw new Error('Invalid argument lastname: string');
+        }
+
+        if (!username) {
+            this.username = this._getUsername(this.getFullName());
         } else {
-            if (username === this.usernameConstraint(username) ) {
-                this._username = username
-            } else {
-                throw new Error("Invalid arguement username: don't respect this.usernameConstraint()")
+            if (username !== this._getUsername(username)) {
+                this.username = username
+                throw new Error("Invalid argument username: don't respect this.usernameConstraint()")
             }
         }
-        if(email && this.respectEmailConstraint(email)) {
-            this._email = email
+
+        if (email && !this._isEmailValid(email)) {
+            throw new Error('Invalid argument email format: string');
         }
     }
 
-    private usernameConstraint(dirtyUsername: string): string {
-        if (dirtyUsername.length > 0) {
-            const username: string = slugify(dirtyUsername, {
-                replacement: '.',  // replace spaces with replacement character, defaults to `-`
-                lower: true,      // convert to lower case, defaults to `false`
-                strict: false,     // strip special characters except replacement, defaults to `false`
-            })
-            return username
-        }
-        throw new Error('Invalid arguement dirtyUsername: string')
-    }
-    private respectEmailConstraint(email: string) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    }
-
-    public fullName(): string {
-        const fullname: string = this._firstname + ' ' + this._lastname
-        return fullname
+    public getFullName(): string {
+        return `${this.firstName} ${this.lastName}`;
     }
 
     public control(declinedIdentity: string): boolean {
-        if(declinedIdentity === this.fullName()) {
-            return true
-        } else if(declinedIdentity === this._username) {
-         return true
-        } else if( declinedIdentity === this._email) {
-            return true
+        return declinedIdentity === this.getFullName()
+            || declinedIdentity === this.username
+            || declinedIdentity === this.email;
+    }
+
+    private _getUsername(dirtyUsername: string): string {
+        if (!dirtyUsername) {
+            throw new Error('Invalid argument dirtyUsername: string')
         }
-        return false
+
+        return slugify(
+            dirtyUsername,
+            {
+                replacement: '.', // replace spaces with replacement character, defaults to `-`
+                lower: true,      // convert to lower case, defaults to `false`
+                strict: false,    // strip special characters except replacement, defaults to `false`
+            }
+        );
+    }
+
+    private _isEmailValid(email: string) { // Maybe should we export this to a Validator class ?
+        return this.EMAIL_REGEX.test(email);
     }
 }
