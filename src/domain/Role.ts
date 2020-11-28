@@ -1,8 +1,9 @@
 
 export class Role {
-    private _userId: string
 
-    constructor(userId: string) {
-        this._userId = userId
+    constructor(private _userId: string) {
+        if (!this._userId) {
+            throw new Error('Invalid argument userId: string');
+        }
     }
 }
