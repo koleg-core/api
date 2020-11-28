@@ -12,5 +12,4 @@ k8s/bin
 *.rkestate
 *.img
 *.iso
-dist/
 build
