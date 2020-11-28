@@ -6,8 +6,10 @@ import { PhoneNumber } from './PhoneNumber';
 import { SshKey } from './SshKey';
 import { UserIdentity } from './UserIdentity';
 import { ReturnCodes } from './enums/return-codes.enum';
+import { Group } from './Groups';
+import { group } from 'console';
 
-class User {
+export class User {
 
   private _id: string;
   private _passwordHistory: Password[];
@@ -19,12 +21,13 @@ class User {
     private _identity: UserIdentity,
     private _password: Password,
     private _job: Job,
+    private _groups: Group[],
     private _profilePictureUrl: URL,
     private _sshKey: SshKey,
     private _birthdate: Date,
     private _phoneNumbers: PhoneNumber[],
     private _imgUrl: string = null,
-    private _expirationDate: Date = null,
+    private _expirationDate: Date = null
   ) {
     this._id = uuid();
     this._passwordHistory.push(this._password);
@@ -34,6 +37,7 @@ class User {
   public isDisabled():boolean {
     return this._disableDate <= new Date();
   }
+
 
   public disable(): number {
     let returnCode: ReturnCodes = ReturnCodes.NOTHING_CHANGED;
@@ -118,6 +122,42 @@ class User {
     return ReturnCodes.UPDATED;
   }
 
+  public addGroup(newGroup: Group): ReturnCodes {
+    if (!newGroup) {
+      throw new Error('Invalid argument newGroup: Group');
+    }
+
+    if(!this._isEditable()) {
+      return ReturnCodes.NOT_EDITABLE;
+    }
+
+    if(this._groups.includes(newGroup)) {
+      return ReturnCodes.NOTHING_CHANGED;
+    }
+
+    this._groups.push(newGroup);
+    return ReturnCodes.UPDATED;
+  }
+
+  public removeGroup(newGroup: Group): ReturnCodes {
+    if (!newGroup) {
+      throw new Error('Invalid argument newGroup: Group');
+    }
+
+    if(!this._isEditable()) {
+      return ReturnCodes.NOT_EDITABLE;
+    }
+
+    if(this._groups.includes(newGroup)) {
+      this._groups = this._groups
+        .filter(inPlaceGroup => inPlaceGroup !== newGroup);
+      return ReturnCodes.REMOVED;
+    }
+
+    return ReturnCodes.NOT_FOUND;
+  }
+
+
   public getProfilePictureUrl(): URL {
     return this._profilePictureUrl;
   }
@@ -132,7 +172,7 @@ class User {
     }
 
     this._profilePictureUrl = profilePictureUrl;
-    this._update(); 
+    this._update();
     return ReturnCodes.UPDATED;
   }
 
