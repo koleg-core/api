@@ -1,10 +1,11 @@
 export enum ReturnCodes {
   UPDATED = 0,
-  REMOVED = 0,
-  CREATED = 1,
-  NOTHING_CHANGED = 1,
-  DUPLICATED = 2,
+  REMOVED = 1,
+  CREATED = 2,
+  NOTHING_CHANGED = 3,
+  DUPLICATED = 4,
   NOT_FOUND = -1,
   NOT_EDITABLE = -2,
-  WAS_ALREADY_USED = -3
+  WAS_ALREADY_USED = -3,
+  CONFLICTING = -4
 }

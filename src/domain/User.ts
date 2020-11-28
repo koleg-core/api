@@ -6,8 +6,10 @@ import { PhoneNumber } from './PhoneNumber';
 import { SshKey } from './SshKey';
 import { UserIdentity } from './UserIdentity';
 import { ReturnCodes } from './enums/return-codes.enum';
+import { Group } from './Groups';
+import { group } from 'console';
 
-class User {
+export class User {
 
   private _id: string;
   private _passwordHistory: Password[];
@@ -19,11 +21,13 @@ class User {
     private _identity: UserIdentity,
     private _password: Password,
     private _job: Job,
+    private _groups: Group[],
+    private _profilePictureUrl: URL,
     private _sshKey: SshKey,
     private _birthdate: Date,
     private _phoneNumbers: PhoneNumber[],
     private _imgUrl: string = null,
-    private _expirationDate: Date = null,
+    private _expirationDate: Date = null
   ) {
     this._id = uuid();
     this._passwordHistory.push(this._password);
@@ -33,6 +37,7 @@ class User {
   public isDisabled():boolean {
     return this._disableDate <= new Date();
   }
+
 
   public disable(): number {
     let returnCode: ReturnCodes = ReturnCodes.NOTHING_CHANGED;
@@ -47,7 +52,7 @@ class User {
     return returnCode;
   }
 
-  public enable(): number {
+  public enable(): ReturnCodes {
     let returnCode: ReturnCodes = ReturnCodes.NOTHING_CHANGED;
 
     if(this._disableDate) {
@@ -66,7 +71,7 @@ class User {
     return this._identity;
   }
 
-  public updateIdentity(identity: UserIdentity): number {
+  public updateIdentity(identity: UserIdentity): ReturnCodes {
     if (!identity) {
       throw new Error('Invalid argument identity: UserIdentity');
     }
@@ -80,7 +85,7 @@ class User {
     return ReturnCodes.UPDATED;
   }
 
-  public updatePassword(password: Password): number {
+  public updatePassword(password: Password): ReturnCodes {
     if (!password) {
       throw new Error('Invalid argument password: Password');
     }
@@ -103,7 +108,7 @@ class User {
     return this._job;
   }
 
-  public updateJob(job: Job): number {
+  public updateJob(job: Job): ReturnCodes {
     if (!job) {
       throw new Error('Invalid argument job: Job');
     }
@@ -117,7 +122,61 @@ class User {
     return ReturnCodes.UPDATED;
   }
 
-  public updateSshKey(sshKey: SshKey): number {
+  public addGroup(newGroup: Group): ReturnCodes {
+    if (!newGroup) {
+      throw new Error('Invalid argument newGroup: Group');
+    }
+
+    if(!this._isEditable()) {
+      return ReturnCodes.NOT_EDITABLE;
+    }
+
+    if(this._groups.includes(newGroup)) {
+      return ReturnCodes.NOTHING_CHANGED;
+    }
+
+    this._groups.push(newGroup);
+    return ReturnCodes.UPDATED;
+  }
+
+  public removeGroup(newGroup: Group): ReturnCodes {
+    if (!newGroup) {
+      throw new Error('Invalid argument newGroup: Group');
+    }
+
+    if(!this._isEditable()) {
+      return ReturnCodes.NOT_EDITABLE;
+    }
+
+    if(this._groups.includes(newGroup)) {
+      this._groups = this._groups
+        .filter(inPlaceGroup => inPlaceGroup !== newGroup);
+      return ReturnCodes.REMOVED;
+    }
+
+    return ReturnCodes.NOT_FOUND;
+  }
+
+
+  public getProfilePictureUrl(): URL {
+    return this._profilePictureUrl;
+  }
+
+  public updateProfilePictureUrl(profilePictureUrl: URL): ReturnCodes {
+    if(!profilePictureUrl) {
+      throw new Error('Invalid argument profilePictureUrl: URL');
+    }
+
+    if(!this._isEditable()) {
+      return ReturnCodes.NOT_EDITABLE;
+    }
+
+    this._profilePictureUrl = profilePictureUrl;
+    this._update();
+    return ReturnCodes.UPDATED;
+  }
+
+  public updateSshKey(sshKey: SshKey): ReturnCodes {
     if (!sshKey) {
       throw new Error('Invalid argument sshKay: SshKey');
     }
@@ -147,7 +206,7 @@ class User {
       && !this.isExpired();
   }
 
-  public addPhoneNumber(phoneNumber: PhoneNumber): number {
+  public addPhoneNumber(phoneNumber: PhoneNumber): ReturnCodes {
     if (!phoneNumber) {
       throw new Error('Invalid argument phoneNumber: is null');
     }
@@ -169,7 +228,7 @@ class User {
     return returnCode;
   }
 
-  public removePhoneNumber(phoneNumber: PhoneNumber): number {
+  public removePhoneNumber(phoneNumber: PhoneNumber): ReturnCodes {
     if (!phoneNumber) {
       throw new Error('Invalid argument phoneNumber: is null');
     }
@@ -197,7 +256,7 @@ class User {
     this._updateDate = new Date();
   }
 
-  private _findPhoneNumberIndexInList(phoneNumber: PhoneNumber): number {
+  private _findPhoneNumberIndexInList(phoneNumber: PhoneNumber): ReturnCodes {
 
     // Return -1 for not found
     return this._phoneNumbers
