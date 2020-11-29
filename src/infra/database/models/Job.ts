@@ -17,7 +17,7 @@ interface JobAttributes{
   name: string;
 }
 
-type JobCreationAttributes = Optional<JobAttributes, "id">
+interface JobCreationAttributes extends Optional<JobAttributes, "id"> {}
 
 export class Job extends Model<JobAttributes, JobCreationAttributes> implements JobAttributes{
   public id!: number;

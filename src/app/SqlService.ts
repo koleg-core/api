@@ -6,7 +6,7 @@ export class SqlService {
     private database: Database;
 
     constructor(
-        uri = "postgres://postgres:B2fpKNTvon@db-develop-postgresql:5432/postgres"
+        uri: string = "postgres://postgres:B2fpKNTvon@db-develop-postgresql:5432/postgres"
     ) {
         this.orm = new Sequelize(uri);
         this.database = new Database(this.orm);
