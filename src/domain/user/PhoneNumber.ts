@@ -1,4 +1,4 @@
-import { PhoneType } from "./enums/phone-type.enum"
+import { PhoneType } from "../enums/phone-type.enum"
 
 export class PhoneNumber {
 

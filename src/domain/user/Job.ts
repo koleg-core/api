@@ -4,10 +4,14 @@
 export class Job {
 
     constructor(
-        readonly name: string
+        private name: string
     ) {
         if (!this.name) {
             throw new Error('Invalid argument name: string');
         }
+    }
+
+    public getName(): string {
+        return this.name;
     }
 }

@@ -1,19 +1,19 @@
 import { v4 as uuid } from 'uuid';
 
-import { User } from './User';
-import { ReturnCodes } from './enums/return-codes.enum';
-import { group } from 'console';
+import { ReturnCodes } from '../enums/return-codes.enum';
+
+import { GroupProperties } from './GroupProperties';
+
 
 export class Group {
     private _id: string;
-    private _groups: Group[];
-    private _users: User[];
 
     constructor(
       private _name: string,
       private _description: string,
       private _imgUrl: URL,
-      private _parendGroup: Group
+      private _parendGroup: Group,
+      private _childsGroups: Group[] = [],
     ) {
         this._id = uuid();
         this._parendGroup._addChild(this);
@@ -59,9 +59,9 @@ export class Group {
 
     public getChildsId(): string[] {
         const childsId: string[] = [];
-        this._groups.forEach(
-            childGroups => childsId.push(
-                childGroups.getId()
+        this._childsGroups.forEach(
+            childGroup => childsId.push(
+                childGroup.getId()
             )
         );
         return childsId;
@@ -72,7 +72,7 @@ export class Group {
             return ReturnCodes.CONFLICTING;
         }
 
-        this._groups.push(newChild);
+        this._childsGroups.push(newChild);
         return ReturnCodes.UPDATED;
     }
 
@@ -82,7 +82,7 @@ export class Group {
     }
 
     private _canOwnThisChild(newChild: Group): boolean {
-        const inPlaceConfictingChilds = this._groups
+        const inPlaceConfictingChilds = this._childsGroups
           .filter(
               inPlaceChild => !inPlaceChild._canShareSameParent(newChild)
           );
@@ -91,5 +91,16 @@ export class Group {
           return false;
         }
         return true;
+    }
+
+    public getProperties(): GroupProperties {
+
+        return new GroupProperties(
+            this._id,
+            this.getChildsId(),
+            this._name, this._description,
+            this._imgUrl,
+            this.getParentId()
+            )
     }
 }
