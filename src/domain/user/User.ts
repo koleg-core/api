@@ -5,8 +5,8 @@ import { Password } from './Password';
 import { PhoneNumber } from './PhoneNumber';
 import { SshKey } from './SshKey';
 import { UserIdentity } from './UserIdentity';
-import { ReturnCodes } from './enums/return-codes.enum';
-import { Group } from './Group';
+import { ReturnCodes } from '../enums/return-codes.enum';
+import { Group } from '../group/Group';
 import { UserProperties } from './UserProperties';
 
 export class User {
@@ -255,14 +255,14 @@ export class User {
     return ReturnCodes.NOT_FOUND;
   }
 
-  public freeze(): UserProperties {
-    const jobName: string = this.getJob().getName();
+  public getProperties(): UserProperties {
+    const job: Job = this.getJob();
     const publicKey: string = this._sshKey.publicKey;
 
     return new UserProperties(
       this._id,
       this._identity,
-      jobName,
+      job,
       this.getGroupIds(),
       this._profilePictureUrl,
       publicKey,
