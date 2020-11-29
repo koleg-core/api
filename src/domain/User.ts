@@ -1,13 +1,13 @@
 import { v4 as uuid } from 'uuid';
-import { Job } from './Job';
 
+import { Job } from './Job';
 import { Password } from './Password';
 import { PhoneNumber } from './PhoneNumber';
 import { SshKey } from './SshKey';
 import { UserIdentity } from './UserIdentity';
 import { ReturnCodes } from './enums/return-codes.enum';
-import { Group } from './Groups';
-import { group } from 'console';
+import { Group } from './Group';
+import { UserProperties } from './UserProperties';
 
 export class User {
 
@@ -26,18 +26,17 @@ export class User {
     private _sshKey: SshKey,
     private _birthdate: Date,
     private _phoneNumbers: PhoneNumber[],
-    private _imgUrl: string = null,
     private _expirationDate: Date = null
   ) {
     this._id = uuid();
     this._passwordHistory.push(this._password);
-    this._creationDate = this._updateDate = new Date();
+    this._creationDate = new Date();
+    this._updateDate = this._creationDate;
   }
 
   public isDisabled():boolean {
     return this._disableDate <= new Date();
   }
-
 
   public disable(): number {
     let returnCode: ReturnCodes = ReturnCodes.NOTHING_CHANGED;
@@ -50,6 +49,10 @@ export class User {
       this._update();
     }
     return returnCode;
+  }
+
+  public getId(): string {
+    return this._id;
   }
 
   public enable(): ReturnCodes {
@@ -139,6 +142,15 @@ export class User {
     return ReturnCodes.UPDATED;
   }
 
+  public getGroupIds(): string[] {
+    const groupsIds: string[] = [];
+
+    this._groups
+      .forEach(group => groupsIds.push(group.getId()));
+
+    return groupsIds;
+  }
+
   public removeGroup(newGroup: Group): ReturnCodes {
     if (!newGroup) {
       throw new Error('Invalid argument newGroup: Group');
@@ -156,7 +168,6 @@ export class User {
 
     return ReturnCodes.NOT_FOUND;
   }
-
 
   public getProfilePictureUrl(): URL {
     return this._profilePictureUrl;
@@ -242,6 +253,25 @@ export class User {
     }
 
     return ReturnCodes.NOT_FOUND;
+  }
+
+  public freeze(): UserProperties {
+    const jobName: string = this.getJob().getName();
+    const publicKey: string = this._sshKey.publicKey;
+
+    return new UserProperties(
+      this._id,
+      this._identity,
+      jobName,
+      this.getGroupIds(),
+      this._profilePictureUrl,
+      publicKey,
+      this._phoneNumbers,
+      this._birthdate,
+      this. _expirationDate,
+      this._creationDate,
+      this._disableDate,
+      this._updateDate);
   }
 
   private _wasPasswordAlreadyUsed(password: Password): boolean {

@@ -4,10 +4,10 @@ export class Password {
     private readonly DATE_LIMIT_MONTH = 4;
 
     constructor(
-        readonly value: string,
+        private _value: string,
         private _dateLimit: Date = null
     ) {
-        if (!value) {
+        if (!_value) {
             throw new Error('Invalid arguement value: string');
         }
 
@@ -20,8 +20,12 @@ export class Password {
         }
     }
 
+    public getValue(): string {
+        return this._value;
+    }
+
     public hasSameValue(password: Password) {
-        return this.value === password.value;
+        return this._value === password.getValue();
     }
 
     public isExpired(): boolean {
@@ -29,7 +33,7 @@ export class Password {
     }
 
     public isValueValid(valueToCheck: string): boolean {
-        return !this.isExpired() && valueToCheck === this.value;
+        return !this.isExpired() && valueToCheck === this._value;
     }
 
     private _initializeDateLimit(): void {
