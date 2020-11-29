@@ -8,7 +8,6 @@ import { GroupProperties } from './GroupProperties';
 export class Group {
     private _id: string;
 
-
     constructor(
       private _name: string,
       private _description: string,

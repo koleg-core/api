@@ -1,6 +1,7 @@
 import { OrganisationRepository } from '../domain/OrganisationRepository';
 import { Organisation } from '../domain/Organisation';
-
+import { UserProperties } from '../domain/user/UserProperties';
+import { GroupProperties } from '../domain/group/GroupProperties';
 
 export class OrganisationInMemory implements OrganisationRepository {
     constructor(
@@ -17,5 +18,21 @@ export class OrganisationInMemory implements OrganisationRepository {
           .filter(organisation => organisationId === organisation.getId());
 
         return organisations[0].getId();
+    }
+
+    public saveUser(user: UserProperties): string {
+        return null;
+    }
+
+    public readUser(organisationId: string): string {
+        return null;
+    }
+
+    public saveGroup(groupProperties: GroupProperties): string {
+        return null;
+    }
+
+    public readGroup(groupId: string): string {
+        return null;
     }
 }

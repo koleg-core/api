@@ -26,7 +26,7 @@ export class User {
     private _sshKey: SshKey,
     private _birthdate: Date,
     private _phoneNumbers: PhoneNumber[],
-    private _expirationDate: Date = null
+    private _expirationDate: Date = null,
   ) {
     this._id = uuid();
     this._passwordHistory.push(this._password);

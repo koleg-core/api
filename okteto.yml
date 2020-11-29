@@ -1,5 +1,6 @@
 name: api-${USER}
 image: okteto/node:12
+namespace: develop
 command: bash
 sync:
   - .:/usr/src/app
