@@ -10,6 +10,7 @@ import { PhoneNumber } from './user/PhoneNumber';
 import { Password } from './user/Password';
 import { Job } from './user/Job';
 import { UserProperties } from './user//UserProperties';
+import { Url } from 'url';
 
 // This is the aggregate
 export class Organisation {
@@ -82,19 +83,42 @@ export class Organisation {
         return findedUsers[0].getProperties();
     }
 
+    public addGroup(
+        name:string,
+        description:string,
+        imgUrl:URL = null,
+        parentGroupId:string = null,
+        childsGroupsId:string[] = []
+    ): string {
+        const parentGroup:Group = this._getGroupById(parentGroupId);
+        const childsGroups:Group[] = [];
+
+        childsGroupsId.forEach(childsGroupId => {
+            const childGroup:Group = this._getGroupById(childsGroupId);
+            childsGroups.push(childGroup);
+        })
+        const newGroup:Group = new Group(name, description, imgUrl, parentGroup, childsGroups);
+        if(!newGroup) {
+            throw new Error('Group was not created');
+        }
+
+        this._groups.push(newGroup);
+        return newGroup.getId();
+    }
+
     public addUser(
         identity: UserIdentity,
         password: Password,
         job: Job,
-        groupsIds: string[],
-        profilePictureUrl: URL,
-        sshKey: SshKey,
         birthdate: Date,
-        phoneNumbers: PhoneNumber[],
+        groupsIds: string[] = [],
+        profilePictureUrl: URL = null,
+        sshKey: SshKey = null,
+        phoneNumbers: PhoneNumber[] = null,
         expirationDate: Date = null
     ): string {
 
-        const validGroupsIds: string[] = groupsIds
+        const validGroupsIds:string[] = groupsIds
           .filter(existingGroupId => this.containsGroupById(existingGroupId));
 
         if(validGroupsIds.length !== groupsIds.length) {
@@ -114,10 +138,10 @@ export class Organisation {
             identity,
             password,
             job,
+            birthdate,
             validGroups,
             profilePictureUrl,
             sshKey,
-            birthdate,
             phoneNumbers,
             expirationDate
         )
