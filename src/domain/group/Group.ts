@@ -10,13 +10,15 @@ export class Group {
 
     constructor(
       private _name: string,
-      private _description: string,
-      private _imgUrl: URL,
-      private _parendGroup: Group,
+      private _description: string = null,
+      private _imgUrl: URL = null,
+      private _parendGroup: Group = null,
       private _childsGroups: Group[] = [],
     ) {
         this._id = uuid();
-        this._parendGroup._addChild(this);
+        if(this._parendGroup){
+            this._parendGroup._addChild(this);
+        }
     }
 
     public getId(): string {
@@ -54,7 +56,10 @@ export class Group {
 
 
     public getParentId(): string {
-        return this._parendGroup.getId();
+        if(this._parendGroup) {
+            return this._parendGroup.getId();
+        }
+        return null;
     }
 
     public getChildsId(): string[] {
@@ -74,6 +79,20 @@ export class Group {
 
         this._childsGroups.push(newChild);
         return ReturnCodes.UPDATED;
+    }
+
+    public isRoot(): boolean {
+        if(!this._parendGroup) {
+            return true;
+        }
+        return false;
+    }
+
+    public hasChilds(): boolean {
+        if(this._childsGroups.length === 0) {
+            return false;
+        }
+        return true;
     }
 
     private _canShareSameParent(concurrent: Group): boolean {

@@ -13,7 +13,8 @@
     "start": "node --inspect=5858 -r ts-node/register ./src/server.ts",
     "start:watch": "nodemon",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha -r ts-node/register tests/**/*.test.ts",
+    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
     "codegen": " npx swagger-typescript-api -p openapi.yml -n KolegApi.ts -o ./auto"
   },
   "repository": {
@@ -27,7 +28,13 @@
   },
   "homepage": "https://gitlab.com/koleg1/api#readme",
   "dependencies": {
+    "@types/crypto-js": "^4.0.1",
+    "@types/jest": "^26.0.15",
+    "@types/mocha": "^8.0.4",
+    "chai": "^4.2.0",
+    "crypto-js": "^4.0.0",
     "express": "^4.17.1",
+    "mocha": "^8.2.1",
     "slugify": "^1.4.6",
     "swagger-typescript-api": "^3.0.1"
   },

@@ -12,23 +12,24 @@ import { UserProperties } from './UserProperties';
 export class User {
 
   private _id: string;
-  private _passwordHistory: Password[];
   private _creationDate: Date
   private _disableDate: Date;
   private _updateDate: Date;
+  private _passwordHistory: Password[];
 
   constructor(
     private _identity: UserIdentity,
     private _password: Password,
     private _job: Job,
-    private _groups: Group[],
-    private _profilePictureUrl: URL,
-    private _sshKey: SshKey,
     private _birthdate: Date,
-    private _phoneNumbers: PhoneNumber[],
+    private _groups: Group[] = [],
+    private _profilePictureUrl: URL = null,
+    private _sshKey: SshKey,
+    private _phoneNumbers: PhoneNumber[] = null,
     private _expirationDate: Date = null,
   ) {
     this._id = uuid();
+    this._passwordHistory = [];
     this._passwordHistory.push(this._password);
     this._creationDate = new Date();
     this._updateDate = this._creationDate;
