@@ -93,9 +93,34 @@ describe('Group', function() {
         }
 
         done();
-    });
+      });
     });
 });
+
+describe('Group', function() {
+    describe('#init() with parent', function() {
+      it('should be created without error', function(done) {
+        try {
+            const organisation:Organisation = genOrganisation();
+            const parentGroupId:string = genGroupId(organisation);
+            const childGroupId:string = genGroupId(organisation, parentGroupId);
+
+            if(
+              !organisation.getGroupPropertiesById(parentGroupId)
+              || !organisation.getGroupPropertiesById(childGroupId)
+            ) {
+                const err:string = "There is not group into organisation";
+                done(err);
+            }
+        } catch (err) {
+            done(err);
+        }
+
+        done();
+      });
+    });
+});
+
 
 describe('SshKey', function() {
     describe('#init()', function() {
