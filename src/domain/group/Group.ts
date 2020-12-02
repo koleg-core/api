@@ -12,12 +12,12 @@ export class Group {
       private _name: string,
       private _description: string = null,
       private _imgUrl: URL = null,
-      private _parendGroup: Group = null,
+      private _parentGroup: Group = null,
       private _childsGroups: Group[] = [],
     ) {
         this._id = uuid();
-        if(this._parendGroup){
-            this._parendGroup._addChild(this);
+        if(this._parentGroup){
+            this._parentGroup.addChild(this);
         }
     }
 
@@ -56,33 +56,19 @@ export class Group {
 
 
     public getParentId(): string {
-        if(this._parendGroup) {
-            return this._parendGroup.getId();
+        if(this._parentGroup) {
+            return this._parentGroup.getId();
         }
         return null;
     }
 
     public getChildsId(): string[] {
-        const childsId: string[] = [];
-        this._childsGroups.forEach(
-            childGroup => childsId.push(
-                childGroup.getId()
-            )
-        );
-        return childsId;
-    }
-
-    private _addChild(newChild: Group): ReturnCodes {
-        if(!this._canOwnThisChild(newChild)) {
-            return ReturnCodes.CONFLICTING;
-        }
-
-        this._childsGroups.push(newChild);
-        return ReturnCodes.UPDATED;
+        return this._childsGroups
+          .map(child => child.getId());
     }
 
     public isRoot(): boolean {
-        if(!this._parendGroup) {
+        if(!this._parentGroup) {
             return true;
         }
         return false;
@@ -95,21 +81,50 @@ export class Group {
         return true;
     }
 
-    private _canShareSameParent(concurrent: Group): boolean {
-        return this._name === concurrent.getName()
-          || this._id === concurrent.getId();
+    // Here use static to replace missing friend of
+    private static _canShareSameParent(
+        inPlaceGroup: Group,
+        concurrentGroup: Group): boolean {
+        return inPlaceGroup._name === concurrentGroup.getName()
+          || inPlaceGroup.getId() === concurrentGroup.getId();
     }
 
-    private _canOwnThisChild(newChild: Group): boolean {
-        const inPlaceConfictingChilds = this._childsGroups
+    public canShareSameParent(concurrentGroup: Group) {
+        return Group._canShareSameParent(
+            this,
+            concurrentGroup);
+    }
+
+    // Here use static to replace missing friend of
+    private static _canOwnThisChild(existingChild: Group, newChild: Group): boolean {
+        const inPlaceConfictingChilds = existingChild._childsGroups
           .filter(
-              inPlaceChild => !inPlaceChild._canShareSameParent(newChild)
+              inPlaceChild => !inPlaceChild.canShareSameParent(newChild)
           );
 
         if(inPlaceConfictingChilds.length >= 0 ) {
           return false;
         }
         return true;
+    }
+
+    public canOwnThisChild(newChild: Group): boolean {
+        return Group._canOwnThisChild(
+            this,
+            newChild);
+    }
+
+    private static _addChild(parentGroup:Group , newChild: Group): ReturnCodes {
+        if(!parentGroup.canOwnThisChild(newChild)) {
+            return ReturnCodes.CONFLICTING;
+        }
+
+        parentGroup._childsGroups.push(newChild);
+        return ReturnCodes.UPDATED;
+    }
+
+    public addChild(childGroup: Group) {
+        Group._addChild(this, childGroup);
     }
 
     public getProperties(): GroupProperties {
