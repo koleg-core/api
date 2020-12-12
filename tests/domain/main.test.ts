@@ -23,7 +23,7 @@ describe('Organisation', () => {
         try {
             const organisation:Organisation = genOrganisation();
             if(!organisation) {
-                const err:string = "There is not organisation created.";
+                const err = "There is not organisation created.";
                 done(err);
             }
         } catch (err) {
@@ -34,12 +34,12 @@ describe('Organisation', () => {
     });
 });
 
-describe('Identity', function() {
-    describe('#init()', function() {
-      it('should be created without error', function(done) {
+describe('Identity', () => {
+    describe('#init()', () => {
+      it('should be created without error', (done) => {
           const identity:UserIdentity = genUserIdentity();
           if(!identity) {
-              const err:string = "User identity is undefined";
+              const err = "User identity is undefined";
               done(err);
           }
         try {
@@ -51,9 +51,9 @@ describe('Identity', function() {
     });
 });
 
-describe('Password', function() {
-    describe('#init()', function() {
-      it('should be created without error', function(done) {
+describe('Password', () => {
+    describe('#init()', () => {
+      it('should be created without error', (done) => {
         try {
             const passwordWithExpiration:Password = genPassword();
         } catch (err) {
@@ -64,9 +64,9 @@ describe('Password', function() {
     });
 });
 
-describe('Job', function() {
-    describe('#init()', function() {
-      it('should be created without error', function(done) {
+describe('Job', () => {
+    describe('#init()', () => {
+      it('should be created without error', (done) => {
         try {
             const job:Job = genJob();
         } catch (err) {
@@ -77,15 +77,15 @@ describe('Job', function() {
     });
 });
 
-describe('Group', function() {
-    describe('#init()', function() {
-      it('should be created without error', function(done) {
+describe('Group', () => {
+    describe('#init()', () => {
+      it('should be created without error', (done) => {
         try {
             const organisation:Organisation = genOrganisation();
             const groupId:string = genGroupId(organisation);
 
             if(!organisation.getGroupPropertiesById(groupId)) {
-                const err:string = "There is not group into organisation";
+                const err = "There is not group into organisation";
                 done(err);
             }
         } catch (err) {
@@ -97,9 +97,9 @@ describe('Group', function() {
     });
 });
 
-describe('Group', function() {
-    describe('#init() with parent', function() {
-      it('should be created without error', function(done) {
+describe('Group', () => {
+    describe('#init() with parent', () => {
+      it('should be created without error', (done) => {
         try {
             const organisation:Organisation = genOrganisation();
             const parentGroupId:string = genGroupId(organisation);
@@ -109,7 +109,7 @@ describe('Group', function() {
               !organisation.getGroupPropertiesById(parentGroupId)
               || !organisation.getGroupPropertiesById(childGroupId)
             ) {
-                const err:string = "There is not group into organisation";
+                const err = "There is not group into organisation";
                 done(err);
             }
         } catch (err) {
@@ -122,9 +122,9 @@ describe('Group', function() {
 });
 
 
-describe('SshKey', function() {
-    describe('#init()', function() {
-      it('should be created without error', function(done) {
+describe('SshKey', () => {
+    describe('#init()', () => {
+      it('should be created without error', (done) => {
         try {
             const sshKey:SshKey = genSshKey();
         } catch (err) {
@@ -135,9 +135,9 @@ describe('SshKey', function() {
     });
 });
 
-describe('PhoneNumber', function() {
-    describe('#init()', function() {
-      it('should be created without error', function(done) {
+describe('PhoneNumber', () => {
+    describe('#init()', () => {
+      it('should be created without error', (done) => {
         try {
             const phoneNumber: PhoneNumber = genPhoneNumber();
         } catch (err) {
@@ -148,14 +148,14 @@ describe('PhoneNumber', function() {
     });
 });
 
-describe('Organisation', function() {
-    describe('#addUser()', function() {
-      it('user should be created without error', function(done) {
+describe('Organisation', () => {
+    describe('#addUser()', () => {
+      it('user should be created without error', (done) => {
         try {
           const organisation:Organisation = genOrganisation();
           const userId:string = genUserId(organisation);
           if(!organisation.getUserById(userId)) {
-              const err:string = "There is no user into organisation.";
+              const err = "There is no user into organisation.";
               done(err);
           }
         } catch (err) {

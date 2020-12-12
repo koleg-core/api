@@ -1,5 +1,5 @@
 import { OrganisationRepository } from "../domain/OrganisationRepository";
-import { Api } from "../infra/api/Api";
+import { Api } from "../infra/api/api";
 
 export class App {
 

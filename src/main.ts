@@ -1,8 +1,6 @@
-import './application/App';
-import { App } from './application/App';
-import { OrganisationRepository } from './domain/OrganisationRepository';
-
-import { Api } from './infra/api/Api';
+import './app/app';
+import { App } from './app/app';
+import { Api } from './infra/api/api';
 import { OrganisationInMemory } from './infra/OrganisationInMemory';
 
 const apiService: Api = new Api();

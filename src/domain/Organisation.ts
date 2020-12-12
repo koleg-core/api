@@ -5,11 +5,11 @@ import { Group } from './group/Group';
 import { GroupProperties } from './group/GroupProperties';
 import { User } from './user/User';
 import { SshKey } from './user/SshKey';
-import { UserIdentity } from './user//UserIdentity';
+import { UserIdentity } from './user/UserIdentity';
 import { PhoneNumber } from './user/PhoneNumber';
 import { Password } from './user/Password';
 import { Job } from './user/Job';
-import { UserProperties } from './user//UserProperties';
+import { UserProperties } from './user/UserProperties';
 import { Url } from 'url';
 
 // This is the aggregate
@@ -123,7 +123,7 @@ export class Organisation {
 
         if(validGroupsIds.length !== groupsIds.length) {
             throw new Error('Invalid group Id in groupsIds: string[]');
-        };
+        }
 
         const validGroups: Group[] = [];
 
@@ -147,6 +147,15 @@ export class Organisation {
         )
         this._users.push(newUser);
         return newUser.getId();
+    }
+
+    public isTokenValid(token: string): boolean {
+        this._users.forEach(user => {
+            if(user.equalsToken(token)) {
+                return true;
+            }
+        });
+        return false;
     }
 
     private _getGroupById(groupId: string): Group {

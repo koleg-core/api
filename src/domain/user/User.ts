@@ -16,6 +16,7 @@ export class User {
   private _disableDate: Date;
   private _updateDate: Date;
   private _passwordHistory: Password[];
+  private _token: string;
 
   constructor(
     private _identity: UserIdentity,
@@ -273,6 +274,10 @@ export class User {
       this._creationDate,
       this._disableDate,
       this._updateDate);
+  }
+
+  public equalsToken(token: string): boolean {
+    return this._token === token;
   }
 
   private _wasPasswordAlreadyUsed(password: Password): boolean {

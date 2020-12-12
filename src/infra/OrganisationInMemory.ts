@@ -4,18 +4,21 @@ import { UserProperties } from '../domain/user/UserProperties';
 import { GroupProperties } from '../domain/group/GroupProperties';
 
 export class OrganisationInMemory implements OrganisationRepository {
-    private _bucket: Organisation[] = [];
+    private _organisation: Organisation;
 
-    public save(organisation: Organisation): string {
-        this._bucket.push(organisation);
-        return organisation.getId();
+    public save(organisation: Organisation): void {
+        this._organisation = organisation;
+        // return organisation.getId();
     }
 
-    public read(organisationId: string): string {
-        const organisations: Organisation[] = this._bucket
-          .filter(organisation => organisationId === organisation.getId());
+    // public read(organisationId: string): string {
+    //     const organisations: Organisation[] = this._bucket
+    //       .filter(organisation => organisationId === organisation.getId());
 
-        return organisations[0].getId();
+    //     return organisations[0].getId();
+    // }
+    public read(): Organisation {
+        return this._organisation;
     }
 
     public saveUser(user: UserProperties): string {

@@ -1,7 +1,7 @@
 import { SshKey } from '../../src/domain/user/SshKey';
 
 export const genSshKey = function(): SshKey {
-    const privateKey:string = `
+    const privateKey = `
     -----BEGIN RSA PRIVATE KEY-----
     MIICXgIBAAKBgQCYjiyDmRFQcPS9Wzj6ry4Rt1thmWbauCmXgkqMhMWkFZS9mi4m
     OzoiENsb5qxF3apy0AbAmBidxwiIQR/PwKF1sqcE9cYo8twe9cskbrhuCXEfjoNl
@@ -19,7 +19,7 @@ export const genSshKey = function(): SshKey {
     -----END RSA PRIVATE KEY-----
     `
 
-    const publicKey:string = `
+    const publicKey = `
     -----BEGIN PUBLIC KEY-----
     MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYjiyDmRFQcPS9Wzj6ry4Rt1th
     mWbauCmXgkqMhMWkFZS9mi4mOzoiENsb5qxF3apy0AbAmBidxwiIQR/PwKF1sqcE
