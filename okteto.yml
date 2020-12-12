@@ -1,4 +1,5 @@
 name: api-${USER}
+namespace: develop
 image: okteto/node:12
 namespace: develop
 command: bash

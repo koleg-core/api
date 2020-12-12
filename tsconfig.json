@@ -12,10 +12,12 @@
             "*": [
                 "node_modules/*"
             ]
-        }
+        },
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts", "src/infra/BDD.js"
     ],
     "exclude": [
     "node_modules",
