@@ -4,17 +4,15 @@ import { UserProperties } from '../domain/user/UserProperties';
 import { GroupProperties } from '../domain/group/GroupProperties';
 
 export class OrganisationInMemory implements OrganisationRepository {
-    constructor(
-        private bucket: Organisation[]
-    ) {}
+    private _bucket: Organisation[] = [];
 
     public save(organisation: Organisation): string {
-        this.bucket.push(organisation);
+        this._bucket.push(organisation);
         return organisation.getId();
     }
 
     public read(organisationId: string): string {
-        const organisations: Organisation[] = this.bucket
+        const organisations: Organisation[] = this._bucket
           .filter(organisation => organisationId === organisation.getId());
 
         return organisations[0].getId();

@@ -1,8 +1,8 @@
 import express from "express";
 import * as bodyParser from "body-parser";
-import { Routes } from "./routes";
+import { Routes } from "./Routes";
 
-class Api {
+export class Api {
   public app: express.Application;
   public routePrv: Routes = new Routes();
 
@@ -17,5 +17,3 @@ class Api {
     this.app.use(bodyParser.urlencoded({ extended: false }));
   }
 }
-
-export default new Api().app;

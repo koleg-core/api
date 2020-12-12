@@ -10,7 +10,8 @@
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "prestart": "npm run build",
-    "start": "node --inspect=5858 -r ts-node/register ./src/server.ts",
+    "start": "node -r ts-node/register ./src/main.ts",
+    "dev": "nodemon src/**/*.ts",
     "start:watch": "nodemon",
     "build": "tsc",
     "test": "mocha -r ts-node/register tests/**/*.test.ts",

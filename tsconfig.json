@@ -17,7 +17,7 @@
         "emitDecoratorMetadata": true
     },
     "include": [
-        "src/**/*.ts", "src/infra/BDD.js"
+        "src/**/*.ts"
     ],
     "exclude": [
     "node_modules",
