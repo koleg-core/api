@@ -18,11 +18,21 @@ init: ## Clone all git submodules and npm install
 build: ## Local build with npm/typescript
 	@echo "+ $@"
 	@npm i
-	@npm run prebuild
-	@npm run prestart
+	@npm run build
+
+test: ## Test all
+	@echo "+ $@"
+	@npm lint
+	@npm test
+	@echo "Test Dockerfile"
+	@docker run --rm -i hadolint/hadolint < Dockerfile
 
 start: ## Start with node
 	@npm run start
+
+dev: ## Start dev 
+	@echo "+ $@"
+	@npm run dev
 
 up: ## Cloud start with okteto/npm
 	@echo "+ $@"

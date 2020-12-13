@@ -42,14 +42,9 @@ If you are not or if you want to have okteto into an other terminal run:
 make shell
 ```
 
-After you can transpile with `typescript` into `js`:
+Start nodemon automatic rebuild/restart
 ```bash
-make build
-```
-
-Transpile into typescript and start with:
-```bash
-make start
+make dev
 ```
 
 Enjoy !

@@ -10,7 +10,6 @@ import { PhoneNumber } from './user/PhoneNumber';
 import { Password } from './user/Password';
 import { Job } from './user/Job';
 import { UserProperties } from './user/UserProperties';
-import { Url } from 'url';
 
 // This is the aggregate
 export class Organisation {
@@ -149,13 +148,19 @@ export class Organisation {
         return newUser.getId();
     }
 
-    public isTokenValid(token: string): boolean {
-        this._users.forEach(user => {
-            if(user.equalsToken(token)) {
-                return true;
-            }
-        });
-        return false;
+    // TODO: fill this functions
+    public getUserByIdentifier(userIdentifier: string): string {
+        return null;
+    }
+
+    // TODO: fill this functions
+    public verifyUserPassword(userUuid: string, password: string): string {
+        return null;
+    }
+
+    // TODO: fill this functions
+    public getUserProperties(userUuid: string): UserProperties {
+        return null;
     }
 
     private _getGroupById(groupId: string): Group {

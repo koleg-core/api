@@ -1,6 +1,6 @@
 import { SshKey } from '../../src/domain/user/SshKey';
 
-export const genSshKey = function(): SshKey {
+export const genSshKey = (): SshKey => {
     const privateKey = `
     -----BEGIN RSA PRIVATE KEY-----
     MIICXgIBAAKBgQCYjiyDmRFQcPS9Wzj6ry4Rt1thmWbauCmXgkqMhMWkFZS9mi4m

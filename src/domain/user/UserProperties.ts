@@ -7,6 +7,7 @@ export class UserProperties {
     private _id: string,
     private _identity: UserIdentity,
     private _job: Job,
+    private _token: string,
     private _groupsIds: string[],
     private _profilePictureUrl: URL,
     private _sshPublicKey: string,
@@ -36,6 +37,10 @@ export class UserProperties {
 
   public getJob(): Job {
     return this._job;
+  }
+
+  public getToken(): string {
+    return this._token;
   }
 
   public getGroupIds(): string[] {

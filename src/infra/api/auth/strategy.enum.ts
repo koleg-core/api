@@ -1,4 +1,6 @@
 export enum Strategy {
-    BEARER = 'bearer',
-    GTILAB = 'passport-gitlab'
+    LOGIN = 'login',
+    JWT = 'passport-jwt',
+    SIGNUP = 'signup',
+    GTILAB = 'passport-gitlab2'
 }

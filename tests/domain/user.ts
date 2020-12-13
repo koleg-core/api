@@ -3,7 +3,6 @@ import { Job } from '../../src/domain/user/Job';
 import { Password } from '../../src/domain/user/Password';
 import { PhoneNumber } from '../../src/domain/user/PhoneNumber';
 import { SshKey } from '../../src/domain/user/SshKey';
-import { User } from '../../src/domain/user/User';
 import { UserIdentity } from '../../src/domain/user/UserIdentity';
 import { genGroupId } from './group';
 import { genJob } from './job';
@@ -12,7 +11,7 @@ import { genPhoneNumber } from './phoneNumber';
 import { genSshKey } from './sshKey';
 import { genUserIdentity } from './userIdentity';
 
-export const genUserId = function(organisation: Organisation):string {
+export const genUserId = (organisation: Organisation): string => {
 
     const identity:UserIdentity = genUserIdentity();
     const phoneNumber: PhoneNumber = genPhoneNumber();

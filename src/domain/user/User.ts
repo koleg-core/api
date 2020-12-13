@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import { deepCopy } from 'deep-copy-ts';
 
 import { Job } from './Job';
 import { Password } from './Password';
@@ -16,7 +17,8 @@ export class User {
   private _disableDate: Date;
   private _updateDate: Date;
   private _passwordHistory: Password[];
-  private _token: string;
+  private _token: string; // Is it usefull ?
+  // private _gitlabId: string;
 
   constructor(
     private _identity: UserIdentity,
@@ -112,6 +114,41 @@ export class User {
   public getJob(): Job {
     return this._job;
   }
+
+  public updateToken(token: string): ReturnCodes {
+    if (!token) {
+      throw new Error('Invalid argument job: Job');
+    }
+
+    if(!this._isEditable()) {
+      return ReturnCodes.NOT_EDITABLE;
+    }
+
+    this._token = token;
+    this._update();
+    return ReturnCodes.UPDATED;
+  }
+  public getToken(): string {
+    return this._token;
+  }
+
+  // public updateGitlabId(gitlabId: string): ReturnCodes {
+  //   if (!gitlabId) {
+  //     throw new Error('Invalid argument job: Job');
+  //   }
+
+  //   if(!this._isEditable()) {
+  //     return ReturnCodes.NOT_EDITABLE;
+  //   }
+
+  //   this._gitlabId = gitlabId;
+  //   this._update();
+  //   return ReturnCodes.UPDATED;
+  // }
+
+  // public getGitlabId(): string {
+  //   return this._gitlabId;
+  // }
 
   public updateJob(job: Job): ReturnCodes {
     if (!job) {
@@ -258,18 +295,18 @@ export class User {
   }
 
   public getProperties(): UserProperties {
-    const job: Job = this.getJob();
-    const publicKey: string = this._sshKey.publicKey;
+    const publicKey: string = deepCopy(this._sshKey.publicKey);
 
     return new UserProperties(
       this._id,
       this._identity,
-      job,
+      this._job,
+      this._token,
       this.getGroupIds(),
       this._profilePictureUrl,
       publicKey,
       this._phoneNumbers,
-      this._birthdate,
+      this._birthdate, // TODO: Do we need to deepCopy date to detatch from User ?
       this. _expirationDate,
       this._creationDate,
       this._disableDate,
