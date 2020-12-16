@@ -19,7 +19,7 @@ interface JobAttributes{
 
 interface JobCreationAttributes extends Optional<JobAttributes, "id"> {}
 
-export class Job extends Model<JobAttributes, JobCreationAttributes> implements JobAttributes{
+export class JobModel extends Model<JobAttributes, JobCreationAttributes> implements JobAttributes{
   public id!: number;
   public name!:string;
 }

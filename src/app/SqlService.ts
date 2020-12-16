@@ -21,12 +21,3 @@ export class SqlService {
     }
 
 }
-
-const test = new SqlService();
-
-
-/*test.getDatabase().getJob().findAll()
-.then((response : any) => console.log(response))
-.catch((e : any) => console.error(e));
-// console.log(jobs.every(job => job instanceof Job)); // true
-// console.log("All jobs:", JSON.stringify(jobs, null, 2));*/
