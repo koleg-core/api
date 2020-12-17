@@ -7,24 +7,18 @@ import {
 import { UserIdentity } from "../../../domain/user/UserIdentity";
 import { UserProperties } from "../../../domain/user/UserProperties";
 import { AuthService } from "../auth/auth.service";
+import { Controller } from "./controller";
 
-export class AuthController {
+export class AuthController extends Controller {
 
   constructor(
     private _authService: AuthService
-  ) { }
+  ) {
+    super();
+  }
 
   public async login(req: Request, res: Response): Promise<void> {
-    if (!req) {
-      throw new Error('Invalid argument req: Request or req.body is udefined');
-    }
-    if (!req.body) {
-      throw new Error('Invalid argument req.body');
-    }
-
-    if (!res) {
-      throw new Error('Invalid argument res: Response is udefined');
-    }
+    super.validRequestParams(req, res);
 
     const { identifer, password } = req.body;
 
@@ -55,6 +49,8 @@ export class AuthController {
   }
 
   public logout(req: Request, res: Response): void {
+    super.validRequestParams(req, res);
+
     res.json({
       message: "logout"
     })

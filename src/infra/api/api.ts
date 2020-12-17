@@ -1,29 +1,41 @@
-import express from "express";
 import bodyParser from "body-parser";
+import "reflect-metadata"; // this shim is required
+import { useContainer, createExpressServer } from "routing-controllers";
+import { UsersController } from "./controllers/users.controller"
+import { Container } from 'typedi';
 
-import { Routes } from "./routes";
+// import { Routes } from "./routes";
 import { AuthService } from "../api/auth/auth.service";
 import { Strategy as AuthStrategy } from "../api/auth/strategy.enum";
 import { OrganisationRepository } from "../../domain/OrganisationRepository";
+import { Application } from "express";
 
 export class Api {
-  private _app: express.Application;
+  private _app: Application;
   private _authService: AuthService;
-  private _routePrv: Routes;
-  private _repository: OrganisationRepository;
 
   constructor(
-    private repository: OrganisationRepository
+    private _repository: OrganisationRepository
   ) {
 
-    this._app = express();
-    this._repository = repository;
+    if (!this._repository) {
+      throw new Error('Invalid argument repository: OrganisationRepository is not defined.');
+    }
+
+    Container.set('organisation.repository', this._repository);
+
+    // To have working typedi
+    useContainer(Container);
+
+
+    this._app = createExpressServer({
+      controllers: [UsersController]
+    });
     this._authService = new AuthService(this._repository);
-    this._routePrv = new Routes(this._app, this._authService);
     this._config();
   }
 
-  public getApp() {
+  public getApp(): Application {
     return this._app;
   }
 

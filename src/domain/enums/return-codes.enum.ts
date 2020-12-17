@@ -6,6 +6,8 @@ export enum ReturnCodes {
   DUPLICATED = 4,
   NOT_FOUND = -1,
   NOT_EDITABLE = -2,
+  NOT_CREATED = -2,
   WAS_ALREADY_USED = -3,
-  CONFLICTING = -4
+  CONFLICTING = -4,
+  SERVER_ERROR = -5,
 }

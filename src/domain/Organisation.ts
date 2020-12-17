@@ -105,6 +105,13 @@ export class Organisation {
         return newGroup.getId();
     }
 
+    public getUsers(): UserProperties[] {
+        const usersProperties: UserProperties[] = [];
+        this._users.forEach( user => {
+            usersProperties.push(user.getProperties())
+        })
+        return usersProperties;
+    }
     public addUser(
         identity: UserIdentity,
         password: Password,
@@ -120,7 +127,7 @@ export class Organisation {
         const validGroupsIds:string[] = groupsIds
           .filter(existingGroupId => this.containsGroupById(existingGroupId));
 
-        if(validGroupsIds.length !== groupsIds.length) {
+        if(groupsIds.length > 0 && validGroupsIds.length !== groupsIds.length) {
             throw new Error('Invalid group Id in groupsIds: string[]');
         }
 

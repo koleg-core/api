@@ -4,7 +4,9 @@ import { GroupsController } from "./controllers/groups.controller";
 import { JobsController } from "./controllers/jobs.controller";
 import { UsersController } from "./controllers/users.controller";
 import { AuthService } from "../api/auth/auth.service";
-import bodyParser from "body-parser";
+// Is bodyparser should be into routes or into API
+// import bodyParser from "body-parser";
+import { OrganisationRepository } from "../../domain/OrganisationRepository";
 
 export class Routes {
   private _authController: AuthController;
@@ -13,10 +15,20 @@ export class Routes {
   private _usersController: UsersController;
 
   constructor(
+    private _repository: OrganisationRepository,
     private _app: express.Application,
     private _authService: AuthService
   ) {
-    this._authController = new AuthController(_authService);
+
+    if (!this._repository) {
+      throw new Error('Invalid argument repository: OrganisationRepository is not defined.');
+    }
+
+    if (!this._app) {
+      throw new Error('Invalid argument _app: express.Application is not defined.');
+    }
+
+    this._authController = new AuthController(this._authService);
     this._groupsController = new GroupsController();
     this._jobsController = new JobsController();
     this._usersController = new UsersController();
@@ -25,23 +37,22 @@ export class Routes {
       res.json({ msg: 'Hello World !' });
     });
 
-    const jsonParser = bodyParser.json()
-    const urlencodedParser = bodyParser.urlencoded({ extended: false })
-
-    // this._app.post("/auth/login", jsonParser, (req, res) => {
-    //     console.log(req.body);
-    //     this._authController.login(req, res);
-    // });
+    this._app.post("/auth/login", (req, res) => {
+      console.log(req.body);
+      this._authController.login(req, res);
+    });
 
     this._app.post("/auth/login", this._authController.login);
 
-    this._app.route("/auth/logout").get(this._authController.logout);
+    this._app.get("/auth/logout", this._authController.logout);
 
     // GROUPS
-    this._app.route("/groups/").get(this._groupsController.index);
+    this._app.get("/groups", this._groupsController.index);
 
     // JOBS
 
     // USERS
+    this._app.get("/users", this._usersController.index);
+    this._app.post("/users/login", this._usersController.add);
   }
 }

@@ -1,10 +1,16 @@
+import { Service } from 'typedi';
+
 import { OrganisationRepository } from '../domain/OrganisationRepository';
 import { Organisation } from '../domain/Organisation';
 import { UserProperties } from '../domain/user/UserProperties';
 import { GroupProperties } from '../domain/group/GroupProperties';
 
-export class OrganisationInMemory implements OrganisationRepository {
+@Service('organisation.repository')
+class OrganisationInMemory implements OrganisationRepository {
     private _organisation: Organisation;
+    constructor() {
+        this._organisation = new Organisation("demo organisation", "this is a memory organisation");
+    }
 
     public save(organisation: Organisation): void {
         this._organisation = organisation;
@@ -37,3 +43,7 @@ export class OrganisationInMemory implements OrganisationRepository {
         return null;
     }
 }
+
+export const factory = OrganisationInMemory;
+export const organisationInMemory = new OrganisationInMemory();
+export default organisationInMemory;

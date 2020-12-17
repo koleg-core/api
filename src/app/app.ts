@@ -5,18 +5,14 @@ export class App {
 
     constructor(
         private _api: Api,
-        private _repository: OrganisationRepository,
         private _port: number = 8080
     ) {
         if (!this._api) {
             throw new Error('Invalid argument api: Api is not defined.');
         }
-        if (!this._repository) {
-            throw new Error('Invalid argument repository: OrganisationRepository is not defined.');
-        }
     }
 
-    public start() {
+    public start(): void {
         this._api.getApp().listen(this._port, () => console.log(`Koleg is listening on port ${this._port}!`));
     }
 

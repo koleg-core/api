@@ -42,10 +42,6 @@ describe('Identity', () => {
               const err = "User identity is undefined";
               done(err);
           }
-        try {
-        } catch (err) {
-            done(err);
-        }
         done();
     });
     });

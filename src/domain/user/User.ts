@@ -27,7 +27,7 @@ export class User {
     private _birthdate: Date,
     private _groups: Group[] = [],
     private _profilePictureUrl: URL = null,
-    private _sshKey: SshKey,
+    private _sshKey: SshKey = null,
     private _phoneNumbers: PhoneNumber[] = null,
     private _expirationDate: Date = null,
   ) {
