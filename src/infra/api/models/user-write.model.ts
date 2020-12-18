@@ -1,4 +1,4 @@
-import { PhoneNumberModel } from "./phoneNumber.model"
+import { PhoneNumberModel } from "./phone-number.model"
 
 export class UserWriteModel {
     constructor(
