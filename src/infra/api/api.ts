@@ -9,6 +9,7 @@ import { AuthService } from "../api/auth/auth.service";
 import { Strategy as AuthStrategy } from "../api/auth/strategy.enum";
 import { OrganisationRepository } from "../../domain/OrganisationRepository";
 import { Application } from "express";
+import { JobsController } from "./controllers/jobs.controller";
 
 export class Api {
   private _app: Application;
@@ -29,7 +30,10 @@ export class Api {
 
 
     this._app = createExpressServer({
-      controllers: [UsersController]
+      controllers: [
+        UsersController,
+        JobsController
+      ]
     });
     this._authService = new AuthService(this._repository);
     this._config();

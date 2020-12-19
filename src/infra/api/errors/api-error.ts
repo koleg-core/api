@@ -4,10 +4,10 @@ import { ResponseModel } from "../models/response.model";
 export class ApiError extends HttpError {
 
   constructor(
-    private readonly httpError: number,
-    private readonly status: number,
-    public readonly message: string,
-    private readonly response: any = {}) {
+    readonly httpError: number,
+    readonly status: number,
+    readonly message: string,
+    readonly response: any = {}) {
     super(httpError, message);
   }
 
