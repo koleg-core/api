@@ -37,16 +37,16 @@ export class AuthService {
           ) => {
             try {
               const organisation: Organisation = this._repository.read();
-              const userUuid: string = organisation.getUserByIdentifier(userIdentifier);
-              if (!userUuid) {
+              const userId: string = organisation.getUserByIdentifier(userIdentifier);
+              if (!userId) {
                 return done(null, null, { message: "User not found" });
               }
 
-              if (!organisation.verifyUserPassword(userUuid, password)) {
+              if (!organisation.verifyUserPassword(userId, password)) {
                 return done(null, null, { message: "User password was invalid" });
               }
 
-              return done(null, organisation.getUserProperties(userUuid));
+              return done(null, organisation.getUserPropertiesById(userId));
             } catch (err) {
               if (err) {
                 return done(err, null, { message: "Internal servor error"});

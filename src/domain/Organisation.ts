@@ -67,25 +67,15 @@ export class Organisation {
     // ####################
 
     public containsGroupById(groupId: string): boolean {
-        if (!this._getGroupById(groupId)) {
-            return false;
+        if (this._getGroupById(groupId)) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     public getGroupPropertiesById(groupId: string): GroupProperties {
         const group: Group = this._getGroupById(groupId);
         return group.getProperties();
-    }
-
-    public getUserById(groupId: string): UserProperties {
-        const findedUsers: User[] = this._users.filter(group =>
-            group.getId() === groupId);
-        if (findedUsers.length > 1) {
-            throw new Error('Find 2 or more corresponding group with this id.');
-        }
-
-        return findedUsers[0].getProperties();
     }
 
     public addGroup(
@@ -111,17 +101,29 @@ export class Organisation {
         return newGroup.getId();
     }
 
-    public getUsers(): UserProperties[] {
-        const usersProperties: UserProperties[] = [];
-        this._users.forEach(user => {
-            usersProperties.push(user.getProperties())
-        })
-        return usersProperties;
-    }
-
     // ####################
     // ###### USERS #######
     // ####################
+    public containsUserById(userId: string): boolean {
+        if (!userId)
+            throw new Error('Invalid argument userId: string');
+
+        if (this._getUserById(userId)) {
+            return true;
+        }
+        return false;
+    }
+
+     public getUserPropertiesById(userId: string): UserProperties {
+        if (!userId)
+            throw new Error('Invalid argument userId: string');
+
+        const user: User = this._getUserById(userId);
+        if(!user) {
+            return null;
+        }
+        return user.getProperties();
+    }
 
     public addUser(
         identity: UserIdentity,
@@ -142,28 +144,36 @@ export class Organisation {
             throw new Error('Invalid group Id in groupsIds: string[]');
         }
 
-        const validGroups: Group[] = [];
-
-        validGroupsIds
-            .forEach(
-                userGroupsId => {
-                    const group: Group = this._getGroupById(userGroupsId);
-                    validGroups.push(group);
-                });
-
         const newUser = new User(
             identity,
             password,
             job,
             birthdate,
-            validGroups,
+            validGroupsIds,
             profilePictureUrl,
             sshKey,
             phoneNumbers,
             expirationDate
         )
+
         this._users.push(newUser);
         return newUser.getId();
+    }
+
+    public deleteUser(userId: string) {
+        if (!userId)
+            throw new Error('Invalid argument userId: string');
+
+        const requestedUserIndex = this._users.findIndex(user => userId === user.getId());
+
+        if (requestedUserIndex < 0)
+            throw new Error('User not found')
+
+        if (requestedUserIndex > 1)
+            throw new Error('There is more than one user with this id')
+
+        delete this._users[requestedUserIndex];
+        return ReturnCodes.REMOVED;
     }
 
     // TODO: fill this functions
@@ -176,10 +186,22 @@ export class Organisation {
         return null;
     }
 
-    // TODO: fill this functions
-    public getUserProperties(userUuid: string): UserProperties {
-        return null;
+    public updateUser (
+        userUuid: string,
+        newUserProperties: UserProperties
+    ): ReturnCodes {
+        const user: User = this._getUserById(userUuid)
+        const userProperties: UserProperties = user.getProperties()
+        if(!userProperties.equals(user.getProperties())) {
+            user.updateGroups(newUserProperties.getGroupIds())
+            user.updateIdentity(newUserProperties.getIdentity());
+            user.updateJob(newUserProperties.getJob());
+            user.updateProfilePictureUrl(newUserProperties.getProfilePictureUrl());
+        }
+
+        return ReturnCodes.NOTHING_CHANGED;
     }
+
 
     // ####################
     // ####### JOBS #######
@@ -212,9 +234,13 @@ export class Organisation {
         if (requestedJobIndex < 0)
             throw new Error('Job not found')
 
-        this._jobs.splice(requestedJobIndex, 1);
+        delete this._users[requestedJobIndex];
         return ReturnCodes.REMOVED;
     }
+
+    // ####################
+    // ###### GROUPS ######
+    // ####################
 
     private _getGroupById(groupId: string): Group {
         const findedGroups: Group[] = this._groups.filter(group =>
@@ -228,5 +254,19 @@ export class Organisation {
         }
 
         return findedGroups[0];
+    }
+
+    // ###################
+    // ###### USERS ######
+    // ###################
+
+    public _getUserById(groupId: string): User {
+        const findedUsers: User[] = this._users.filter(group =>
+            group.getId() === groupId);
+        if (findedUsers.length > 1) {
+            throw new Error('Find 2 or more corresponding user with this id.');
+        }
+
+        return findedUsers[0];
     }
 }

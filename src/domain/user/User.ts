@@ -7,7 +7,6 @@ import { PhoneNumber } from './PhoneNumber';
 import { SshKey } from './SshKey';
 import { UserIdentity } from './UserIdentity';
 import { ReturnCodes } from '../enums/return-codes.enum';
-import { Group } from '../group/Group';
 import { UserProperties } from './UserProperties';
 
 export class User {
@@ -17,15 +16,13 @@ export class User {
   private _disableDate: Date;
   private _updateDate: Date;
   private _passwordHistory: Password[];
-  private _token: string; // Is it usefull ?
-  // private _gitlabId: string;
 
   constructor(
     private _identity: UserIdentity,
     private _password: Password,
     private _job: Job,
     private _birthdate: Date,
-    private _groups: Group[] = [],
+    private _groupsIds: string[] = [],
     private _profilePictureUrl: URL = null,
     private _sshKey: SshKey = null,
     private _phoneNumbers: PhoneNumber[] = null,
@@ -115,41 +112,6 @@ export class User {
     return this._job;
   }
 
-  public updateToken(token: string): ReturnCodes {
-    if (!token) {
-      throw new Error('Invalid argument job: Job');
-    }
-
-    if(!this._isEditable()) {
-      return ReturnCodes.NOT_EDITABLE;
-    }
-
-    this._token = token;
-    this._update();
-    return ReturnCodes.UPDATED;
-  }
-  public getToken(): string {
-    return this._token;
-  }
-
-  // public updateGitlabId(gitlabId: string): ReturnCodes {
-  //   if (!gitlabId) {
-  //     throw new Error('Invalid argument job: Job');
-  //   }
-
-  //   if(!this._isEditable()) {
-  //     return ReturnCodes.NOT_EDITABLE;
-  //   }
-
-  //   this._gitlabId = gitlabId;
-  //   this._update();
-  //   return ReturnCodes.UPDATED;
-  // }
-
-  // public getGitlabId(): string {
-  //   return this._gitlabId;
-  // }
-
   public updateJob(job: Job): ReturnCodes {
     if (!job) {
       throw new Error('Invalid argument job: Job');
@@ -164,8 +126,8 @@ export class User {
     return ReturnCodes.UPDATED;
   }
 
-  public addGroup(newGroup: Group): ReturnCodes {
-    if (!newGroup) {
+  public addGroup(newGroupId: string): ReturnCodes {
+    if (!newGroupId) {
       throw new Error('Invalid argument newGroup: Group');
     }
 
@@ -173,25 +135,20 @@ export class User {
       return ReturnCodes.NOT_EDITABLE;
     }
 
-    if(this._groups.includes(newGroup)) {
+    if(this._groupsIds.includes(newGroupId)) {
       return ReturnCodes.NOTHING_CHANGED;
     }
 
-    this._groups.push(newGroup);
+    this._groupsIds.push(newGroupId);
     return ReturnCodes.UPDATED;
   }
 
   public getGroupIds(): string[] {
-    const groupsIds: string[] = [];
-
-    this._groups
-      .forEach(group => groupsIds.push(group.getId()));
-
-    return groupsIds;
+    return this._groupsIds;
   }
 
-  public removeGroup(newGroup: Group): ReturnCodes {
-    if (!newGroup) {
+  public removeGroup(groupId: string): ReturnCodes {
+    if (!groupId) {
       throw new Error('Invalid argument newGroup: Group');
     }
 
@@ -199,13 +156,19 @@ export class User {
       return ReturnCodes.NOT_EDITABLE;
     }
 
-    if(this._groups.includes(newGroup)) {
-      this._groups = this._groups
-        .filter(inPlaceGroup => inPlaceGroup !== newGroup);
+    const groupIndex: number = this._groupsIds.indexOf(groupId);
+    if(groupIndex) {
+      delete this._groupsIds[groupIndex];
       return ReturnCodes.REMOVED;
     }
 
     return ReturnCodes.NOT_FOUND;
+  }
+
+  public updateGroups(groupsIds: string[]): ReturnCodes {
+    // TODO deep equal tests
+    this._groupsIds = groupsIds;
+    return ReturnCodes.UPDATED;
   }
 
   public getProfilePictureUrl(): URL {
@@ -301,8 +264,7 @@ export class User {
       this._id,
       this._identity,
       this._job,
-      this._token,
-      this.getGroupIds(),
+      this._groupsIds,
       this._profilePictureUrl,
       publicKey,
       this._phoneNumbers,
@@ -311,10 +273,6 @@ export class User {
       this._creationDate,
       this._disableDate,
       this._updateDate);
-  }
-
-  public equalsToken(token: string): boolean {
-    return this._token === token;
   }
 
   private _wasPasswordAlreadyUsed(password: Password): boolean {

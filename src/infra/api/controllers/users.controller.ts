@@ -11,6 +11,8 @@ import {
   Param
 } from "routing-controllers";
 
+import { hashSync } from 'bcrypt';
+
 import { ReturnCodes } from '../../../domain/enums/return-codes.enum';
 import { Organisation } from "../../../domain/Organisation";
 import { OrganisationRepository } from "../../../domain/OrganisationRepository";
@@ -34,6 +36,9 @@ export class UsersController {
   @Inject('organisation.repository')
   private _organisationRepository: OrganisationRepository;
 
+  @Inject('saltRounds.security.config')
+  private _saltRoudsPassword: number;
+
   @Get("/users")
   getAll(): UserProperties[] {
     console.log(this._organisationRepository);
@@ -44,7 +49,8 @@ export class UsersController {
       return undefined;
     }
 
-    return organisation.getUsers();
+    // return organisation.getUsersProperties();
+    // return null
   }
 
   @Post('/users')
@@ -61,11 +67,17 @@ export class UsersController {
         user.email);
 
       const job: Job = new Job(user.job);
-      const password: Password = new Password(user.passwordHash);
+
+      const hash: string = hashSync(user.passwordHash, this._saltRoudsPassword);
+
+      const password: Password = new Password(hash);
       const birthdayDate: Date = new Date(user.birthdate); // TODO implement dateLimit Password
 
-      const phoneType: PhoneType = user.phone.type as PhoneType;
-      const phoneNumber: PhoneNumber[] = [new PhoneNumber(phoneType, user.phone.value)];
+      const phoneNumbers: PhoneNumber[] = [];
+      user.phones.forEach(phone => {
+        const phoneType: PhoneType = phone.type as PhoneType;
+        phoneNumbers.push(new PhoneNumber(phoneType, phone.value))
+      })
       const expirationDate = new Date(user.expirationDate) || null;
 
       // Return user uuid
@@ -77,7 +89,7 @@ export class UsersController {
           user.groupIds,
           null,
           null,
-          phoneNumber,
+          phoneNumbers,
           expirationDate
         )
 
@@ -91,15 +103,76 @@ export class UsersController {
       throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
     }
     // Should not be reached
- }
+  }
 
-  // @Put('/users/:id')
-  // put(@Param('id') id: number, @Body() user: any): {
-  //   return 'Updating a user...';
-  // }
+  @Put('/users/:id')
+  put(@Param('id') id: string, @Body() user: UserWriteModel): ResponseModel {
+    const organisation: Organisation = this._organisationRepository.read();
 
-  // @Delete('/users/:id')
-  // remove(@Param('id') id: number): any {
-  //   const organisation: Organisation = this._organisationRepository.read();
-  // }
+    if(!organisation.containsUserById(id)) {
+      throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, `There is not user with id: ${id}`);
+    }
+    try {
+      const userIdentity: UserIdentity = new UserIdentity(
+        user.firstName,
+        user.lastName,
+        user.username,
+        user.email);
+
+      const job: Job = new Job(user.job);
+      const birthdayDate: Date = new Date(user.birthdate);
+      const phoneNumbers: PhoneNumber[] = [];
+      user.phones.forEach(phone => {
+        const phoneType: PhoneType = phone.type as PhoneType;
+        phoneNumbers.push(new PhoneNumber(phoneType, phone.value))
+      })
+
+      let expirationDate: Date = null;
+      if(user.expirationDate) {
+        expirationDate =  new Date(user.expirationDate);
+      }
+
+     let profilePictureUrl: URL = null
+     if(user.profilePictureUrl) {
+      profilePictureUrl = new URL(user.profilePictureUrl);
+     }
+
+      const userProperties: UserProperties = new UserProperties(
+        id,
+        userIdentity,
+        job,
+        user.groupIds,
+        profilePictureUrl,
+        null,
+        phoneNumbers,
+        expirationDate,
+        birthdayDate,
+      );
+
+      organisation.updateUser(id, userProperties);
+      this._organisationRepository.save(organisation);
+      return new ResponseModel(ReturnCodes.CREATED, `User ${id} was updated.`);
+
+    } catch (error) {
+      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
+    }
+    // Should not be reached
+  }
+
+  @Delete('/users/:id')
+  remove(@Param('id') id: string): any {
+    const organisation: Organisation = this._organisationRepository.read();
+    if(!organisation.containsUserById(id)) {
+      throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, `There is not user with id: ${id}`);
+    }
+    try {
+      organisation.deleteUser(id)
+      this._organisationRepository.save(organisation);
+      return new ResponseModel(ReturnCodes.REMOVED, `User ${id} was removed.`);
+
+    } catch (error) {
+      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
+    }
+    // Should not be reached
+  }
 }

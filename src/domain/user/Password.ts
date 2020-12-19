@@ -24,7 +24,7 @@ export class Password {
         return this._value;
     }
 
-    public hasSameValue(password: Password) {
+    public hasSameValue(password: Password): boolean {
         return this._value === password.getValue();
     }
 

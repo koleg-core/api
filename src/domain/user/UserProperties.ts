@@ -1,3 +1,5 @@
+import deepEqual from 'deep-equal';
+
 import { PhoneNumber } from './PhoneNumber';
 import { UserIdentity } from './UserIdentity';
 import { Job } from './Job';
@@ -7,16 +9,15 @@ export class UserProperties {
     private _id: string,
     private _identity: UserIdentity,
     private _job: Job,
-    private _token: string,
     private _groupsIds: string[],
     private _profilePictureUrl: URL,
     private _sshPublicKey: string,
     private _phoneNumbers: PhoneNumber[],
     private _expirationDate: Date,
     private _birthdate: Date,
-    private _creationDate: Date,
-    private _disableDate: Date,
-    private _updateDate: Date,
+    private _creationDate: Date = null,
+    private _disableDate: Date = null,
+    private _updateDate: Date = null,
   ) {}
 
   public isDisabled():boolean {
@@ -39,10 +40,6 @@ export class UserProperties {
     return this._job;
   }
 
-  public getToken(): string {
-    return this._token;
-  }
-
   public getGroupIds(): string[] {
     return this._groupsIds;
   }
@@ -53,5 +50,25 @@ export class UserProperties {
 
   public isExpired(): boolean {
     return this._expirationDate && this._expirationDate < new Date();
+  }
+
+  public getSshPublicKey(): string {
+    return this._sshPublicKey;
+  }
+
+  public getSshPhoneNumbers(): PhoneNumber[] {
+    return this._phoneNumbers;
+  }
+
+  public getCreationDate(): Date {
+    return this._creationDate;
+  }
+
+  public getBirthDate(): Date {
+    return this._birthdate;
+  }
+
+  public equals(obj: unknown): boolean {
+    return deepEqual(this, obj);
   }
 }

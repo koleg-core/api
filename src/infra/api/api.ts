@@ -23,6 +23,9 @@ export class Api {
       throw new Error('Invalid argument repository: OrganisationRepository is not defined.');
     }
 
+
+    // TODO externalize it into config
+    Container.set('saltRounds.security.config', 10);
     Container.set('organisation.repository', this._repository);
 
     // To have working typedi
