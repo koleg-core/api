@@ -10,17 +10,21 @@ import {
     HasManyCountAssociationsMixin,
     HasManyCreateAssociationMixin,
     Optional,
-    Deferrable
+    Deferrable,
+    BelongsToGetAssociationMixin,
+    BelongsToSetAssociationMixin
   } from "sequelize";
+import { PhoneType } from "./PhoneType";
+import { UserModel } from "./UserModel";
 
-  interface UserPhoneAttributes{
-    idUser: number;
-    idPhonetype: number;
+  export interface UserPhoneAttributes{
     value: string;
+    idUser: number;
+    idPhoneType: number;
   }
 
   export class UserPhone extends Model<UserPhoneAttributes> implements UserPhoneAttributes{
-    public idUser!: number;
-    public idPhonetype!:number;
     public value!:string;
+    public idUser!:number;
+    public idPhoneType!:number;
   }

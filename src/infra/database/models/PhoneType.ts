@@ -10,6 +10,11 @@ import {
     HasManyCountAssociationsMixin,
     HasManyCreateAssociationMixin,
     Optional,
+    BelongsToManySetAssociationsMixin,
+    BelongsToManyGetAssociationsMixin,
+    BelongsToManyAddAssociationsMixin,
+    BelongsToManyAddAssociationMixin,
+    BelongsToManyCreateAssociationMixin
   } from "sequelize";
 
   interface PhoneTypeAttributes{
@@ -20,6 +25,6 @@ import {
   interface PhoneTypeCreationAttributes extends Optional<PhoneTypeAttributes, "id"> {}
 
   export class PhoneType extends Model<PhoneTypeAttributes, PhoneTypeCreationAttributes> implements PhoneTypeAttributes{
-    public id!: number;
-    public name!: string;
+    id!: number;
+    name!: string;
   }

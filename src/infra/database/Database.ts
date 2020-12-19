@@ -68,21 +68,16 @@ export class Database {
 
         UserPhone.init(
                 {
-                    idUser: {
+                    value:{
+                        type: DataTypes.STRING
+                    },
+                    idUser:{
                         type: DataTypes.INTEGER,
                         field: 'id_user'
                     },
-                    idPhonetype: {
+                    idPhoneType:{
                         type: DataTypes.INTEGER,
-                        field: 'id_phonetype'/*,
-                        references:{
-                            model: PhoneType,
-                            key:'id'
-                        }*/
-                        // allowNull defaults to true
-                    },
-                    value:{
-                        type: DataTypes.STRING
+                        field: 'id_phonetype'
                     }
                 },
                 {
@@ -92,44 +87,108 @@ export class Database {
                 });
             UserPhone.removeAttribute('id');
 
-            UserPwdHistory.init(
-                {
-                    id: {
-                        type: DataTypes.INTEGER,
-                        primaryKey: true,
-                        autoIncrement: true
-                    },
-                    updateDate: {
-                        type: DataTypes.DATE,
-                        field: 'update_date'/*,
-                        references:{
-                            model: PhoneType,
-                            key:'id'
-                        }*/
-                        // allowNull defaults to true
-                    },
-                    idUser:{
-                        type: DataTypes.INTEGER,
-                        field: 'id_user'
-                    },
-                    password:{
-                        type: DataTypes.STRING
-                    }
+        UserPwdHistory.init(
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    primaryKey: true,
+                    autoIncrement: true
                 },
-                {
-                    sequelize: this.orm,
-                    tableName: "user_phones",
-                    timestamps: false,
-                });
+                updateDate: {
+                    type: DataTypes.DATE,
+                    field: 'update_date'/*,
+                    references:{
+                        model: PhoneType,
+                        key:'id'
+                    }*/
+                    // allowNull defaults to true
+                },
+                idUser:{
+                    type: DataTypes.INTEGER,
+                    field: 'id_user'
+                },
+                password:{
+                    type: DataTypes.STRING
+                }
+            },
+            {
+                sequelize: this.orm,
+                tableName: "users_pwd_history",
+                timestamps: false,
+            });
+        JobModel.hasMany(UserModel, {as:'users', foreignKey: 'id_job' });
+        UserModel.belongsTo(JobModel,{as:'job',foreignKey: 'id_job'});
+        UserModel.removeAttribute('JobModelId');
 
-        // PhoneType.belongsToMany(User,{ through: 'user_phones' });
-        // User.belongsToMany(PhoneType,{ through: 'user_phones' });
+        UserModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_user'});
+        UserPhone.belongsTo(UserModel,{as:'user',foreignKey:'id_user'});
+        PhoneType.hasMany(UserPhone,{as:'phones',foreignKey:'id_phonetype'});
+        UserPhone.belongsTo(PhoneType,{as:'type',foreignKey:'id_phonetype'});
 
+
+        /*UserModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_user'});
+        UserPhone.belongsTo(UserModel,{as:'user',foreignKey:'id_user'});
+        UserPhone.removeAttribute('UserModelId');
+        PhoneType.hasMany(UserPhone,{as:'phones',foreignKey:'id_phonetype'});
+        UserPhone.belongsTo(PhoneType,{as:'phoneType',foreignKey:'id_phonetype'});
+        UserPhone.removeAttribute('PhoneTypeId');*/
     }
 
-    createUserPhone(userPhone: UserPhone){
+    // JobModel
+    getJob(name: string): Promise<JobModel>{
+        return JobModel.findOne({where: {name}});
+    }
+
+    deleteJob(name: string){
+        JobModel.destroy({
+            where: {
+                name
+            }
+        });
+    }
+
+    createJob(job: JobModel){
+        job.save();
+    }
+
+    createUserPhone(uuid:string,phone:string,type:string){
+        this.getUser(uuid)
+        .then(response=>{
+            this.getPhoneType(type)
+            .then(res=>{
+                const userPhone = new UserPhone({value:phone,idUser:response.id,idPhoneType:res.id});
+                userPhone.save();
+            })
+        })
+    }
+
+    /*getUserPhone(uuid:string,phone:string,type:string): Promise<UserPhone>{
+        this.getUser(uuid)
+        .then(response=>{
+            this.getPhoneType(type)
+            .then(res=>{
+                return UserPhone.findOne({where:{idUser:}})
+            })
+        })
+    }
+
+    updateUserPhone(uuid:string,)*/
+
+    getPhoneType(name:string):Promise<PhoneType>{
+        return PhoneType.findOne({ where: { name } });
+    }
+
+    getJobUser(user: UserModel): Promise<JobModel>{
+        return user.getJob();
+    }
+
+    setJobUser(user: UserModel, job: JobModel){
+        user.setJob(job).then((res:any)=>console.log(res));
+    }
+
+    /*createUserPhone(userPhone: UserPhone){
         userPhone.save();
-    }
+    }*/
 
     createPhoneType(phoneType: PhoneType){
         phoneType.save();
@@ -152,32 +211,21 @@ export class Database {
     }
 
     getUser(uuid: string): Promise<UserModel>{
-        return UserModel.findOne({ where: { uuid } }).then((response: any)=> response.dataValues);
+        return UserModel.findOne({ where: { uuid } });
     }
 
     getUsers(): Promise<UserModel[]>{
         return UserModel.findAll().then((response : any) => response.map((jobJson : any)=> jobJson.dataValues));
     }
 
-    createJob(job: JobModel){
-        console.log(job);
-        job.save();
-    }
+
 
     getJobs(): Promise<JobModel[]>{
         return JobModel.findAll()
           .then((response : any) => response.map((jobJson : any)=> jobJson.dataValues));
     }
 
-    updateJob(job: JobModel){
-        job.save();
+    getJobUsers(job: JobModel): Promise<UserModel[]>{
+        return job.getUsers();
     }
-
-    deleteJob(job: JobModel){
-        job.destroy();
-    }
-
-
-
-
 }

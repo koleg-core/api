@@ -1,4 +1,4 @@
-import { Job } from "../../../../src/domain/Job";
+import { Job } from "../../../domain/Job";
 import { JobModel } from "../models/JobModel";
 
 export class JobSerializer {
