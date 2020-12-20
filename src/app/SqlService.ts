@@ -2,7 +2,7 @@ import {Sequelize} from "sequelize";
 import { JobModel } from "../infra/database/models/JobModel";
 import {Database} from "../infra/database/Database";
 import { UserModel } from "../infra/database/models/UserModel";
-import { Job } from "../domain/Job";
+// import { Job } from "./domain/Job";
 import { JobSerializer } from "../infra/database/serializer/JobSerializer";
 import { UserPhone } from "../infra/database/models/UserPhone";
 
@@ -11,9 +11,9 @@ export class SqlService {
     private database: Database;
 
     constructor(
-        uri: string = "postgres://postgres:B2fpKNTvon@db-develop-postgresql:5432/postgres"
+        private _uri: string = "postgres://postgres:B2fpKNTvon@db-develop-postgresql:5432/postgres"
     ) {
-        this.orm = new Sequelize(uri);
+        this.orm = new Sequelize(this._uri);
         this.database = new Database(this.orm);
     }
 
