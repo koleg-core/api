@@ -3,12 +3,15 @@ import { Job } from "../../../domain/user/Job";
 export class JobApiModel {
 
   constructor(
-    private name: string
+    public readonly name: string
   ) {
-    // super(name);
   }
 
-  getName() {
-    return this.name;
+  public static toJobModel(job: Job): JobApiModel {
+    return new JobApiModel(job.getName());
+  }
+
+  public toJob(): Job {
+    return new Job(this.name);
   }
 }

@@ -4,7 +4,7 @@ import { PhoneNumber } from './PhoneNumber';
 import { UserIdentity } from './UserIdentity';
 import { Job } from './Job';
 
-export class UserProperties {
+export class ReadableUser {
   constructor(
     private _id: string,
     private _identity: UserIdentity,
@@ -17,7 +17,7 @@ export class UserProperties {
     private _birthdate: Date,
     private _creationDate: Date = null,
     private _disableDate: Date = null,
-    private _updateDate: Date = null,
+    private _updateDate: Date = null
   ) {}
 
   public isDisabled():boolean {
@@ -56,7 +56,7 @@ export class UserProperties {
     return this._sshPublicKey;
   }
 
-  public getSshPhoneNumbers(): PhoneNumber[] {
+  public getPhoneNumbers(): PhoneNumber[] {
     return this._phoneNumbers;
   }
 

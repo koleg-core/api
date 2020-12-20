@@ -5,16 +5,14 @@ import {
 } from "passport-local";
 
 import { UserIdentity } from "../../../domain/user/UserIdentity";
-import { UserProperties } from "../../../domain/user/UserProperties";
+import { ReadableUser } from "../../../domain/user/ReadableUser";
 import { AuthService } from "../auth/auth.service";
-import { Controller } from "./controller";
 
-export class AuthController extends Controller {
+export class AuthController {
 
   constructor(
     private _authService: AuthService
   ) {
-    super();
   }
 
   public async login(req: Request, res: Response): Promise<void> {
@@ -25,7 +23,7 @@ export class AuthController extends Controller {
     this._authService.login(
       identifer,
       password,
-      (error, user?: UserProperties, options?: IVerifyOptions) => {
+      (error, user?: ReadableUser, options?: IVerifyOptions) => {
         if (error) {
           res.status(500).json({ message: 'User password error' });
         }

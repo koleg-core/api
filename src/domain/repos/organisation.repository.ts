@@ -1,5 +1,5 @@
 import { Job } from '../../domain/user/Job';
-import { Organisation } from '../Organisation';
+import { Organisation } from '../../domain/organisation';
 
 export interface OrganisationRepository {
     // While we don't have many organisation,
@@ -10,14 +10,17 @@ export interface OrganisationRepository {
     read(): Organisation;
     readAsync(): Promise<Organisation>;
 
-    createJob(organisation: Organisation): any;
+    // Jobs
+    createJob(job: Job): void;
+    deleteJob(name: string): void;
 
+    // User
+    createUser(organisation: Organisation, userId: string): void;
+    updateUser(organisation: Organisation, userId: string): void;
+    deleteUser(organisation: Organisation, userId: string): void;
 
-    // saveUser(user: UserProperties): string;
-    // readUser(userId: string): string;
-
-    // saveGroup(group: GroupProperties): string;
-    // readGroup(groupId: string): string;
-
-    // readJobs(): Promise<Job[]>;
+    // Group
+    createGroup(organisation: Organisation, groupId: string): void;
+    updateGroup(organisation: Organisation, groupId: string): void;
+    deleteGroup(organisation: Organisation, groupId: string): void;
 }

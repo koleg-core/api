@@ -8,7 +8,7 @@ import {
   IVerifyOptions
 } from "passport-local";
 
-import { UserProperties } from '../../../domain/user/UserProperties'
+import { ReadableUser } from '../../../domain/user/ReadableUser'
 import { Organisation } from "../../../domain/Organisation";
 import { OrganisationRepository } from "../../../domain/repos/organisation.repository";
 
@@ -31,7 +31,7 @@ export class AuthService {
             password: string,
             done: (
               error: unknown,
-              user?: UserProperties,
+              user?: ReadableUser,
               options?: IVerifyOptions
             ) => void
           ) => {
@@ -46,7 +46,7 @@ export class AuthService {
                 return done(null, null, { message: "User password was invalid" });
               }
 
-              return done(null, organisation.getUserPropertiesById(userId));
+              return done(null, organisation.getReadableUserById(userId));
             } catch (err) {
               if (err) {
                 return done(err, null, { message: "Internal servor error"});
@@ -83,7 +83,7 @@ export class AuthService {
     password: string,
     done: (
       error: unknown,
-      user?: UserProperties,
+      user?: ReadableUser,
       options?: IVerifyOptions
     ) => void): void {
     this._passport.authenticate('login', done);

@@ -14,9 +14,8 @@ import {
 import { hashSync } from 'bcrypt';
 
 import { ReturnCodes } from '../../../domain/enums/return-codes.enum';
-import { Organisation } from "../../../domain/Organisation";
-import { OrganisationRepository } from "../../../domain/repos/organisation.repository";
-import { UserProperties } from "../../../domain/user/UserProperties";
+import { Organisation } from "../../../domain/organisation";
+import { ReadableUser } from "../../../domain/user/ReadableUser";
 import { UserIdentity } from '../../../domain/user/UserIdentity';
 import { Job } from '../../../domain/user/Job';
 import { Password } from '../../../domain/user/Password';
@@ -24,47 +23,41 @@ import { PhoneNumber } from '../../../domain/user/PhoneNumber';
 import { PhoneType } from '../../../domain/enums/phone-type.enum';
 import { ApiError } from '../errors/api-error'
 
-import { UserWriteModel } from "../models/user-write.model";
+import { UserWriteApiModel } from "../models/user-write-api.model";
 import { ResponseModel } from "../models/response.model";
-import { HttpStatusCode } from "../models/http-status-code.model";
+import { HttpStatusCode } from "../models/http-status-code.enum";
+import { OrganisationService } from '../../../app/organisation.service';
 // import { } from "../models/user-write.model";
 
 @Service('user.controller')
 @JsonController()
 export class UsersController {
 
-  @Inject('organisation.repository')
-  private _organisationRepository: OrganisationRepository;
-
   @Inject('saltRounds.security.config')
   private _saltRoudsPassword: number;
 
+  @Inject('organisation.service')
+  private _organisationService: OrganisationService;
+
   @Get("/users")
   @HttpCode(HttpStatusCode.OK)
-  @OnUndefined(HttpStatusCode.INTERNAL_SERVER_ERROR)
-  getAll(): ResponseModel {
-    try {
-      const organisation: Organisation = this._organisationRepository.read();
-
-      if (!organisation) {
-        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.NOT_FOUND, "Organisation not found");
-      }
-
-      return new ResponseModel(
-        HttpStatusCode.OK,
-        'Success',
-        organisation.getUsersProperties()
-      );
-
-    } catch (error) {
-      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
-    }
+  getAll(): Promise<ResponseModel | ApiError> {
+    // return this._organisationService.getUsers()
+    //   .then(UserPwdHistory => {
+    //     const usersResponse = [];
+    //     if (Array.isArray(users) && users.length > 0) {
+    //       users.forEach(user => usersResponse.push(JobApiModel.toJobModel(job)));
+    //     }
+    //     return new ResponseModel(HttpStatusCode.OK, 'Success', jobsResponse);
+    //   })
+    //   .catch(error => {
+    //     return new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+    //   })
   }
 
   @Post('/users')
   @HttpCode(HttpStatusCode.CREATED)
-  @OnUndefined(HttpStatusCode.INTERNAL_SERVER_ERROR)
-  post(@Body() user: UserWriteModel): ResponseModel {
+  post(@Body() user: UserWriteApiModel): ResponseModel {
     try {
       const organisation: Organisation = this._organisationRepository.read();
       const userIdentity: UserIdentity = new UserIdentity(
@@ -113,7 +106,7 @@ export class UsersController {
   }
 
   @Put('/users/:id')
-  put(@Param('id') id: string, @Body() user: UserWriteModel): ResponseModel {
+  put(@Param('id') id: string, @Body() user: UserWriteApiModel): ResponseModel {
     const organisation: Organisation = this._organisationRepository.read();
 
     if(!organisation.containsUserById(id)) {
@@ -144,7 +137,7 @@ export class UsersController {
       profilePictureUrl = new URL(user.profilePictureUrl);
      }
 
-      const userProperties: UserProperties = new UserProperties(
+      const ReadableUser: ReadableUser = new ReadableUser(
         id,
         userIdentity,
         job,
@@ -156,7 +149,7 @@ export class UsersController {
         birthdayDate,
       );
 
-      organisation.updateUser(id, userProperties);
+      organisation.updateUser(id, ReadableUser);
       this._organisationRepository.save(organisation);
       return new ResponseModel(ReturnCodes.CREATED, `User ${id} was updated.`);
 

@@ -19,7 +19,7 @@
     },
     "include": [
         "src/**/*.ts", "src/infra/BDD.js"
-    ],
+, "src/infra/api/controllers/auth.controller.ts.old"    ],
     "exclude": [
         "node_modules",
         ".vscode"

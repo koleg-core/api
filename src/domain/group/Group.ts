@@ -123,11 +123,11 @@ export class Group {
         return ReturnCodes.UPDATED;
     }
 
-    public addChild(childGroup: Group) {
+    public addChild(childGroup: Group): void {
         Group._addChild(this, childGroup);
     }
 
-    public getProperties(): GroupProperties {
+    public getReadableProperties(): GroupProperties {
 
         return new GroupProperties(
             this._id,

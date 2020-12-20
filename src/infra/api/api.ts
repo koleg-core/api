@@ -5,29 +5,29 @@ import { UsersController } from "./controllers/users.controller"
 import { Container } from 'typedi';
 
 // import { Routes } from "./routes";
-import { AuthService } from "../api/auth/auth.service";
-import { Strategy as AuthStrategy } from "../api/auth/strategy.enum";
-import { OrganisationRepository } from "../../domain/repos/organisation.repository";
+// import { AuthService } from "../api/auth/auth.service";
+// import { Strategy as AuthStrategy } from "../api/auth/strategy.enum";
 import { Application } from "express";
 import { JobsController } from "./controllers/jobs.controller";
+import { OrganisationService } from '../../app/organisation.service';
 
 export class Api {
   private _app: Application;
-  private _authService: AuthService;
+  // private _authService: AuthService;
   private _port = 8080;
 
   constructor(
-    private _repository: OrganisationRepository
+    private _organisationService: OrganisationService
   ) {
 
-    if (!this._repository) {
-      throw new Error('Invalid argument repository: OrganisationRepository is not defined.');
+    if (!this._organisationService) {
+      throw new Error('Invalid argument _organisationService: OrganisationService is not defined.');
     }
 
 
     // TODO externalize it into config
     Container.set('saltRounds.security.config', 10);
-    // Container.set('organisation.repository', this._repository);
+    Container.set('organisation.service', this._organisationService);
 
     // To have working typedi
     useContainer(Container);
@@ -45,11 +45,11 @@ export class Api {
     this._app.use(morgan('dev'));
   }
 
-  public config(port: number) {
+  public config(port: number): void {
     this._port = port;
   }
 
-  public start() {
+  public start(): void {
     this._app.listen(this._port, () => console.log(`Koleg is listening on port ${this._port}!`));
   }
 
