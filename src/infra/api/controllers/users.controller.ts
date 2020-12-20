@@ -15,7 +15,7 @@ import { hashSync } from 'bcrypt';
 
 import { ReturnCodes } from '../../../domain/enums/return-codes.enum';
 import { Organisation } from "../../../domain/Organisation";
-import { OrganisationRepository } from "../../../domain/OrganisationRepository";
+import { OrganisationRepository } from "../../../domain/repos/organisation.repository";
 import { UserProperties } from "../../../domain/user/UserProperties";
 import { UserIdentity } from '../../../domain/user/UserIdentity';
 import { Job } from '../../../domain/user/Job';

@@ -10,7 +10,7 @@ import {
 
 import { UserProperties } from '../../../domain/user/UserProperties'
 import { Organisation } from "../../../domain/Organisation";
-import { OrganisationRepository } from "../../../domain/OrganisationRepository";
+import { OrganisationRepository } from "../../../domain/repos/organisation.repository";
 
 import { Strategy } from "./strategy.enum";
 

@@ -34,6 +34,18 @@ export class Organisation {
         return this._name;
     }
 
+    public setUsers(users: User[]) {
+        this._users = users;
+    }
+
+    public setJobs(jobs: Job[]) {
+        this._jobs = jobs;
+    }
+
+    public setGroups(groups: Group[]) {
+        this._groups = groups;
+    }
+
     public setName(name: string): ReturnCodes {
         if (!name) {
             throw new Error('Invalid argument name: string');

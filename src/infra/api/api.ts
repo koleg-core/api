@@ -7,7 +7,7 @@ import { Container } from 'typedi';
 // import { Routes } from "./routes";
 import { AuthService } from "../api/auth/auth.service";
 import { Strategy as AuthStrategy } from "../api/auth/strategy.enum";
-import { OrganisationRepository } from "../../domain/OrganisationRepository";
+import { OrganisationRepository } from "../../domain/repos/organisation.repository";
 import { Application } from "express";
 import { JobsController } from "./controllers/jobs.controller";
 

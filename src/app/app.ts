@@ -1,4 +1,4 @@
-import { OrganisationRepository } from "../domain/OrganisationRepository";
+import { OrganisationRepository } from "../domain/repos/organisation.repository";
 import { Api } from "../infra/api/api";
 
 export class App {

@@ -1,15 +1,25 @@
 import { Service } from 'typedi';
 
-import { OrganisationRepository } from '../domain/OrganisationRepository';
+import { OrganisationRepository } from '../domain/repos/organisation.repository';
 import { Organisation } from '../domain/Organisation';
 import { UserProperties } from '../domain/user/UserProperties';
 import { GroupProperties } from '../domain/group/GroupProperties';
+import { Job } from '../domain/user/Job';
 
 @Service('organisation.repository')
 class OrganisationInMemory implements OrganisationRepository {
     private _organisation: Organisation;
     constructor() {
         this._organisation = new Organisation("demo organisation", "this is a memory organisation");
+    }
+    createJob(organisation: Organisation) {
+        throw new Error('Method not implemented.');
+    }
+    readAsync(): Promise<Organisation> {
+        throw new Error('Method not implemented.');
+    }
+    readJobs(): Promise<Job[]> {
+        throw new Error('Method not implemented.');
     }
 
     public save(organisation: Organisation): void {

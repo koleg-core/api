@@ -1,12 +1,12 @@
 import { ReturnCodes } from "../../../domain/enums/return-codes.enum";
 import { Organisation } from "../../../domain/Organisation";
-import { OrganisationRepository } from "../../../domain/OrganisationRepository";
+import { OrganisationRepository } from "../../../domain/repos/organisation.repository";
 import { Body, Delete, Get, HttpCode, JsonController, Param, Post, Put } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { ApiError } from "../errors/api-error";
-import { JobModel } from "../models/job.model";
 import { ResponseModel } from "../models/response.model";
 import HttpStatusCode from "../models/http-status-code.model";
+import { JobApiModel } from "../models/job-api.model";
 
 @Service('job.controller')
 @JsonController()
@@ -16,33 +16,35 @@ export class JobsController {
   private _organisationRepository: OrganisationRepository;
 
 
+
   @Get('/jobs')
-  @HttpCode(HttpStatusCode.OK)
-  getAll(): ResponseModel {
-    try {
-      const organisation: Organisation = this._organisationRepository.read();
+  async getAll() {
 
-      console.log(organisation.getJobs());
-      return new ResponseModel(HttpStatusCode.OK, 'Success', organisation.getJobs());
-    } catch (error) {
-      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
-    }
+    const organisation: Organisation = await this._organisationRepository.readAsync();
 
+    return organisation.getJobs();
+
+    // return await this._organisationRepository.readJobs()
+    //   .then(jobs => {
+    //     return new ResponseModel(HttpStatusCode.OK, 'Success', jobs);
+    //   })
+    //   .catch(error => {
+    //     return new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+    //   });
   }
 
   @Post('/jobs')
-  @HttpCode(HttpStatusCode.CREATED)
-  post(@Body() job: JobModel): ResponseModel {
-    try {
-      const organisation: Organisation = this._organisationRepository.read();
+  post(@Body() job: JobApiModel) {
 
-      const returnCode: ReturnCodes = organisation.addJob(job.name);
-
-      return new ResponseModel(returnCode, `Job ${job.name} was created.`);
-
-    } catch (error) {
-      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
-    }
+    return this._organisationRepository.readAsync()
+      .then(organisation => {
+        const returnCode: ReturnCodes = organisation.addJob(job.getName());
+        this._organisationRepository.createJob(organisation);
+        return new ResponseModel(returnCode, `Job ${job.getName()} was created.`);
+      })
+      .catch(error => {
+        return new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+      })
   }
 
   @HttpCode(HttpStatusCode.OK)
@@ -52,6 +54,7 @@ export class JobsController {
       const organisation: Organisation = this._organisationRepository.read();
 
       const job = organisation.getJob(name);
+
 
       return new ResponseModel(HttpStatusCode.OK, 'Success', job);
     } catch (error) {
