@@ -17,10 +17,11 @@ export class JobsController {
 
 
   @Get('/jobs')
-  getAll() {
+  getAll(): ResponseModel {
     try {
       const organisation: Organisation = this._organisationRepository.read();
 
+      console.log(organisation.getJobs());
       return new ResponseModel(HttpStatusCode.OK, 'Success', organisation.getJobs());
     } catch (error) {
       throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
@@ -29,7 +30,7 @@ export class JobsController {
   }
 
   @Post('/jobs')
-  post(@Body() job: JobModel) {
+  post(@Body() job: JobModel): ResponseModel {
     try {
       const organisation: Organisation = this._organisationRepository.read();
 
@@ -43,7 +44,7 @@ export class JobsController {
   }
 
   @Get('/jobs/:name')
-  get(@Param('name') name: string) {
+  get(@Param('name') name: string): ResponseModel {
     try {
       const organisation: Organisation = this._organisationRepository.read();
 
@@ -56,7 +57,7 @@ export class JobsController {
   }
 
   @Delete('/jobs/:name')
-  delete(@Param('name') name: string) {
+  delete(@Param('name') name: string): ResponseModel {
     try {
       const organisation: Organisation = this._organisationRepository.read();
 
@@ -68,6 +69,4 @@ export class JobsController {
       throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
     }
   }
-
-
 }

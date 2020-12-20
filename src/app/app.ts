@@ -10,10 +10,12 @@ export class App {
         if (!this._api) {
             throw new Error('Invalid argument api: Api is not defined.');
         }
+
+        this._api.config(this._port);
     }
 
     public start(): void {
-        this._api.getApp().listen(this._port, () => console.log(`Koleg is listening on port ${this._port}!`));
+        this._api.start();
     }
 
 }

@@ -45,6 +45,8 @@ export class UsersController {
 
     const organisation: Organisation = this._organisationRepository.read();
 
+    console.log("dezf");
+
     if (!organisation) {
       return undefined;
     }
@@ -57,7 +59,6 @@ export class UsersController {
   @HttpCode(201)
   @OnUndefined(500)
   post(@Body() user: UserWriteModel): ResponseModel {
-
     try {
       const organisation: Organisation = this._organisationRepository.read();
       const userIdentity: UserIdentity = new UserIdentity(
