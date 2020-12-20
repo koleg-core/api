@@ -104,6 +104,17 @@ export class Organisation {
     // ####################
     // ###### USERS #######
     // ####################
+
+    public getUsersProperties(): UserProperties[] {
+        const usersProperties: UserProperties[] = [];
+
+        this._users.forEach(user => {
+            usersProperties.push(user.getProperties());
+        })
+
+        return usersProperties;
+    }
+
     public containsUserById(userId: string): boolean {
         if (!userId)
             throw new Error('Invalid argument userId: string');
@@ -160,7 +171,7 @@ export class Organisation {
         return newUser.getId();
     }
 
-    public deleteUser(userId: string) {
+    public deleteUser(userId: string): ReturnCodes {
         if (!userId)
             throw new Error('Invalid argument userId: string');
 

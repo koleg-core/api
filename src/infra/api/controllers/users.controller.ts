@@ -40,24 +40,30 @@ export class UsersController {
   private _saltRoudsPassword: number;
 
   @Get("/users")
-  getAll(): UserProperties[] {
-    console.log(this._organisationRepository);
+  @HttpCode(HttpStatusCode.OK)
+  @OnUndefined(HttpStatusCode.INTERNAL_SERVER_ERROR)
+  getAll(): ResponseModel {
+    try {
+      const organisation: Organisation = this._organisationRepository.read();
 
-    const organisation: Organisation = this._organisationRepository.read();
+      if (!organisation) {
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.NOT_FOUND, "Organisation not found");
+      }
 
-    console.log("dezf");
+      return new ResponseModel(
+        HttpStatusCode.OK,
+        'Success',
+        organisation.getUsersProperties()
+      );
 
-    if (!organisation) {
-      return undefined;
+    } catch (error) {
+      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
     }
-
-    // return organisation.getUsersProperties();
-    // return null
   }
 
   @Post('/users')
-  @HttpCode(201)
-  @OnUndefined(500)
+  @HttpCode(HttpStatusCode.CREATED)
+  @OnUndefined(HttpStatusCode.INTERNAL_SERVER_ERROR)
   post(@Body() user: UserWriteModel): ResponseModel {
     try {
       const organisation: Organisation = this._organisationRepository.read();

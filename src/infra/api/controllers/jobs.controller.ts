@@ -1,7 +1,7 @@
 import { ReturnCodes } from "../../../domain/enums/return-codes.enum";
 import { Organisation } from "../../../domain/Organisation";
 import { OrganisationRepository } from "../../../domain/OrganisationRepository";
-import { Body, Delete, Get, JsonController, Param, Post, Put } from "routing-controllers";
+import { Body, Delete, Get, HttpCode, JsonController, Param, Post, Put } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { ApiError } from "../errors/api-error";
 import { JobModel } from "../models/job.model";
@@ -17,6 +17,7 @@ export class JobsController {
 
 
   @Get('/jobs')
+  @HttpCode(HttpStatusCode.OK)
   getAll(): ResponseModel {
     try {
       const organisation: Organisation = this._organisationRepository.read();
@@ -30,6 +31,7 @@ export class JobsController {
   }
 
   @Post('/jobs')
+  @HttpCode(HttpStatusCode.CREATED)
   post(@Body() job: JobModel): ResponseModel {
     try {
       const organisation: Organisation = this._organisationRepository.read();
@@ -43,6 +45,7 @@ export class JobsController {
     }
   }
 
+  @HttpCode(HttpStatusCode.OK)
   @Get('/jobs/:name')
   get(@Param('name') name: string): ResponseModel {
     try {
