@@ -1,8 +1,6 @@
-import { Job } from "../../../domain/user/Job";
 import { SshKey } from "../../../domain/user/SshKey";
 import { UserIdentity } from "../../../domain/user/UserIdentity";
 import { PhoneNumber } from "../../../domain/user/PhoneNumber";
-import { Password } from "../../../domain/user/Password";
 import { PhoneNumberApiModel } from "./phone-number-api.model"
 import { JobApiModel } from "./job-api.model";
 import { StatelessUser } from "../../../domain/user/StatelessUser";
@@ -19,7 +17,6 @@ export class WritableUserApiModel {
         public readonly profilePictureUrl: string,
         public readonly job: JobApiModel,
         public readonly phones: PhoneNumberApiModel[], // TODO multiple phones numbers
-        public readonly passwordHash: string,
         public readonly sshPublicKey: string = null,
         public readonly sshPrivateKey: string = null,
         public readonly expirationDate: string = null,
@@ -44,7 +41,6 @@ export class WritableUserApiModel {
             user.profilePictureUrl.toString(),
             JobApiModel.toJobModel(user.job),
             phones,
-            user.password.getValue(),
             user.sshKey.publicKey,
             user.sshKey.privateKey,
             user.expirationDate.toISOString(),
@@ -63,7 +59,7 @@ export class WritableUserApiModel {
             null,
             null,
             new UserIdentity(this.firstName, this.lastName, this.username, this.email),
-            new Password(this.passwordHash),
+            null,
             new Date(this.birthdate),
             null,
             phones,

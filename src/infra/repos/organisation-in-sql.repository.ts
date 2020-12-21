@@ -1,9 +1,10 @@
 import { OrganisationRepository } from "../../domain/repos/organisation.repository";
 import { Database } from "../../infra/database/Database";
-import { Organisation } from "../../domain/Organisation";
+import { Organisation } from "../../domain/organisation";
 import { Job } from "../../domain/user/Job";
 import { JobSerializer } from "../../infra/database/serializer/job.serializer";
 import { Sequelize } from "sequelize";
+import { StatelessUser } from "../../domain/user/StatelessUser";
 
 export class OrganisationInSqlRepository implements OrganisationRepository {
 
@@ -60,15 +61,18 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     this._database.deleteJob(name);
   }
 
-  createUser(organisation: Organisation, userId: string): void {
+  createUser(userId: string, user: StatelessUser): void {
+    // this._database.createUser(userId, user);
     throw new Error("Method not implemented.");
   }
 
-  updateUser(organisation: Organisation, userId: string): void {
+  updateUser(userId: string, user: StatelessUser): void {
+    // this._database.updateUser(userId, user);
     throw new Error("Method not implemented.");
   }
 
-  deleteUser(organisation: Organisation, userId: string): void {
+  deleteUser(userId: string): void {
+    // this._database.deleteUser(userId);
     throw new Error("Method not implemented.");
   }
 

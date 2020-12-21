@@ -144,9 +144,9 @@ export class Organisation {
             }
         });
 
-        const newUser = new User(statelessUser);
-
+        const newUser = new User(statelessUser)
         this._users.push(newUser);
+
         return newUser.getId();
     }
 
@@ -157,13 +157,18 @@ export class Organisation {
         const requestedUserIndex = this._users.findIndex(user => userId === user.getId());
 
         if (requestedUserIndex < 0)
-            throw new Error('User not found')
+            return ReturnCodes.NOT_FOUND
 
         if (requestedUserIndex > 1)
             throw new Error('There is more than one user with this id')
 
-        delete this._users[requestedUserIndex];
-        return ReturnCodes.REMOVED;
+        const deletedUsers = this._users.splice(requestedUserIndex, 1);
+
+        if (deletedUsers[0]?.getId() === userId) {
+            return ReturnCodes.REMOVED;
+        } else {
+            throw new Error('Failure to delete the user');
+        }
     }
 
     // TODO: fill this functions
@@ -204,16 +209,16 @@ export class Organisation {
             user.updateGroups(statelessUser.groupsIds);
         }
         user.updateJob(statelessUser.job);
-        if(statelessUser.birthdate) {
+        if (statelessUser.birthdate) {
             user.updateBirthDate(statelessUser.birthdate);
         }
         if (statelessUser.password && !statelessUser.password.hasSameValue(user.getPassword())) {
             user.updatePassword(statelessUser.password);
         }
-        if(statelessUser.profilePictureUrl) {
+        if (statelessUser.profilePictureUrl) {
             user.updateProfilePictureUrl(statelessUser.profilePictureUrl);
         }
-        if(statelessUser.sshKey) {
+        if (statelessUser.sshKey) {
             user.updateSshKey(statelessUser.sshKey);
         }
 
@@ -262,8 +267,13 @@ export class Organisation {
         if (requestedJobIndex < 0)
             return ReturnCodes.NOT_FOUND;
 
-        this._users.splice(requestedJobIndex, 1);
-        return ReturnCodes.REMOVED;
+        const deleteJobs = this._jobs.splice(requestedJobIndex, 1);
+
+        if (deleteJobs[0]?.getName() === jobName) {
+            return ReturnCodes.REMOVED;
+        } else {
+            throw new Error('Failure to delete the user');
+        }
     }
 
     // ####################
@@ -284,7 +294,7 @@ export class Organisation {
         return foundGroups[0];
     }
 
-    private _containsInvalidGroupIds(groupsIds: string[]): boolean{
+    private _containsInvalidGroupIds(groupsIds: string[]): boolean {
         groupsIds.some(groupId => {
             if (!this.containsGroupById(groupId)) {
                 return true;

@@ -9,7 +9,7 @@ import {
 } from "passport-local";
 
 import { ReadableUser } from '../../../domain/user/ReadableUser'
-import { Organisation } from "../../../domain/Organisation";
+import { Organisation } from "../../../domain/organisation";
 import { OrganisationRepository } from "../../../domain/repos/organisation.repository";
 
 import { Strategy } from "./strategy.enum";

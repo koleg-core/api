@@ -64,6 +64,14 @@ export class ReadableUser {
     return this._creationDate;
   }
 
+  public getExpirationDate(): Date {
+    return this._expirationDate;
+  }
+
+  public getDisableDate(): Date {
+    return this._disableDate;
+  }
+
   public getBirthDate(): Date {
     return this._birthdate;
   }

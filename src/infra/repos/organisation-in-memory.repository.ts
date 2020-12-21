@@ -1,10 +1,9 @@
 import { Service } from 'typedi';
 
 import { OrganisationRepository } from '../../domain/repos/organisation.repository';
-import { Organisation } from '../../domain/Organisation';
-import { ReadableUser } from '../../domain/user/ReadableUser';
-import { GroupProperties } from '../../domain/group/GroupProperties';
+import { Organisation } from '../../domain/organisation';
 import { Job } from '../../domain/user/Job';
+import { StatelessUser } from '../../domain/user/StatelessUser';
 
 @Service('organisation.repository')
 class OrganisationInMemoryRepository implements OrganisationRepository {
@@ -28,13 +27,13 @@ class OrganisationInMemoryRepository implements OrganisationRepository {
     deleteJob(name: string): void {
         throw new Error('Method not implemented.');
     }
-    createUser(organisation: Organisation, userId: string): void {
+    createUser(userId: string, user: StatelessUser): void {
         throw new Error('Method not implemented.');
     }
-    updateUser(organisation: Organisation, userId: string): void {
+    updateUser(userId: string, user: StatelessUser): void {
         throw new Error('Method not implemented.');
     }
-    deleteUser(organisation: Organisation, userId: string): void {
+    deleteUser(userId: string): void {
         throw new Error('Method not implemented.');
     }
     createGroup(organisation: Organisation, groupId: string): void {
