@@ -16,7 +16,6 @@ import {
   interface UserPwdHistoryAttributes{
     id: number;
     updateDate: Date;
-    idUser: number;
     password: string;
   }
 
@@ -25,6 +24,5 @@ import {
 export class UserPwdHistory extends Model<UserPwdHistoryAttributes, UserPwdHistoryCreationAttributes> implements UserPwdHistoryAttributes{
     public id!: number;
     public updateDate!:Date;
-    public idUser!:number;
     public password!:string;
 }
