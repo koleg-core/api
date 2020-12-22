@@ -125,8 +125,9 @@ export class Organisation {
     }
 
     public getReadableUserById(userId: string): ReadableUser {
-        if (!userId)
+        if (!userId) {
             throw new Error('Invalid argument userId: string');
+        }
 
         const user: User = this._getUserById(userId);
         if (!user) {
@@ -191,9 +192,6 @@ export class Organisation {
         if (!statelessUser.identity) {
             throw new Error('statelessUser.identity Should not be empty');
         }
-        if (!statelessUser.groupsIds) {
-            throw new Error('statelessUser.groupsIds Should not be empty');
-        }
 
         const user: User = this._getUserById(statelessUser.id);
         user.updateIdentity(statelessUser.identity);
@@ -230,7 +228,7 @@ export class Organisation {
     // ####### JOBS #######
     // ####################
 
-    public getJobs(): Job[] {
+    public getJobs(filter?:string): Job[] {
         return this._jobs;
     }
 

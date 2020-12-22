@@ -46,6 +46,7 @@ export class OrganisationService {
   // USERS
   public async getUsers(): Promise<ReadableUser[]> {
     await this._updateOrganisation()
+    console.log(this._organisation.getUsersProperties());
     return this._organisation.getUsersProperties();
   }
 
@@ -55,6 +56,9 @@ export class OrganisationService {
   }
 
   public async updateUser(user: StatelessUser): Promise<ReturnCodes> {
+    if(!user.id) {
+        throw Error('Invalid user argument property: id of user: StatelessUser should not be null.');
+    }
     await this._updateOrganisation();
     const returnCode = this._organisation.updateUser(user);
     if (returnCode === ReturnCodes.UPDATED) {

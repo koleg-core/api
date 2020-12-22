@@ -48,14 +48,15 @@ export class WritableUserApiModel {
         );
     }
 
-    public toStatelessUser(): StatelessUser {
-        const phones: PhoneNumber[] = [];
+    public toStatelessUser(id: string = null): StatelessUser {
         if (Array.isArray(this.phones) && this.phones.length > 0) {
             this.phones.forEach(phone => phones.push(phone.toPhoneNumber()))
         }
 
+        const phones: PhoneNumber[] = [];
+
         return new StatelessUser(
-            null,
+            id,
             null,
             null,
             new UserIdentity(this.firstName, this.lastName, this.username, this.email),

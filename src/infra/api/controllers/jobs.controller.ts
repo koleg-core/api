@@ -1,5 +1,8 @@
+import Fuse from 'fuse.js'
+
 import { ReturnCodes } from "../../../domain/enums/return-codes.enum";
-import { Body, Delete, Get, HttpCode, JsonController, Param, Post } from "routing-controllers";
+import { Job } from "../../../domain/user/Job";
+import { QueryParam, Body, Delete, Get, HttpCode, JsonController, Param, Post } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { ApiError } from "../errors/api-error";
 import { ResponseModel } from "../models/response.model";
@@ -12,15 +15,30 @@ import { OrganisationService } from '../../../app/organisation.service';
 export class JobsController {
 
   @Inject('organisation.service')
-  private _organisationService: OrganisationService;
+  private readonly _organisationService: OrganisationService;
+  private readonly _fuseOptions: Fuse.IFuseOptions<Job> = {
+      includeScore: false,
+      keys: ['_name'] // This break private things, but don't care
+    }
 
   @Get('/jobs')
-  async getAll(): Promise<ResponseModel | ApiError> {
+  async getAll(@QueryParam("filter") filter?: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getJobs()
       .then(jobs => {
+
         const jobsResponse: JobApiModel[] = [];
         if (Array.isArray(jobs) && jobs.length > 0) {
-          jobs.forEach(job => jobsResponse.push(JobApiModel.toJobModel(job)));
+          if(filter) {
+            const fuse: Fuse<Job> = new Fuse(jobs, this._fuseOptions);
+            const fuzeJobs = fuse.search(filter);
+            fuzeJobs.forEach(
+              job => {
+                jobsResponse.push(JobApiModel.toJobModel(job.item))
+            });
+          } else {
+            jobs.forEach(job => jobsResponse.push(JobApiModel.toJobModel(job)));
+          }
+
         }
         return new ResponseModel(HttpStatusCode.OK, 'Success', jobsResponse);
       })

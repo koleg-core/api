@@ -1,4 +1,3 @@
-import { type } from 'os';
 import { default as slugify } from 'slugify';
 
 // while this class don't have any methods,

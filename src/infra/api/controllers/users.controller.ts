@@ -10,9 +10,11 @@ import {
   Param
 } from "routing-controllers";
 
-import { hashSync } from 'bcrypt';
+import { hash } from 'bcrypt';
 
 import { ReturnCodes } from '../../../domain/enums/return-codes.enum';
+import {Password} from '../../../domain/user/Password';
+import {StatelessUser} from '../../../domain/user/StatelessUser';
 import { ApiError } from '../errors/api-error'
 
 import { WritableUserApiModel } from "../models/writable-user-api.model";
@@ -79,8 +81,8 @@ export class UsersController {
   }
 
   @Put('/users/:id')
-  put(@Param('id') id: string, @Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
-    return this._organisationService.updateUser(user.toStatelessUser())
+  async put(@Param('id') id: string, @Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
+    return this._organisationService.updateUser(user.toStatelessUser(id))
       .then(returnCode => {
         if (returnCode === ReturnCodes.NOT_FOUND) {
           throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, "User not found");
@@ -105,7 +107,28 @@ export class UsersController {
   }
 
   @Post('/users/:id/update-password')
-  updatePassword(@Param('id') id: string): Promise<ResponseModel | ApiError> {
-    throw new Error('Not yet implemented'); // TODO
+  async updatePassword(@Param('id') id: string, @Body() frontHashedPassword: string): Promise<ResponseModel | ApiError> {
+    return this._organisationService.getUserById(id)
+      .then(readableUser => {
+        hash(frontHashedPassword, this._saltRoudsPassword, (bcryptError: Error , backHashedPassword: string) => {
+            if(bcryptError) {
+                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, bcryptError?.message);
+            }
+            const password: Password = new Password(backHashedPassword);
+            const stateLessUser = new StatelessUser(
+                readableUser.getId(),
+                null,
+                null,
+                readableUser.getIdentity(),
+                password,
+                null,
+            );
+        })
+          .catch (error => {
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+          });
+
+        return new ResponseModel(HttpStatusCode.ACCEPTED, `Your password changment for user: ${id} was aknoleged.`);
+    });
   }
 }
