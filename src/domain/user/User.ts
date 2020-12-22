@@ -29,16 +29,16 @@ export class User {
   // TODO: Add activation date, apply it into _isEditable
 
   constructor(statelessUser: StatelessUser) {
-    if (!this._identity) {
+    if (!statelessUser.identity) {
       throw new Error(`Invalid argument parameter, identity`);
     }
-    if (!this._password) {
+    if (!statelessUser.password) {
       throw new Error(`Invalid argument parameter, password`);
     }
-    if (!this._birthdate) {
+    if (!statelessUser.birthdate) {
       throw new Error(`Invalid argument parameter, birthdate`);
     }
-    if (this._birthdate > new Date()) {
+    if (statelessUser.birthdate > new Date()) {
       throw new Error(`Negativ age, birthdate is into the future`);
     }
 

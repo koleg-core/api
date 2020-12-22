@@ -1,5 +1,4 @@
-import '../../src/domain/Organisation'
-import { Organisation } from '../../src/domain/Organisation';
+import { Organisation } from '../../src/domain/organisation';
 import { UserIdentity } from '../../src/domain/user/UserIdentity';
 import { Password } from '../../src/domain/user/Password';
 import { Group } from '../../src/domain/group/Group';
@@ -150,7 +149,7 @@ describe('Organisation', () => {
         try {
           const organisation:Organisation = genOrganisation();
           const userId:string = genUserId(organisation);
-          if(!organisation.getUserById(userId)) {
+          if(!organisation.getReadableUserById(userId)) {
               const err = "There is no user into organisation.";
               done(err);
           }

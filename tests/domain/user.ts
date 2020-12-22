@@ -1,8 +1,9 @@
-import { Organisation } from '../../src/domain/Organisation';
+import { Organisation } from '../../src/domain/organisation';
 import { Job } from '../../src/domain/user/Job';
 import { Password } from '../../src/domain/user/Password';
 import { PhoneNumber } from '../../src/domain/user/PhoneNumber';
 import { SshKey } from '../../src/domain/user/SshKey';
+import { StatelessUser } from '../../src/domain/user/StatelessUser';
 import { UserIdentity } from '../../src/domain/user/UserIdentity';
 import { genGroupId } from './group';
 import { genJob } from './job';
@@ -20,20 +21,28 @@ export const genUserId = (organisation: Organisation): string => {
     const sshKey:SshKey = genSshKey();
     const groupId = genGroupId(organisation);
 
-    const groupsId:string[] = [groupId];
+    const groupsId: string[] = [groupId];
     const birthDay:Date = new Date();
-    birthDay.setMonth(birthDay.getMonth() + 8);
+    birthDay.setMonth(birthDay.getMonth() - 8);
 
     const phoneNumbers:PhoneNumber[] = [phoneNumber];
 
-    return organisation.addUser(
+    const statelessUser: StatelessUser = new StatelessUser(
+        null,
+        null,
+        null,
         identity,
         passwordWithExpiration,
-        job,
         birthDay,
+        null,
+        phoneNumbers,
         groupsId,
+        job,
+        null,
         null,
         sshKey,
-        phoneNumbers,
-        null);
+        null
+    )
+
+    return organisation.addUser(statelessUser);
 }

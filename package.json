@@ -15,8 +15,7 @@
     "lint": "eslint . --ext .ts",
     "start:watch": "nodemon",
     "build": "tsc",
-    "test:domain": "mocha -r ts-node/register tests/**/*.test.ts",
-    "test:app": "npm run build; mocha -r ts-node/register tests/**/*.test.ts",
+    "test": "mocha -r ts-node/register tests/**/*.test.ts",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
     "codegen": " npx swagger-typescript-api -p openapi.yml -n KolegApi.ts -o ./auto"
   },

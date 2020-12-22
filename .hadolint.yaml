@@ -1,0 +1,3 @@
+trustedRegistries:
+  - docker.io
+  - rg.fr-par.scw.cloud/koleg

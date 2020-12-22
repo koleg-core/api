@@ -1,0 +1,95 @@
+variables:
+  IMAGE_NAME: koleg-api
+
+stages:
+  - 📜tests
+  - 🐳login
+  - 🏗build
+  - deploy
+
+.docker_login:
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - >
+      echo "$SCW_REGISTRY_TOKEN"
+      | docker login
+      --username $SCW_REGISTRY_USER
+      $SCW_REGISTRY
+      --password-stdin
+
+🔧node_tests:
+  stage: 📜tests
+  script:
+  image: node:12.19.0
+  script: |
+    yarn
+    yarn test
+
+🐳dockerfile_lint:
+  image: hadolint/hadolint
+  script: |
+    hadolint -c .hadolint.yaml Dockerfile
+
+🔥build_prod:
+  stage: 🏗build
+  extends: .docker_login
+  script: |
+    docker pull \
+      $SCW_REGISTRY/$IMAGE_NAME:latest || true
+    docker build \
+      -t $SCW_REGISTRY/$IMAGE_NAME:latest \
+      -t $SCW_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA \
+      --cache-from $SCW_REGISTRY:latest \
+      --build-arg='PROD=false' \
+      .
+    echo "Push image to registry"
+    docker push \
+      $SCW_REGISTRY/$IMAGE_NAME:latest
+    docker push \
+      $SCW_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA
+
+🚑build_debug:
+  stage: 🏗build
+  extends: .docker_login
+  script: |
+    docker pull \
+      $SCW_REGISTRY/$IMAGE_NAME:debug || true
+    docker build \
+      -t $SCW_REGISTRY/$IMAGE_NAME:debug \
+      -t $SCW_REGISTRY/$IMAGE_NAME:debug-$CI_COMMIT_SHA \
+      --cache-from $SCW_REGISTRY:debug \
+      --build-arg='PROD=true' \
+      .
+    echo "Push image to registry"
+    docker push \
+      $SCW_REGISTRY/$IMAGE_NAME:debug
+    docker push \
+      $SCW_REGISTRY/$IMAGE_NAME:debug-$CI_COMMIT_SHA
+
+☸️production_deploy:
+  stage: deploy
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: ["/bin/bash", "-c"]
+  script: |
+    - >
+      /opt/bitnami/kubectl/bin/kubectl
+      set image deployment.v1.apps/$IMAGE_NAME
+      $IMAGE_NAME=$SCW_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA
+      --namespace production
+      --kubeconfig $SCW_KUBECONFIG
+      --record
+    - >
+      /opt/bitnami/kubectl/bin/kubectl
+      rollout status deployment.v1.apps/$IMAGE_NAME
+      --timeout=5m
+      --namespace production
+      --kubeconfig $SCW_KUBECONFIG
+      || ( kubectl
+      --namespace production
+      --kubeconfig $SCW_KUBECONFIG
+      rollout undo deployment.v1.apps/$IMAGE_NAME
+      && echo "❌ deployment failed, return to previous deployment"
+      && exit 1 )

@@ -1,5 +1,4 @@
-
-import { Organisation } from '../../src/domain/Organisation';
+import { Organisation } from '../../src/domain/organisation';
 
 export const genGroupId = (
     organisation:Organisation,
