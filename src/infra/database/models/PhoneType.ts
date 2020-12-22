@@ -22,7 +22,7 @@ import {
     name: string;
   }
 
-  interface PhoneTypeCreationAttributes extends Optional<PhoneTypeAttributes, "id"> {}
+  type PhoneTypeCreationAttributes = Optional<PhoneTypeAttributes, "id">
 
   export class PhoneType extends Model<PhoneTypeAttributes, PhoneTypeCreationAttributes> implements PhoneTypeAttributes{
     id!: number;

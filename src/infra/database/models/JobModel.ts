@@ -19,7 +19,7 @@ interface JobAttributes{
   users?: UserModel[] | UserModel['id'][];
 }
 
-interface JobCreationAttributes extends Optional<JobAttributes, "id"> {}
+type JobCreationAttributes = Optional<JobAttributes, "id">
 
 export class JobModel extends Model<JobAttributes, JobCreationAttributes> implements JobAttributes{
   public id!: number;

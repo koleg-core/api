@@ -20,7 +20,7 @@ import {
     password: string;
   }
 
-  interface UserPwdHistoryCreationAttributes extends Optional<UserPwdHistoryAttributes, "id"> {}
+  type UserPwdHistoryCreationAttributes = Optional<UserPwdHistoryAttributes, "id">
 
   export class UserPwdHistory extends Model<UserPwdHistoryAttributes, UserPwdHistoryCreationAttributes> implements UserPwdHistoryAttributes{
     public id!: number;
