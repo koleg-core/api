@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 
 import { ReturnCodes } from './enums/return-codes.enum';
 import { Group } from './group/Group';
-import { GroupProperties } from './group/GroupProperties';
+import { ReadableGroup } from './group/readableGroup';
 import { User } from './user/User';
 import { Job } from './user/Job';
 import { ReadableUser } from './user/ReadableUser';
@@ -69,12 +69,13 @@ export class Organisation {
         return false;
     }
 
-    public getGroupPropertiesById(groupId: string): GroupProperties {
+    public getGroupPropertiesById(groupId: string): ReadableGroup {
         const group: Group = this._getGroupById(groupId);
-        return group.getReadableProperties();
+        return group.getReadableGroup();
     }
 
     public addGroup(
+        id: string,
         name: string,
         description: string,
         imgUrl: URL = null,
@@ -91,7 +92,14 @@ export class Organisation {
             }
             childsGroups.push(childGroup);
         })
-        const newGroup: Group = new Group(name, description, imgUrl, parentGroup, childsGroups);
+        const newGroup: Group = new Group(
+          id,
+          name,
+          description,
+          parentGroup,
+          childsGroups,
+          imgUrl
+        );
         if (!newGroup) {
             throw new Error('Group was not created');
         }

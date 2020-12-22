@@ -21,13 +21,20 @@ stages:
 
 🔧node_tests:
   stage: 📜tests
-  script:
   image: node:12.19.0
   script: |
     yarn
     yarn test
 
+🛏️node_coverage:
+  stage: 📜tests
+  image: node:12.19.0
+  script: |
+    yarn
+    yarn coverage
+
 🐳dockerfile_lint:
+  stage: 📜tests
   image: hadolint/hadolint
   script: |
     hadolint -c .hadolint.yaml Dockerfile
@@ -41,7 +48,7 @@ stages:
     docker build \
       -t $SCW_REGISTRY/$IMAGE_NAME:latest \
       -t $SCW_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA \
-      --cache-from $SCW_REGISTRY:latest \
+      --cache-from $SCW_REGISTRY/$IMAGE_NAME:latest \
       --build-arg='PROD=false' \
       .
     echo "Push image to registry"
@@ -59,7 +66,7 @@ stages:
     docker build \
       -t $SCW_REGISTRY/$IMAGE_NAME:debug \
       -t $SCW_REGISTRY/$IMAGE_NAME:debug-$CI_COMMIT_SHA \
-      --cache-from $SCW_REGISTRY:debug \
+      --cache-from $SCW_REGISTRY/$IMAGE_NAME:debug \
       --build-arg='PROD=true' \
       .
     echo "Push image to registry"

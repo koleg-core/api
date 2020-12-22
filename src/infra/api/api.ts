@@ -16,8 +16,11 @@ export class Api {
   private _app: Application;
   // private _authService: AuthService;
   private _port = 8080;
-  private _routingControllersOptions: RoutingControllersOptions;
+  private readonly _routingControllersOptions: RoutingControllersOptions;
   private _spec: OpenAPIObject;
+  private _swaggerOptions = {
+    customCss: '.swagger-ui .topbar { display: none }'
+  };
 
   constructor(
     private _organisationService: OrganisationService
@@ -105,7 +108,11 @@ export class Api {
       ]
     })
 
-    this._app.use('/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(this._spec));
+    this._app.use(
+        '/docs',
+        swaggerUiExpress.serve,
+        swaggerUiExpress.setup(this._spec, this._swaggerOptions)
+    );
   }
 
   public start(): void {

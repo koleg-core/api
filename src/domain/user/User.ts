@@ -29,14 +29,17 @@ export class User {
   // TODO: Add activation date, apply it into _isEditable
 
   constructor(statelessUser: StatelessUser) {
+    if(statelessUser) {
+      throw new Error(`Invalid argument parameter, statelessUser.`);
+    }
     if (!statelessUser.identity) {
-      throw new Error(`Invalid argument parameter, identity`);
+      throw new Error(`Invalid argument parameter, statelessUser.identity.`);
     }
     if (!statelessUser.password) {
-      throw new Error(`Invalid argument parameter, password`);
+      throw new Error(`Invalid argument parameter, statelessUser.password.`);
     }
     if (!statelessUser.birthdate) {
-      throw new Error(`Invalid argument parameter, birthdate`);
+      throw new Error(`Invalid argument parameter, statelessUser.birthdate`);
     }
     if (statelessUser.birthdate > new Date()) {
       throw new Error(`Negativ age, birthdate is into the future`);
@@ -242,7 +245,6 @@ export class User {
   }
 
   public updateGroups(groupsIds: string[]): ReturnCodes {
-    // TODO deep equal tests
     this._groupsIds = groupsIds;
     return ReturnCodes.UPDATED;
   }

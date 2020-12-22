@@ -13,4 +13,5 @@ k8s/bin
 *.img
 *.iso
 build
+dist/
 package-lock.json

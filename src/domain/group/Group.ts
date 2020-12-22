@@ -2,20 +2,20 @@ import { v4 as uuid } from 'uuid';
 
 import { ReturnCodes } from '../enums/return-codes.enum';
 
-import { GroupProperties } from './GroupProperties';
-
+import { ReadableGroup } from './readableGroup';
 
 export class Group {
-    private _id: string;
-
     constructor(
+      private _id: string,
       private _name: string,
       private _description: string = null,
-      private _imgUrl: URL = null,
       private _parentGroup: Group = null,
       private _childsGroups: Group[] = [],
+      private _imgUrl: URL = null
     ) {
-        this._id = uuid();
+        if(!this._id) {
+          this._id = uuid();
+        }
         if(this._parentGroup){
             this._parentGroup.addChild(this);
         }
@@ -53,7 +53,6 @@ export class Group {
         this._imgUrl = imgUrl;
         return ReturnCodes.UPDATED;
     }
-
 
     public getParentId(): string {
         if(this._parentGroup) {
@@ -127,14 +126,14 @@ export class Group {
         Group._addChild(this, childGroup);
     }
 
-    public getReadableProperties(): GroupProperties {
-
-        return new GroupProperties(
-            this._id,
-            this.getChildsId(),
-            this._name, this._description,
-            this._imgUrl,
-            this.getParentId()
-            )
+    public getReadableGroup(): ReadableGroup {
+      return new ReadableGroup(
+        this._id,
+        this._name,
+        this._description,
+        this.getParentId(),
+        this.getChildsId(),
+        this._imgUrl
+      )
     }
 }

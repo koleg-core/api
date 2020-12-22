@@ -1,10 +1,12 @@
-ARG NODE_VERSION=${12.19.0}
+ARG NODE_VERSION=12.19.0
 FROM node:${NODE_VERSION} as build
+
+COPY * /work/
 
 WORKDIR /work
 
 RUN yarn \
-    yarn build
+    && yarn build
 
 FROM node:${NODE_VERSION} as main
 
