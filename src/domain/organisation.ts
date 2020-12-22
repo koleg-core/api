@@ -78,27 +78,29 @@ export class Organisation {
         id: string,
         name: string,
         description: string,
-        imgUrl: URL = null,
         parentGroupId: string = null,
-        childsGroupsId: string[] = []
+        childsGroupsId?: string[],
+        imgUrl?: URL
     ): string {
         const parentGroup: Group = this._getGroupById(parentGroupId);
         const childsGroups: Group[] = [];
 
-        childsGroupsId.forEach(childsGroupId => {
-            const childGroup: Group = this._getGroupById(childsGroupId);
-            if (!this._getGroupById(childsGroupId)) {
-                throw new Error(`Child group ${childsGroupId} does not exist.`);
-            }
-            childsGroups.push(childGroup);
-        })
+        if(childsGroupsId) {
+          childsGroupsId.forEach(childsGroupId => {
+              const childGroup: Group = this._getGroupById(childsGroupId);
+              if (!this._getGroupById(childsGroupId)) {
+                  throw new Error(`Child group ${childsGroupId} does not exist.`);
+              }
+              childsGroups.push(childGroup);
+          })
+        }
         const newGroup: Group = new Group(
           id,
           name,
           description,
           parentGroup,
           childsGroups,
-          imgUrl
+          imgUrl || null
         );
         if (!newGroup) {
             throw new Error('Group was not created');
@@ -153,7 +155,7 @@ export class Organisation {
             }
         });
 
-        const newUser = new User(statelessUser)
+        const newUser = new User(statelessUser);
         this._users.push(newUser);
 
         return newUser.getId();

@@ -1,11 +1,13 @@
 import { Organisation } from '../../src/domain/organisation';
 import { UserIdentity } from '../../src/domain/user/UserIdentity';
 import { Password } from '../../src/domain/user/Password';
-import { Group } from '../../src/domain/group/Group';
+import { StatelessUser } from '../../src/domain/user/StatelessUser';
 import { SshKey } from '../../src/domain/user/SshKey';
 import { Job } from '../../src/domain/user/Job';
 import { PhoneNumber } from '../../src/domain/user/PhoneNumber';
+// import { Group } from '../../src/domain/group/Group';
 
+import { genStatelessUser } from './statelessUser';
 import { genOrganisation } from './organisation';
 import { genUserIdentity } from './userIdentity';
 import { genPassword } from './password';
@@ -14,7 +16,7 @@ import { genSshKey } from './sshKey';
 import { genJob } from './job';
 import { genGroupId } from './group';
 import { genUserId } from './user';
-import { strict } from 'assert';
+// import { strict } from 'assert';
 
 describe('Organisation', () => {
     describe('#init()', () => {
@@ -142,6 +144,23 @@ describe('PhoneNumber', () => {
     });
     });
 });
+
+describe('StatelessUser', () => {
+    describe('#init()', () => {
+      it('should be created without error', (done) => {
+          const organisation:Organisation = genOrganisation();
+
+          const statelessUser: StatelessUser = genStatelessUser(organisation);
+          if(!statelessUser) {
+              const err = "statelessUser is undefined";
+              done(err);
+          }
+        done();
+    });
+    });
+});
+
+
 
 describe('Organisation', () => {
     describe('#addUser()', () => {

@@ -29,7 +29,7 @@ export class User {
   // TODO: Add activation date, apply it into _isEditable
 
   constructor(statelessUser: StatelessUser) {
-    if(statelessUser) {
+    if(!statelessUser) {
       throw new Error(`Invalid argument parameter, statelessUser.`);
     }
     if (!statelessUser.identity) {
