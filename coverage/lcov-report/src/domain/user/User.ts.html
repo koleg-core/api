@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.89% </span>
+                <span class="strong">23.21% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>38/166</span>
+                <span class='fraction'>39/168</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.5% </span>
+                <span class="strong">8.54% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/80</span>
+                <span class='fraction'>7/82</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">23.03% </span>
+                <span class="strong">23.35% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>38/165</span>
+                <span class='fraction'>39/167</span>
             </div>
         
             
@@ -463,7 +463,9 @@
 <a name='L404'></a><a href='#L404'>404</a>
 <a name='L405'></a><a href='#L405'>405</a>
 <a name='L406'></a><a href='#L406'>406</a>
-<a name='L407'></a><a href='#L407'>407</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L407'></a><a href='#L407'>407</a>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -506,6 +508,9 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -543,7 +548,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -707,7 +712,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -813,9 +817,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -900,14 +904,17 @@ export class User {
   // TODO: Add activation date, apply it into _isEditable
 &nbsp;
   constructor(statelessUser: StatelessUser) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if(!statelessUser) {
+<span class="cstat-no" title="statement not covered" >      throw new Error(`Invalid argument parameter, statelessUser.`);</span>
+    }
     <span class="missing-if-branch" title="if path not taken" >I</span>if (!statelessUser.identity) {
-<span class="cstat-no" title="statement not covered" >      throw new Error(`Invalid argument parameter, identity`);</span>
+<span class="cstat-no" title="statement not covered" >      throw new Error(`Invalid argument parameter, statelessUser.identity.`);</span>
     }
     <span class="missing-if-branch" title="if path not taken" >I</span>if (!statelessUser.password) {
-<span class="cstat-no" title="statement not covered" >      throw new Error(`Invalid argument parameter, password`);</span>
+<span class="cstat-no" title="statement not covered" >      throw new Error(`Invalid argument parameter, statelessUser.password.`);</span>
     }
     <span class="missing-if-branch" title="if path not taken" >I</span>if (!statelessUser.birthdate) {
-<span class="cstat-no" title="statement not covered" >      throw new Error(`Invalid argument parameter, birthdate`);</span>
+<span class="cstat-no" title="statement not covered" >      throw new Error(`Invalid argument parameter, statelessUser.birthdate`);</span>
     }
     <span class="missing-if-branch" title="if path not taken" >I</span>if (statelessUser.birthdate &gt; new Date()) {
 <span class="cstat-no" title="statement not covered" >      throw new Error(`Negativ age, birthdate is into the future`);</span>
@@ -1113,7 +1120,6 @@ export class User {
   }
 &nbsp;
   public <span class="fstat-no" title="function not covered" >updateGroups(</span>groupsIds: string[]): ReturnCodes {
-    // TODO deep equal tests
 <span class="cstat-no" title="statement not covered" >    this._groupsIds = groupsIds;</span>
 <span class="cstat-no" title="statement not covered" >    return ReturnCodes.UPDATED;</span>
   }
@@ -1218,7 +1224,7 @@ export class User {
   }
 &nbsp;
   // Exporting =======
-  public getReadableProperties(): ReadableUser {
+  public getReadable(): ReadableUser {
     const publicKey: string = deepCopy(this._sshKey.publicKey);
 &nbsp;
     return new ReadableUser(
@@ -1282,7 +1288,7 @@ export class User {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Dec 22 2020 18:16:15 GMT+0100 (GMT+01:00)
+                at Wed Dec 23 2020 00:40:07 GMT+0100 (GMT+01:00)
             </div>
         </div>
         <script src="../../../prettify.js"></script>

@@ -349,7 +349,7 @@ export class User {
   }
 
   // Exporting =======
-  public getReadableProperties(): ReadableUser {
+  public getReadable(): ReadableUser {
     const publicKey: string = deepCopy(this._sshKey.publicKey);
 
     return new ReadableUser(

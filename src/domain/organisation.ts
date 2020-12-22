@@ -114,14 +114,14 @@ export class Organisation {
     // ###### USERS #######
     // ####################
 
-    public getUsersProperties(): ReadableUser[] {
-        const usersProperties: ReadableUser[] = [];
+    public getReadableUsers(): ReadableUser[] {
+        const readableUsers: ReadableUser[] = [];
 
         this._users.forEach(user => {
-            usersProperties.push(user.getReadableProperties());
+            readableUsers.push(user.getReadable());
         })
 
-        return usersProperties;
+        return readableUsers;
     }
 
     public containsUserById(userId: string): boolean {
@@ -143,7 +143,7 @@ export class Organisation {
         if (!user) {
             return null;
         }
-        return user.getReadableProperties();
+        return user.getReadable();
     }
 
     public addUser(statelessUser: StatelessUser): string {

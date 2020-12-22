@@ -57,3 +57,4 @@ jspm_packages
 # Koleg
 dist/
 coverage/
+package-lock.json

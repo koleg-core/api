@@ -46,8 +46,7 @@ export class OrganisationService {
   // USERS
   public async getUsers(): Promise<ReadableUser[]> {
     await this._updateOrganisation()
-    console.log(this._organisation.getUsersProperties());
-    return this._organisation.getUsersProperties();
+    return this._organisation.getReadableUsers();
   }
 
   public async getUserById(id: string): Promise<ReadableUser> {

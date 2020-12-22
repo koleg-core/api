@@ -19,14 +19,7 @@ stages:
       $SCW_REGISTRY
       --password-stdin
 
-🔧node_tests:
-  stage: 📜tests
-  image: node:12.19.0
-  script: |
-    yarn
-    yarn test
-
-🛏️node_coverage:
+🛏️tests_coverage:
   stage: 📜tests
   image: node:12.19.0
   script: |
