@@ -25,7 +25,7 @@ export class JobsController {
         return new ResponseModel(HttpStatusCode.OK, 'Success', jobsResponse);
       })
       .catch(error => {
-        return new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       })
   }
 
@@ -39,7 +39,7 @@ export class JobsController {
         return new ResponseModel(returnCode, `Request returns with status : ${returnCode}.`);
       })
       .catch(error => {
-        return new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       })
   }
 
@@ -54,7 +54,7 @@ export class JobsController {
         return new ResponseModel(HttpStatusCode.OK, 'Success', JobApiModel.toJobModel(job));
       })
       .catch(error => {
-        return new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       })
   }
 
@@ -69,7 +69,7 @@ export class JobsController {
         return new ResponseModel(returnCode, `Request returns with status : ${returnCode}.`);
       })
       .catch(error => {
-        return new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       })
   }
 }

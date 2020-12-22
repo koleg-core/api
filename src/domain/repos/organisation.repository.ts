@@ -1,5 +1,6 @@
 import { Job } from '../../domain/user/Job';
 import { Organisation } from '../../domain/organisation';
+import { StatelessUser } from '../../domain/user/StatelessUser';
 
 export interface OrganisationRepository {
     // While we don't have many organisation,
@@ -15,9 +16,9 @@ export interface OrganisationRepository {
     deleteJob(name: string): void;
 
     // User
-    createUser(organisation: Organisation, userId: string): void;
-    updateUser(organisation: Organisation, userId: string): void;
-    deleteUser(organisation: Organisation, userId: string): void;
+    createUser(userId: string, user: StatelessUser): void;
+    updateUser(userId: string, user: StatelessUser): void;
+    deleteUser(userId: string): void;
 
     // Group
     createGroup(organisation: Organisation, groupId: string): void;

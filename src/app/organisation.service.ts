@@ -57,18 +57,27 @@ export class OrganisationService {
   public async updateUser(user: StatelessUser): Promise<ReturnCodes> {
     await this._updateOrganisation();
     const returnCode = this._organisation.updateUser(user);
+    if (returnCode === ReturnCodes.UPDATED) {
+      this.repository.updateUser(user.id, user);
+    }
     return returnCode;
   }
 
   public async createUser(user: StatelessUser): Promise<string> {
     await this._updateOrganisation();
-    const returnCode = this._organisation.addUser(user);
-    return returnCode;
+    const userId = this._organisation.addUser(user);
+    if (userId) {
+      this.repository.createUser(userId, user);
+    }
+    return userId;
   }
 
   public async deleteUser(id: string): Promise<ReturnCodes> {
     await this._updateOrganisation();
     const returnCode = this._organisation.deleteUser(id);
+    if (returnCode === ReturnCodes.REMOVED) {
+      this.repository.deleteUser(id);
+    }
     return returnCode;
   }
 

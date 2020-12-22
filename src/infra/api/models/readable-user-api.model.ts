@@ -6,6 +6,7 @@ import { Password } from "../../../domain/user/Password";
 import { PhoneNumberApiModel } from "./phone-number-api.model"
 import { JobApiModel } from "./job-api.model";
 import { StatelessUser } from "../../../domain/user/StatelessUser";
+import { ReadableUser } from "../../../domain/user/ReadableUser";
 
 export class ReadableUserApiModel {
 
@@ -28,29 +29,31 @@ export class ReadableUserApiModel {
   ) {
   }
 
-  public static toReadableUserApiModel(user: StatelessUser): ReadableUserApiModel {
+  public static toReadableUserApiModel(user: ReadableUser): ReadableUserApiModel {
 
     const phones: PhoneNumberApiModel[] = [];
-    if (Array.isArray(user.phoneNumbers) && user.phoneNumbers.length > 0) {
-      user.phoneNumbers.forEach(phone => phones.push(PhoneNumberApiModel.toPhoneNumberApiModel(phone)));
+    if (Array.isArray(user.getPhoneNumbers()) && user.getPhoneNumbers().length > 0) {
+      user.getPhoneNumbers().forEach(phone => phones.push(PhoneNumberApiModel.toPhoneNumberApiModel(phone)));
     }
 
+    const identity = user.getIdentity();
+
     return new ReadableUserApiModel(
-      user.id,
-      user.identity.firstName,
-      user.identity.lastName,
-      user.identity.username,
-      user.birthdate.toISOString(),
-      user.identity.email,
-      user.groupsIds,
-      user.profilePictureUrl.toString(),
-      JobApiModel.toJobModel(user.job),
+      user.getId(),
+      identity.firstName,
+      identity.lastName,
+      identity.username,
+      user.getBirthDate().toISOString(),
+      identity.email,
+      user.getGroupIds(),
+      user.getProfilePictureUrl().toString(),
+      JobApiModel.toJobModel(user.getJob()),
       phones,
-      user.sshKey.publicKey,
-      user.expirationDate.toISOString(),
-      user.disableDate.toISOString(),
-      user.updateDate.toISOString(),
-      user.creationDate.toISOString()
+      user.getSshPublicKey(),
+      user.getExpirationDate().toISOString(),
+      user.getDisableDate().toISOString(),
+      user.getUpdateDate().toISOString(),
+      user.getCreationDate().toISOString()
     );
   }
 
