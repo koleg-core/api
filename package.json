@@ -8,13 +8,12 @@
   "description": "Typescript API for koleg",
   "main": "dist/main.js",
   "scripts": {
-    "prestart": "npm run build",
-    "start": "node -r ts-node/register ./src/main.ts",
+    "start": "ts-node -r tsconfig-paths/register ./src/main.ts",
+    "start:prod": "node -r ts-node/register/transpile-only -r tsconfig-paths/register ./dist/main.js",
     "dev": "nodemon src/**/*.ts",
     "lint": "tsc --noEmit && eslint . --ext .ts --fix",
-    "start:watch": "nodemon",
     "build": "tsc",
-    "test": "mocha --color -r ts-node/register tests/**/*.test.ts",
+    "test": "mocha --color -r tsconfig-paths/register -r ts-node/register tests/**/*.test.ts",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
     "codegen": " npx swagger-typescript-api -p openapi.yml -n KolegApi.ts -o ./auto"
   },
@@ -55,6 +54,7 @@
     "slugify": "^1.4.6",
     "swagger-typescript-api": "^3.0.1",
     "swagger-ui-express": "^4.1.5",
+    "tsconfig-paths": "^3.9.0",
     "typedi": "^0.8.0"
   },
   "devDependencies": {
@@ -101,5 +101,10 @@
     ],
     "exec": "npm start",
     "ext": "ts"
+  },
+  "_moduleAliases": {
+    "domain": "./domain",
+    "app": "./app",
+    "infra": "./infra"
   }
 }

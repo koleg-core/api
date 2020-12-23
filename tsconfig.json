@@ -7,14 +7,15 @@
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": true,
+        "rootDir": "./src",
         "outDir": "dist",
-        "baseUrl": "src",
+        "baseUrl": "./src/",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "paths": {
-            "domain/*": ["domain/*"],
-            "infra/*": ["infra/*"],
-            "app/*": ["app/*"],
+            "domain/*": ["./domain/*"],
+            "infra/*": ["./infra/*"],
+            "app/*": ["./app/*"],
             "*": [
                 "node_modules/*"
             ]

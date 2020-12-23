@@ -1,4 +1,3 @@
-import 'app';
 import { App } from 'app/app';
 import { Api } from 'infra/api/api';
 import { OrganisationInSqlRepository } from 'infra/repos/organisation-in-sql.repository';
