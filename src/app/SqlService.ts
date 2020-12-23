@@ -1,10 +1,11 @@
-import {Sequelize} from "sequelize";
+import {Sequelize,QueryTypes} from "sequelize";
 import { JobModel } from "../infra/database/models/JobModel";
 import {Database} from "../infra/database/Database";
 import { UserModel } from "../infra/database/models/UserModel";
 import { JobSerializer } from "../infra/database/serializer/job.serializer";
 import { UserPhone } from "../infra/database/models/UserPhone";
 import { GroupsModel } from "../infra/database/models/GroupsModel";
+import { UserSerializer } from "../infra/database/serializer/user.serializer";
 export class SqlService {
     private orm: Sequelize;
     private database: Database;
@@ -27,6 +28,7 @@ export class SqlService {
 }
 
 const sqlService = new SqlService();
+
 /*const job = new Job("developpeur");
 const jobModel = JobSerializer.serializeJob(job);
 jobModel.id = 1;
@@ -69,12 +71,8 @@ user.id = 1;
 
 /*sqlService.getDatabase().getUser('a70e5a16-5ad1-41be-851f-0fe9a100ddb6')
 .then(response=>{
-    response.getPhones()
-    .then((res:any)=>{
-        for(const entry of res){
-            console.log(entry.value);
-        }
-    })
+    response.getPasswordsTest()
+    .then((res:any)=>console.log(res));
 })
 // sqlService.getDatabase().createUserPhone('a70e5a16-5ad1-41be-851f-0fe9a100ddb6','0689755656','PHONE_HOME');
 /*const job = new JobModel({name:'testCreation'})
@@ -83,11 +81,22 @@ sqlService.getDatabase().createJob(job);*/
 /*const user = UserModel.build({uuid:'a70e5a16-5ad1-41be-851f-0fe9a100ddb6',username:'totoTest'});
 sqlService.getDatabase().updateUser(user);*/
 
-const userPhone = new UserPhone({value:'0556545759'});
+/*const userPhone = new UserPhone({value:'0556545759'});
 userPhone.save()
 .then((response:any)=>{
     response.setUser(1)
     .then((res:any)=>{
         res.setType(1);
     })
+})*/
+
+sqlService.getDatabase().getUser('a70e5a16-5ad1-41be-851f-0fe9a100ddb6')
+.then(response=>{
+    response.getJob()
+    .then((res:any)=>console.log(res));
 })
+/*sqlService.getDatabase().getUser('a70e5a16-5ad1-41be-851f-0fe9a100ddb6')
+.then(response=>{
+    const user = UserSerializer.prototype.deserialize(response);
+    console.log(user);
+})*/

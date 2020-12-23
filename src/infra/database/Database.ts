@@ -261,7 +261,7 @@ export class Database {
     }
 
     getUsers(): Promise<UserModel[]>{
-        return UserModel.findAll().then((response : any) => response.map((jobJson : any)=> jobJson.dataValues));
+        return UserModel.findAll();
     }
 
     getUser(uuid: string): Promise<UserModel>{

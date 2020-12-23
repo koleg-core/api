@@ -44,7 +44,9 @@ import { UserPwdHistory } from "./UserPwdHistory";
     groups?: GroupsModel[] | GroupsModel['id'][];
   }
 
-  type UserCreationAttributes = Optional<UserAttributes, "id">
+  interface UserCreationAttributes extends Optional<UserAttributes, "id"> {
+
+  }
 
 export class UserModel extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes{
     public id!: number;
@@ -69,4 +71,16 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
     getPasswords: HasManyGetAssociationsMixin<UserPwdHistory>;
     getGroups: BelongsToManyGetAssociationsMixin<GroupsModel>;
     addGroup: BelongsToManyAddAssociationsMixin<GroupsModel, GroupsModel['id']>;
+
+    getPasswordsTest(): Promise<any>{
+      return this.getPhones()
+      .then((response:any)=>{
+        for (const result of response) {
+          /*for (const tag of result.tags) {
+              tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+          }*/
+          console.log(result.dataValues.value);
+      }
+      })
+    }
   }
