@@ -12,16 +12,20 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "paths": {
+            "domain/*": ["domain/*"],
+            "infra/*": ["infra/*"],
+            "app/*": ["app/*"],
             "*": [
                 "node_modules/*"
             ]
         }
     },
     "include": [
-        "src/**/*.ts", "src/infra/BDD.js"
-, "src/infra/api/controllers/auth.controller.ts.old"    ],
+        "src/**/*.ts"
+    ],
     "exclude": [
         "node_modules",
+        "dist",
         ".vscode"
     ]
 }

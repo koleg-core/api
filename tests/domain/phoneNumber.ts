@@ -1,4 +1,4 @@
-import { PhoneNumber } from '../../src/domain/user/PhoneNumber';
+import { PhoneNumber } from 'domain/user/PhoneNumber';
 import { PhoneType } from '../../src/domain/enums/phone-type.enum';
 
 export const genPhoneNumber = (): PhoneNumber => {

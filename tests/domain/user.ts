@@ -1,5 +1,5 @@
-import { Organisation } from '../../src/domain/organisation';
-import { StatelessUser } from '../../src/domain/user/StatelessUser';
+import { Organisation } from 'domain/organisation';
+import { StatelessUser } from 'domain/user/StatelessUser';
 import { genStatelessUser } from './statelessUser';
 
 export const genUserId = (organisation: Organisation): string => {

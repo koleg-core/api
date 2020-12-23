@@ -4,15 +4,14 @@
   "engines": {
     "node": "12.19.0"
   },
-  "  engineStrict": true,
+  "engineStrict": true,
   "description": "Typescript API for koleg",
-  "main": "dist/index.js",
+  "main": "dist/main.js",
   "scripts": {
-    "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "prestart": "npm run build",
     "start": "node -r ts-node/register ./src/main.ts",
     "dev": "nodemon src/**/*.ts",
-    "lint": "eslint . --ext .ts",
+    "lint": "tsc --noEmit && eslint . --ext .ts --fix",
     "start:watch": "nodemon",
     "build": "tsc",
     "test": "mocha --color -r ts-node/register tests/**/*.test.ts",
@@ -88,7 +87,6 @@
     "prettier": "2.2.1",
     "swagger-typescript-codegen": "^3.2.1",
     "ts-node": "^9.0.0",
-    "tslint": "^6.1.3",
     "typescript": "^4.0.3"
   },
   "nodemonConfig": {

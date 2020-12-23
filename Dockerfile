@@ -1,12 +1,15 @@
 ARG NODE_VERSION=12.19.0
 FROM node:${NODE_VERSION} as build
 
-COPY * /work/
+ENV NODE_ENV=production \
+    NODE_VERSION=${NODE_VERSION}
+
+COPY . /work/
 
 WORKDIR /work
 
-RUN yarn \
-    && yarn build
+RUN npm install --also=dev \
+    && npm run build
 
 FROM node:${NODE_VERSION} as main
 

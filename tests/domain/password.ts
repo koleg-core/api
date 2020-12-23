@@ -1,4 +1,4 @@
-import { Password } from '../../src/domain/user/Password';
+import { Password } from 'domain/user/Password';
 
 import sha256 from 'crypto-js/sha256';
 
