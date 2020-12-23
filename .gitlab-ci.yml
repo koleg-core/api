@@ -70,26 +70,22 @@ stages:
 
 ☸️production_deploy:
   stage: deploy
-  image:
-    name: bitnami/kubectl:latest
-    entrypoint: ["/bin/bash", "-c"]
+  image: google/cloud-sdk
   script: |
-    - >
-      /opt/bitnami/kubectl/bin/kubectl
-      set image deployment.v1.apps/$IMAGE_NAME
-      $IMAGE_NAME=$SCW_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA
-      --namespace production
-      --kubeconfig $SCW_KUBECONFIG
+    kubectl \
+      set image deployment.v1.apps/$IMAGE_NAME \
+      ${IMAGE_NAME}=${SCW_REGISTRY}/${IMAGE_NAME}:${CI_COMMIT_SHA} \
+      --namespace "${CI_BRANCH}" \
+      --kubeconfig "$SCW_KUBECONFIG" \
       --record
-    - >
-      /opt/bitnami/kubectl/bin/kubectl
-      rollout status deployment.v1.apps/$IMAGE_NAME
-      --timeout=5m
-      --namespace production
-      --kubeconfig $SCW_KUBECONFIG
-      || ( kubectl
-      --namespace production
-      --kubeconfig $SCW_KUBECONFIG
-      rollout undo deployment.v1.apps/$IMAGE_NAME
-      && echo "❌ deployment failed, return to previous deployment"
+    kubectl \
+      rollout status deployment.v1.apps/$IMAGE_NAME \
+      --timeout=5m \
+      --namespace "${CI_BRANCH}" \
+      --kubeconfig $SCW_KUBECONFIG \
+    || ( kubectl \
+      --namespace "${CI_BRANCH}" \
+      --kubeconfig $SCW_KUBECONFIG \
+      rollout undo deployment.v1.apps/$IMAGE_NAME \
+      && echo "❌ deployment failed, return to previous deployment" \
       && exit 1 )
