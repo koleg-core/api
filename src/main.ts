@@ -1,8 +1,8 @@
-import './app/app';
-import { App } from './app/app';
-import { Api } from './infra/api/api';
-import { OrganisationInSqlRepository } from './infra/repos/organisation-in-sql.repository';
-import { OrganisationService } from './app/organisation.service';
+import 'app';
+import { App } from 'app/app';
+import { Api } from 'infra/api/api';
+import { OrganisationInSqlRepository } from 'infra/repos/organisation-in-sql.repository';
+import { OrganisationService } from 'app/organisation.service';
 
 const databaseURI = 'postgres://postgres:B2fpKNTvon@db-develop-postgresql:5432/postgres';
 

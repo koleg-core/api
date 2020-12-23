@@ -1,4 +1,4 @@
-import { SshKey } from 'domain/user/SshKey';
+import { SshKey } from '../../src/domain/user/SshKey';
 
 export const genSshKey = (): SshKey => {
     const privateKey = `

@@ -1,10 +1,10 @@
-import { Organisation } from 'domain/organisation';
-import { UserIdentity } from 'domain/user/UserIdentity';
-import { Password } from 'domain/user/Password';
-import { StatelessUser } from 'domain/user/StatelessUser';
-import { SshKey } from 'domain/user/SshKey';
-import { Job } from 'domain/user/Job';
-import { PhoneNumber } from 'domain/user/PhoneNumber';
+import { Organisation } from '../../src/domain/organisation';
+import { UserIdentity } from '../../src/domain/user/UserIdentity';
+import { Password } from '../../src/domain/user/Password';
+import { StatelessUser } from '../../src/domain/user/StatelessUser';
+import { SshKey } from '../../src/domain/user/SshKey';
+import { Job } from '../../src/domain/user/Job';
+import { PhoneNumber } from '../../src/domain/user/PhoneNumber';
 // import { Group } from '../../src/domain/group/Group';
 
 import { genStatelessUser } from './statelessUser';
