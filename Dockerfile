@@ -13,11 +13,22 @@ RUN npm install --also=dev \
 
 FROM node:${NODE_VERSION} as main
 
-RUN groupadd -r koleg \
-    && useradd --no-log-init -r -g koleg koleg
+WORKDIR /app
 
-COPY --from=build --chown=koleg:koleg /work/dist /app
+COPY --from=build \
+    /work/package.json /work/package-lock.json \
+    /app/
+
+COPY --from=build /work/dist /app/dist/
+
+RUN groupadd -r koleg \
+    && useradd --no-log-init -r -g koleg koleg \
+    && chown -R koleg:koleg /app \
+    && npm i --prod
+
 
 USER koleg:koleg
 
-ENTRYPOINT ["node", "/app/main.js"]
+EXPOSE 8080
+
+ENTRYPOINT ["npm", "run", "start:prod"]
