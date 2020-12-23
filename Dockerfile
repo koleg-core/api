@@ -13,10 +13,11 @@ RUN npm install --also=dev \
 
 FROM node:${NODE_VERSION} as main
 
-USER koleg:koleg
+RUN groupadd -r koleg \
+    && useradd --no-log-init -r -g koleg koleg
 
 COPY --from=build --chown=koleg:koleg /work/dist /app
 
-RUN chmod -R 440 /app
+USER koleg:koleg
 
 ENTRYPOINT ["node", "/app/main.js"]
