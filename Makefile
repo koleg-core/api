@@ -17,20 +17,21 @@ init: ## Clone all git submodules and npm install
 
 build: ## Local build with npm/typescript
 	@echo "+ $@"
-	@npm i
+	@npm i --also=dev
 	@npm run build
 
 test: ## Test all
 	@echo "+ $@"
-	@npm lint
-	@npm test
+	@npm run lint
+	@npm run coverage
 	@echo "Test Dockerfile"
 	@docker run --rm -i hadolint/hadolint < Dockerfile
+	@make docker-build
 
 start: ## Start with node
 	@npm run start
 
-dev: ## Start dev 
+dev: ## Start dev
 	@echo "+ $@"
 	@npm run dev
 
@@ -44,4 +45,17 @@ shell: ## Cloud shell with okteto
 
 docker-build: ## Build container docker
 	@echo "+ $@"
-	@echo TODO
+	@docker build . -t koleg-api
+
+docker-run: ## Run container locally
+	@echo "+ $@"
+	@docker run -p 8080:8080 koleg-api
+
+deploy: ## Apply kubernetes configs on all production namespace
+	@echo "+ $@"
+	@kubectl apply \
+		--namespace develop \
+		-f ./kube \
+	&& kubectl apply \
+		--namespace master \
+		-f ./kube
