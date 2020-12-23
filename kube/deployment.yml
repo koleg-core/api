@@ -1,0 +1,25 @@
+---
+# Documentation:
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1  # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: koleg-api
+spec:
+  selector:
+    matchLabels:
+      app: koleg-api
+  replicas: 1  # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: koleg-api
+    spec:
+      containers:
+        - name: koleg-api
+          image: rg.fr-par.scw.cloud/koleg/koleg-api:latest
+          # Don't activate if you are not in dev mode
+          # https://medium.com/@mccode/the-misunderstood-docker-tag-latest-af3babfd6375
+          imagePullPolicy: Always
+      imagePullSecrets:
+        - name: registry-koleg
