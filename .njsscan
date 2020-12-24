@@ -1,0 +1,22 @@
+---
+# vi:syntax=yaml
+
+- nodejs-extensions:
+  - .js
+
+  template-extensions:
+  - .new
+  - .hbs
+  - ''
+
+  ignore-filenames:
+  - skip.js
+  - right-action.enum.js
+
+  ignore-paths:
+  - __MACOSX
+  - node_modules
+
+  # ignore-rules:
+  # - regex_injection_dos
+  # - pug_jade_template
