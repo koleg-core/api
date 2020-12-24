@@ -4,11 +4,14 @@ kind: Service
 metadata:
   name: koleg-api
   labels:
-    run: koleg-api
+    app: koleg-api
 spec:
+  selector:
+    app: koleg-api
+  type: ClusterIP
   ports:
     - name: http
       port: 8080
+      targetPort: 8080
       protocol: TCP
-  selector:
-    run: koleg-api
+
