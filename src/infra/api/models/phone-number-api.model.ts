@@ -1,5 +1,5 @@
-import { PhoneNumber } from "../../../domain/user/PhoneNumber";
-import { PhoneType } from "../../../domain/enums/phone-type.enum";
+import { PhoneNumber } from "domain/user/PhoneNumber";
+import { PhoneType } from "domain/enums/phone-type.enum";
 
 export class PhoneNumberApiModel {
     constructor(

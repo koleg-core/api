@@ -3,7 +3,7 @@ import "reflect-metadata"; // this shim is required
 import { getMetadataArgsStorage, useContainer, createExpressServer, RoutingControllersOptions } from "routing-controllers";
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 import * as swaggerUiExpress from 'swagger-ui-express'
-import { validationMetadatasToSchemas } from 'class-validator-jsonschema'
+// import { validationMetadatasToSchemas } from 'class-validator-jsonschema'
 import { OpenAPIObject } from 'openapi3-ts'
 import { Container } from 'typedi';
 import { Application } from "express";
@@ -38,6 +38,7 @@ export class Api {
     useContainer(Container);
 
     this._routingControllersOptions = {
+      classTransformer: true,
       controllers: [
         UsersController,
         JobsController
@@ -59,10 +60,11 @@ export class Api {
   ): void {
     this._port = port;
 
+    // TODO: schema is not working, fix it
     // Parse class-validator classes into JSON Schema:
-    const schemas = validationMetadatasToSchemas({
-      refPointerPrefix: '#/components/schemas/',
-    })
+    // const schemas = validationMetadatasToSchemas();
+    // validationMetadatasToSchemas
+    // console.log(schemas);
 
     // Parse routing-controllers classes into OpenAPI spec:
     const storage = getMetadataArgsStorage()
@@ -71,7 +73,7 @@ export class Api {
         this._routingControllersOptions,
     { // TODO: externalize this into template file
       components: {
-        schemas,
+        // schemas,
         securitySchemes: {
           basicAuth: {
             scheme: 'basic',

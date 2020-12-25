@@ -1,75 +1,82 @@
-import { SshKey } from "../../../domain/user/SshKey";
-import { UserIdentity } from "../../../domain/user/UserIdentity";
-import { PhoneNumber } from "../../../domain/user/PhoneNumber";
-import { PhoneNumberApiModel } from "./phone-number-api.model"
-import { JobApiModel } from "./job-api.model";
-import { StatelessUser } from "../../../domain/user/StatelessUser";
+import { SshKey } from "domain/user/SshKey";
+import { UserIdentity } from "domain/user/UserIdentity";
+import { Job } from "domain/user/Job";
+import { Password } from "domain/user/Password";
+import { PhoneNumber } from "domain/user/PhoneNumber";
+import { StatelessUser } from "domain/user/StatelessUser";
 
 export class WritableUserApiModel {
+  constructor(
+    public firstName: string,
+    public lastName: string,
+    public birthdate: string,
+    public email: string,
+    public password: Password,
+    public groupIds: string[],
+    public phoneNumbers: PhoneNumber[], // TODO multiple phones numbers
+    public username: string = null,
+    public profilePictureUrl: URL = null,
+    public job: Job = null,
+    public sshKey: SshKey = null,
+    public expirationDate: string = null,
+    public disableDate: string = null
+  ) {}
 
-    constructor(
-        public readonly firstName: string,
-        public readonly lastName: string,
-        public readonly username: string,
-        public readonly birthdate: string,
-        public readonly email: string,
-        public readonly groupIds: string[],
-        public readonly profilePictureUrl: string,
-        public readonly job: JobApiModel,
-        public readonly phones: PhoneNumberApiModel[], // TODO multiple phones numbers
-        public readonly sshPublicKey: string = null,
-        public readonly sshPrivateKey: string = null,
-        public readonly expirationDate: string = null,
-        public readonly disableDate: string = null
-    ) {
+  public static toWritableUserApiModel(user: StatelessUser): WritableUserApiModel {
+    if(!user) {
+      throw new Error("Invalid argument parameter user is null or undefined");
     }
+    const expirationDate: string =
+      user.expirationDate
+      ? null
+      : user.expirationDate.toISOString();
+    const disableDate: string =
+      user.disableDate
+      ? null
+      : user.disableDate.toISOString();
 
-    public static toWritableUserApiModel(user: StatelessUser): WritableUserApiModel {
-
-        const phones: PhoneNumberApiModel[] = [];
-        if (Array.isArray(user.phoneNumbers) && user.phoneNumbers.length > 0) {
-            user.phoneNumbers.forEach(phone => phones.push(PhoneNumberApiModel.toPhoneNumberApiModel(phone)));
-        }
-
-        return new WritableUserApiModel(
-            user.identity.firstName,
-            user.identity.lastName,
-            user.identity.username,
-            user.birthdate.toISOString(),
-            user.identity.email,
-            user.groupsIds,
-            user.profilePictureUrl.toString(),
-            JobApiModel.toJobModel(user.job),
-            phones,
-            user.sshKey.publicKey,
-            user.sshKey.privateKey,
-            user.expirationDate.toISOString(),
-            user.disableDate.toISOString()
-        );
-    }
+    return new WritableUserApiModel(
+      user.identity.firstName,
+      user.identity.lastName,
+      user.birthdate.toISOString(),
+      user.identity.email,
+      user.password,
+      user.groupsIds,
+      user.phoneNumbers,
+      user.identity.username,
+      user.profilePictureUrl,
+      user.job,
+      user.sshKey,
+      expirationDate,
+      disableDate
+    );
+  }
 
     public toStatelessUser(id: string = null): StatelessUser {
-        if (Array.isArray(this.phones) && this.phones.length > 0) {
-            this.phones.forEach(phone => phones.push(phone.toPhoneNumber()))
-        }
+      const expirationDate: Date =
+      this.expirationDate
+      ? null
+      : new Date(this.expirationDate);
+    const disableDate: Date =
+      this.disableDate
+      ? null
+      : new Date(this.disableDate);
 
-        const phones: PhoneNumber[] = [];
-
-        return new StatelessUser(
-            id,
-            null,
-            null,
-            new UserIdentity(this.firstName, this.lastName, this.username, this.email),
-            null,
-            new Date(this.birthdate),
-            null,
-            phones,
-            this.groupIds,
-            this.job.toJob(),
-            new Date(this.disableDate),
-            new URL(this.profilePictureUrl),
-            new SshKey(this.sshPrivateKey, this.sshPublicKey),
-            new Date(this.expirationDate)
-        );
+      return new StatelessUser(
+        id,
+        null,
+        null,
+        new UserIdentity(this.firstName, this.lastName, this.username, this.email),
+        this.password,
+        new Date(this.birthdate),
+        null,
+        this.phoneNumbers,
+        this.groupIds,
+        this.job,
+        disableDate,
+        this.profilePictureUrl,
+        this.sshKey,
+        expirationDate
+      );
     }
 }

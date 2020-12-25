@@ -61,12 +61,12 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     this._database.deleteJob(name);
   }
 
-  createUser(userId: string, user: StatelessUser): void {
+  createUser(user: StatelessUser): void {
     // this._database.createUser(userId, user);
     throw new Error("Method not implemented.");
   }
 
-  updateUser(userId: string, user: StatelessUser): void {
+  updateUser(user: StatelessUser): void {
     // this._database.updateUser(userId, user);
     throw new Error("Method not implemented.");
   }

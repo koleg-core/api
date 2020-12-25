@@ -12,11 +12,11 @@ import {
 
 import { hash } from 'bcrypt';
 
-import { ReturnCodes } from '../../../domain/enums/return-codes.enum';
-import {Password} from '../../../domain/user/Password';
-import {StatelessUser} from '../../../domain/user/StatelessUser';
-import { ApiError } from '../errors/api-error'
+import { ReturnCodes } from 'domain/enums/return-codes.enum';
+import {Password} from 'domain/user/Password';
+import {StatelessUser} from 'domain/user/StatelessUser';
 
+import { ApiError } from '../errors/api-error'
 import { WritableUserApiModel } from "../models/writable-user-api.model";
 import { ResponseModel } from "../models/response.model";
 import { HttpStatusCode } from "../models/http-status-code.enum";
@@ -36,7 +36,6 @@ export class UsersController {
   @Get("/users")
   @HttpCode(HttpStatusCode.OK)
   getAll(): Promise<ResponseModel | ApiError> {
-
     return this._organisationService.getUsers()
       .then(users => {
         const usersResponse: ReadableUserApiModel[] = [];
@@ -52,8 +51,10 @@ export class UsersController {
 
   @Post('/users')
   @HttpCode(HttpStatusCode.CREATED)
-  post(@Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
-    return this._organisationService.createUser(user.toStatelessUser())
+  async post(@Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
+    console.log(user);
+    const statelessUser: StatelessUser = user.toStatelessUser();
+    return this._organisationService.createUser(statelessUser)
       .then(id => {
         if (id) {
           return new ResponseModel(HttpStatusCode.OK, `User created with id: ${id}.`);
@@ -67,7 +68,7 @@ export class UsersController {
   }
 
   @Get('/users/:id')
-  get(@Param('id') id: string): Promise<ResponseModel | ApiError> {
+  async get(@Param('id') id: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUserById(id)
       .then(user => {
         if (!user) {

@@ -13,37 +13,38 @@ class OrganisationInMemoryRepository implements OrganisationRepository {
         this._organisation = new Organisation("demo organisation", "this is a memory organisation");
     }
     save(organisation: Organisation): void {
-        throw new Error('Method not implemented.');
+      this._organisation = organisation;
     }
     read(): Organisation {
-        throw new Error('Method not implemented.');
+      return this._organisation;
     }
-    readAsync(): Promise<Organisation> {
-        throw new Error('Method not implemented.');
+
+    async readAsync(): Promise<Organisation> {
+      return this._organisation;
     }
     createJob(job: Job): void {
-        throw new Error('Method not implemented.');
+      console.log("job added");
     }
     deleteJob(name: string): void {
-        throw new Error('Method not implemented.');
+      console.log("job deleted");
     }
-    createUser(userId: string, user: StatelessUser): void {
-        throw new Error('Method not implemented.');
+    createUser(user: StatelessUser): void {
+      console.log("user created");
     }
-    updateUser(userId: string, user: StatelessUser): void {
-        throw new Error('Method not implemented.');
+    updateUser(user: StatelessUser): void {
+      console.log("user updated");
     }
     deleteUser(userId: string): void {
-        throw new Error('Method not implemented.');
+      console.log("user deleted");
     }
     createGroup(organisation: Organisation, groupId: string): void {
-        throw new Error('Method not implemented.');
+      console.log("group added");
     }
     updateGroup(organisation: Organisation, groupId: string): void {
-        throw new Error('Method not implemented.');
+      console.log("group updated");
     }
     deleteGroup(organisation: Organisation, groupId: string): void {
-        throw new Error('Method not implemented.');
+      console.log("group deleted");
     }
 }
 

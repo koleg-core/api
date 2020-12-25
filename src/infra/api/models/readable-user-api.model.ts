@@ -1,12 +1,12 @@
-import { Job } from "../../../domain/user/Job";
-import { SshKey } from "../../../domain/user/SshKey";
-import { UserIdentity } from "../../../domain/user/UserIdentity";
-import { PhoneNumber } from "../../../domain/user/PhoneNumber";
-import { Password } from "../../../domain/user/Password";
+import { Job } from "domain/user/Job";
+import { SshKey } from "domain/user/SshKey";
+import { UserIdentity } from "domain/user/UserIdentity";
+import { PhoneNumber } from "domain/user/PhoneNumber";
+import { Password } from "domain/user/Password";
 import { PhoneNumberApiModel } from "./phone-number-api.model"
 import { JobApiModel } from "./job-api.model";
-import { StatelessUser } from "../../../domain/user/StatelessUser";
-import { ReadableUser } from "../../../domain/user/ReadableUser";
+import { StatelessUser } from "domain/user/StatelessUser";
+import { ReadableUser } from "domain/user/ReadableUser";
 
 export class ReadableUserApiModel {
 
@@ -19,8 +19,8 @@ export class ReadableUserApiModel {
     public readonly email: string,
     public readonly groupIds: string[],
     public readonly profilePictureUrl: string,
-    public readonly job: JobApiModel,
-    public readonly phones: PhoneNumberApiModel[], // TODO multiple phones numbers
+    public readonly job: Job,
+    public readonly phones: PhoneNumber[], // TODO multiple phones numbers
     public readonly sshPublicKey: string,
     public readonly expirationDate: string,
     public readonly disableDate: string,
@@ -31,12 +31,16 @@ export class ReadableUserApiModel {
 
   public static toReadableUserApiModel(user: ReadableUser): ReadableUserApiModel {
 
-    const phones: PhoneNumberApiModel[] = [];
-    if (Array.isArray(user.getPhoneNumbers()) && user.getPhoneNumbers().length > 0) {
-      user.getPhoneNumbers().forEach(phone => phones.push(PhoneNumberApiModel.toPhoneNumberApiModel(phone)));
-    }
-
     const identity = user.getIdentity();
+
+    const expirationDate: string =
+      user.getExpirationDate()
+      ? null
+      : user.getExpirationDate().toISOString();
+    const disableDate: string =
+      user.getDisableDate()
+      ? null
+      : user.getDisableDate().toISOString();
 
     return new ReadableUserApiModel(
       user.getId(),
@@ -47,21 +51,26 @@ export class ReadableUserApiModel {
       identity.email,
       user.getGroupIds(),
       user.getProfilePictureUrl().toString(),
-      JobApiModel.toJobModel(user.getJob()),
-      phones,
-      user.getSshPublicKey(),
-      user.getExpirationDate().toISOString(),
-      user.getDisableDate().toISOString(),
+      user.getJob(),
+      user.getPhoneNumbers(),
+      user.getSshPublicKey() || null,
+      expirationDate,
+      disableDate,
       user.getUpdateDate().toISOString(),
       user.getCreationDate().toISOString()
     );
   }
 
   public toStatelessUser(): StatelessUser {
-    const phones: PhoneNumber[] = [];
-    if (Array.isArray(this.phones) && this.phones.length > 0) {
-      this.phones.forEach(phone => phones.push(phone.toPhoneNumber()))
-    }
+    // If we don't check optional dates, we set date add 1970
+    const expirationDate: Date =
+      this.expirationDate
+      ? null
+      : new Date(this.expirationDate);
+    const disableDate: Date =
+      this.disableDate
+      ? null
+      : new Date(this.disableDate);
 
     return new StatelessUser(
       this.id,
@@ -71,13 +80,13 @@ export class ReadableUserApiModel {
       null,
       new Date(this.birthdate),
       null,
-      phones,
+      this.phones,
       this.groupIds,
-      this.job.toJob(),
-      new Date(this.disableDate),
+      this.job,
+      disableDate,
       new URL(this.profilePictureUrl),
       new SshKey(null, this.sshPublicKey),
-      new Date(this.expirationDate)
+      expirationDate
     );
   }
 }
