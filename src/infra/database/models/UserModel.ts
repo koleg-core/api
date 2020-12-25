@@ -18,7 +18,7 @@ import {
   } from "sequelize";
 import { GroupsModel } from "./GroupsModel";
 import { JobModel } from "./JobModel";
-import { PhoneType } from "./PhoneType";
+import { PhoneTypeModel } from "./PhoneTypeModel";
 import { UserPhone } from "./UserPhone";
 import { UserPwdHistory } from "./UserPwdHistory";
 
@@ -33,11 +33,12 @@ import { UserPwdHistory } from "./UserPwdHistory";
     birthdate: Date;
     email: string;
     imgUrl: string;
-    sshKey: Blob;
+    sshPublicKey: string;
+    sshPrivateKey: string;
     creationDate: Date;
     updateDate: Date;
     expirationDate: Date;
-
+    disableDate: Date;
     job?: JobModel | JobModel['id'];
     phones?: UserPhone[] | UserPhone['value'][];
     passwords?: UserPwdHistory[] | UserPwdHistory['id'][];
@@ -59,14 +60,16 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
     public birthdate!: Date;
     public email!: string;
     public imgUrl! : string;
-    public sshKey!: Blob;
+    public sshPublicKey!: string;
+    public sshPrivateKey!: string;
     public creationDate!: Date;
     public updateDate!: Date;
     public expirationDate!: Date;
-
+    public disableDate!: Date;
+    
     getJob: BelongsToGetAssociationMixin<JobModel>;
     setJob: BelongsToSetAssociationMixin<JobModel, JobModel['id']>;
-    getPhones: BelongsToManyGetAssociationsMixin<PhoneType>;
+    getPhones: HasManyGetAssociationsMixin<UserPhone>;
     setPhones: HasManySetAssociationsMixin<UserPhone,UserPhone['value']>;
     getPasswords: HasManyGetAssociationsMixin<UserPwdHistory>;
     getGroups: BelongsToManyGetAssociationsMixin<GroupsModel>;

@@ -2,7 +2,7 @@
 import { Sequelize, DataTypes } from 'sequelize';
 import { GroupsModel } from './models/GroupsModel';
 import { JobModel } from "./models/JobModel";
-import {PhoneType} from "./models/PhoneType";
+import {PhoneTypeModel} from "./models/PhoneTypeModel";
 import {UserModel} from "./models/UserModel";
 import { UserPhone } from './models/UserPhone';
 import { UserPwdHistory } from './models/UserPwdHistory';
@@ -29,7 +29,7 @@ export class Database {
                 timestamps: false,
             });
 
-        PhoneType.init(
+            PhoneTypeModel.init(
             {
                 id: {
                     type: DataTypes.INTEGER,
@@ -84,9 +84,13 @@ export class Database {
                     type: DataTypes.STRING,
                     field: 'img_url'
                 },
-                sshKey:{
-                    type: DataTypes.BLOB,
-                    field: 'ssh_key'
+                sshPublicKey:{
+                    type: DataTypes.STRING,
+                    field: 'ssh_publickey'
+                },
+                sshPrivateKey:{
+                    type: DataTypes.STRING,
+                    field: 'ssh_privatekey'
                 },
                 creationDate:{
                     type: DataTypes.DATE,
@@ -99,6 +103,10 @@ export class Database {
                 expirationDate:{
                     type: DataTypes.DATE,
                     field: 'expiration_date'
+                },
+                disableDate:{
+                    type: DataTypes.DATE,
+                    field: 'disable_date'
                 }
             },
             {
@@ -153,6 +161,9 @@ export class Database {
                     primaryKey: true,
                     autoIncrement: true
                 },
+                uuid:{
+                    type: DataTypes.STRING
+                },
                 name: {
                     type: DataTypes.STRING
                     // allowNull defaults to true
@@ -179,8 +190,8 @@ export class Database {
 
         UserModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_user'});
         UserPhone.belongsTo(UserModel,{as:'user',foreignKey:'id_user'});
-        PhoneType.hasMany(UserPhone,{as:'phones',foreignKey:'id_phonetype'});
-        UserPhone.belongsTo(PhoneType,{as:'type',foreignKey:'id_phonetype'});
+        PhoneTypeModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_phonetype'});
+        UserPhone.belongsTo(PhoneTypeModel,{as:'type',foreignKey:'id_phonetype'});
 
         /*UserModel.belongsToMany(PhoneType,{
             through: 'user_phones',
@@ -291,9 +302,9 @@ export class Database {
 
     updateUserPhone(uuid:string,)*/
 
-  getPhoneType(name:string):Promise<PhoneType>{
-    return PhoneType.findOne({ where: { name } });
-  }
+    getPhoneType(name:string):Promise<PhoneTypeModel>{
+        return PhoneTypeModel.findOne({ where: { name } });
+    }
 
   getJobUser(user: UserModel): Promise<JobModel>{
     return user.getJob();
@@ -307,13 +318,13 @@ export class Database {
         userPhone.save();
     }*/
 
-  createPhoneType(phoneType: PhoneType){
-    phoneType.save();
-  }
+    createPhoneType(phoneType: PhoneTypeModel){
+        phoneType.save();
+    }
 
-  getPhoneTypes(): Promise<PhoneType[]>{
-    return PhoneType.findAll().then((response : any) => response.map((phoneTypeJson : any)=> phoneTypeJson.dataValues));
-  }
+    getPhoneTypes(): Promise<PhoneTypeModel[]>{
+        return PhoneTypeModel.findAll().then((response : any) => response.map((phoneTypeJson : any)=> phoneTypeJson.dataValues));
+    }
 
   getUserPhones(): Promise<UserPhone[]>{
     return UserPhone.findAll().then((response : any) => response.map((userPhoneJson : any)=> userPhoneJson.dataValues));

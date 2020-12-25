@@ -6,6 +6,7 @@ import { JobSerializer } from "../infra/database/serializer/job.serializer";
 import { UserPhone } from "../infra/database/models/UserPhone";
 import { GroupsModel } from "../infra/database/models/GroupsModel";
 import { UserSerializer } from "../infra/database/serializer/user.serializer";
+import { Password } from "domain/user/Password";
 export class SqlService {
     private orm: Sequelize;
     private database: Database;
@@ -90,13 +91,35 @@ userPhone.save()
     })
 })*/
 
-sqlService.getDatabase().getUser('a70e5a16-5ad1-41be-851f-0fe9a100ddb6')
-.then(response=>{
-    response.getJob()
-    .then((res:any)=>console.log(res));
-})
 /*sqlService.getDatabase().getUser('a70e5a16-5ad1-41be-851f-0fe9a100ddb6')
 .then(response=>{
-    const user = UserSerializer.prototype.deserialize(response);
-    console.log(user);
+    response.getGroups()
+    .then()
+})ùù*/
+sqlService.getDatabase().getUser('a70e5a16-5ad1-41be-851f-0fe9a100ddb6')
+.then(response=>{
+    UserSerializer.prototype.deserialize(response)
+    .then(res => {
+        //console.log(res);
+        console.log(UserSerializer.prototype.serialize(res));
+    })
+    
+})
+
+/*sqlService.getDatabase().getUser('a70e5a16-5ad1-41be-851f-0fe9a100ddb6')
+.then(response=>{
+    console.log(response);
+    
+})
+
+/*GroupsModel.findOne({ where: { id:2 } })
+.then((response: any) => {
+    console.log(response);
+    response.getParentGroup()
+    .then((res: any) => {
+        console.log(res);
+    })
 })*/
+
+
+

@@ -17,14 +17,14 @@ import {
   BelongsToManyCreateAssociationMixin
 } from "sequelize";
 
-  interface PhoneTypeAttributes{
+  interface PhoneTypeModelAttributes{
     id: number;
     name: string;
   }
 
-  type PhoneTypeCreationAttributes = Optional<PhoneTypeAttributes, "id">
+  type PhoneTypeModelCreationAttributes = Optional<PhoneTypeModelAttributes, "id">
 
-export class PhoneType extends Model<PhoneTypeAttributes, PhoneTypeCreationAttributes> implements PhoneTypeAttributes{
+  export class PhoneTypeModel extends Model<PhoneTypeModelAttributes, PhoneTypeModelCreationAttributes> implements PhoneTypeModelAttributes{
     id!: number;
     name!: string;
 }

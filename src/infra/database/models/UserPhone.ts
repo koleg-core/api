@@ -1,20 +1,20 @@
 import {
-  Sequelize,
-  Model,
-  ModelDefined,
-  DataTypes,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyHasAssociationMixin,
-  Association,
-  HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin,
-  Optional,
-  Deferrable,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin
-} from "sequelize";
-import { PhoneType } from "./PhoneType";
+    Sequelize,
+    Model,
+    ModelDefined,
+    DataTypes,
+    HasManyGetAssociationsMixin,
+    HasManyAddAssociationMixin,
+    HasManyHasAssociationMixin,
+    Association,
+    HasManyCountAssociationsMixin,
+    HasManyCreateAssociationMixin,
+    Optional,
+    Deferrable,
+    BelongsToGetAssociationMixin,
+    BelongsToSetAssociationMixin
+  } from "sequelize";
+import { PhoneTypeModel } from "./PhoneTypeModel";
 import { UserModel } from "./UserModel";
 
 export interface UserPhoneAttributes{
@@ -22,7 +22,7 @@ export interface UserPhoneAttributes{
     /*idUser: number;
     idPhoneType: number;*/
     user?: UserModel|UserModel['id'];
-    type?: PhoneType|PhoneType['id'];
+    type?: PhoneTypeModel|PhoneTypeModel['id'];
   }
 
 export class UserPhone extends Model<UserPhoneAttributes> implements UserPhoneAttributes{
@@ -30,5 +30,6 @@ export class UserPhone extends Model<UserPhoneAttributes> implements UserPhoneAt
     /*public idUser!:number;
     public idPhoneType!:number;*/
     setUser: BelongsToSetAssociationMixin<UserModel, UserModel['id']>;
-    setType?: BelongsToSetAssociationMixin<PhoneType, PhoneType['id']>;
+    setType?: BelongsToSetAssociationMixin<PhoneTypeModel, PhoneTypeModel['id']>;
+    getType?: BelongsToGetAssociationMixin<PhoneTypeModel>;
   }
