@@ -1,5 +1,4 @@
 import { v4 as uuid } from 'uuid';
-import { deepCopy } from 'deep-copy-ts';
 
 import { Job } from './Job';
 import { Password } from './Password';
@@ -336,6 +335,8 @@ export class User {
     return returnCode;
   }
 
+
+
   // Expiration =======
   public isExpired(): boolean {
     return this._expirationDate && this._expirationDate < new Date();
@@ -350,7 +351,14 @@ export class User {
 
   // Exporting =======
   public getReadable(): ReadableUser {
-    const publicKey: string = deepCopy(this._sshKey.publicKey);
+    let publicKey: string = null;
+    if(this._sshKey) {
+      publicKey = this._sshKey.publicKey;
+    }
+    let disableDate: Date = null;
+    if(this._disableDate) {
+      disableDate = this._disableDate;
+    }
 
     return new ReadableUser(
       this._id,
@@ -363,7 +371,7 @@ export class User {
       this._birthdate, // TODO: Do we need to deepCopy date to detatch from User ?
       this._expirationDate,
       this._creationDate,
-      this._disableDate,
+      disableDate,
       this._updateDate);
   }
 

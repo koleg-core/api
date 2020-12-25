@@ -16,8 +16,8 @@ export interface OrganisationRepository {
     deleteJob(name: string): void;
 
     // User
-    createUser(userId: string, user: StatelessUser): void;
-    updateUser(userId: string, user: StatelessUser): void;
+    createUser(user: StatelessUser): void;
+    updateUser(user: StatelessUser): void;
     deleteUser(userId: string): void;
 
     // Group
