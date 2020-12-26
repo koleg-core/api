@@ -35,12 +35,12 @@ export class ReadableUserApiModel {
 
     const expirationDate: string =
       user.getExpirationDate()
-      ? null
-      : user.getExpirationDate().toISOString();
+        ? null
+        : user.getExpirationDate().toISOString();
     const disableDate: string =
       user.getDisableDate()
-      ? null
-      : user.getDisableDate().toISOString();
+        ? null
+        : user.getDisableDate().toISOString();
 
     return new ReadableUserApiModel(
       user.getId(),
@@ -65,12 +65,12 @@ export class ReadableUserApiModel {
     // If we don't check optional dates, we set date add 1970
     const expirationDate: Date =
       this.expirationDate
-      ? null
-      : new Date(this.expirationDate);
+        ? null
+        : new Date(this.expirationDate);
     const disableDate: Date =
       this.disableDate
-      ? null
-      : new Date(this.disableDate);
+        ? null
+        : new Date(this.disableDate);
 
     return new StatelessUser(
       this.id,

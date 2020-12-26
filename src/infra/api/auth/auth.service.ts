@@ -25,56 +25,56 @@ export class AuthService {
 
   public addAuthKind(authType: Strategy): void {
     switch (authType) {
-      case Strategy.LOGIN: {
-        this._passport.use(new LocalStrategy(
-          (userIdentifier: string,
-            password: string,
-            done: (
+    case Strategy.LOGIN: {
+      this._passport.use(new LocalStrategy(
+        (userIdentifier: string,
+          password: string,
+          done: (
               error: unknown,
               user?: ReadableUser,
               options?: IVerifyOptions
             ) => void
-          ) => {
-            try {
-              const organisation: Organisation = this._repository.read();
-              const userId: string = organisation.getUserByIdentifier(userIdentifier);
-              if (!userId) {
-                return done(null, null, { message: "User not found" });
-              }
+        ) => {
+          try {
+            const organisation: Organisation = this._repository.read();
+            const userId: string = organisation.getUserByIdentifier(userIdentifier);
+            if (!userId) {
+              return done(null, null, { message: "User not found" });
+            }
 
-              if (!organisation.verifyUserPassword(userId, password)) {
-                return done(null, null, { message: "User password was invalid" });
-              }
+            if (!organisation.verifyUserPassword(userId, password)) {
+              return done(null, null, { message: "User password was invalid" });
+            }
 
-              return done(null, organisation.getReadableUserById(userId));
-            } catch (err) {
-              if (err) {
-                return done(err, null, { message: "Internal servor error"});
-              }
+            return done(null, organisation.getReadableUserById(userId));
+          } catch (err) {
+            if (err) {
+              return done(err, null, { message: "Internal servor error"});
             }
           }
-        ));
-        break;
-      }
-      case Strategy.JWT: {
-        const opts = {
-          jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-          secretOrKey: 'secret', // TODO find way to give secret from configs
-          issuer: 'kwt issuer',
-          audience: 'localhost:8080' // TODO find way to give it from config
         }
-        this._passport.use(new JwtStrategy(
-          opts,
-          async (token, done) => {
-            try {
-              return done(null, token.user);
-            } catch (error) {
-              done(error);
-            }
-          }
-        ))
-        break;
+      ));
+      break;
+    }
+    case Strategy.JWT: {
+      const opts = {
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        secretOrKey: 'secret', // TODO find way to give secret from configs
+        issuer: 'kwt issuer',
+        audience: 'localhost:8080' // TODO find way to give it from config
       }
+      this._passport.use(new JwtStrategy(
+        opts,
+        async (token, done) => {
+          try {
+            return done(null, token.user);
+          } catch (error) {
+            done(error);
+          }
+        }
+      ))
+      break;
+    }
     }
   }
 

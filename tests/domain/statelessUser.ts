@@ -30,20 +30,20 @@ export const genStatelessUser = (organisation: Organisation): StatelessUser => {
   const phoneNumbers:PhoneNumber[] = [phoneNumber];
 
   const statelessUser: StatelessUser = new StatelessUser(
-        null,
-        null,
-        null,
-        identity,
-        passwordWithExpiration,
-        birthDay,
-        null,
-        phoneNumbers,
-        groupsId,
-        job,
-        null,
-        null,
-        sshKey,
-        null
-    )
+    null,
+    null,
+    null,
+    identity,
+    passwordWithExpiration,
+    birthDay,
+    null,
+    phoneNumbers,
+    groupsId,
+    job,
+    null,
+    null,
+    sshKey,
+    null
+  )
   return statelessUser
 }

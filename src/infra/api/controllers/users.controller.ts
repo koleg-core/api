@@ -112,24 +112,24 @@ export class UsersController {
     return this._organisationService.getUserById(id)
       .then(readableUser => {
         hash(frontHashedPassword, this._saltRoudsPassword, (bcryptError: Error , backHashedPassword: string) => {
-            if(bcryptError) {
-                throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, bcryptError?.message);
-            }
-            const password: Password = new Password(backHashedPassword);
-            const stateLessUser = new StatelessUser(
-                readableUser.getId(),
-                null,
-                null,
-                readableUser.getIdentity(),
-                password,
-                null,
-            );
+          if(bcryptError) {
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, bcryptError?.message);
+          }
+          const password: Password = new Password(backHashedPassword);
+          const stateLessUser = new StatelessUser(
+            readableUser.getId(),
+            null,
+            null,
+            readableUser.getIdentity(),
+            password,
+            null,
+          );
         })
           .catch (error => {
             throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
           });
 
         return new ResponseModel(HttpStatusCode.ACCEPTED, `Your password changment for user: ${id} was aknoleged.`);
-    });
+      });
   }
 }

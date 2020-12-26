@@ -4,7 +4,7 @@ import { genStatelessUser } from './statelessUser';
 
 export const genUserId = (organisation: Organisation): string => {
 
-    const statelessUser: StatelessUser = genStatelessUser(organisation);
+  const statelessUser: StatelessUser = genStatelessUser(organisation);
 
-    return organisation.addUser(statelessUser);
+  return organisation.addUser(statelessUser);
 }

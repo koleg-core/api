@@ -69,58 +69,58 @@ export class Api {
     // Parse routing-controllers classes into OpenAPI spec:
     const storage = getMetadataArgsStorage()
     this._spec = routingControllersToSpec(
-        storage,
-        this._routingControllersOptions,
-    { // TODO: externalize this into template file
-      components: {
+      storage,
+      this._routingControllersOptions,
+      { // TODO: externalize this into template file
+        components: {
         // schemas,
-        securitySchemes: {
-          basicAuth: {
-            scheme: 'basic',
-            type: 'http',
+          securitySchemes: {
+            basicAuth: {
+              scheme: 'basic',
+              type: 'http',
+            },
           },
         },
-      },
-      info: {
-        description: description || 'Koleg rest api',
-        title: title || 'Koleg 👩‍💼',
-        version: apiVersion || '1.0.0',
-      },
-      externalDocs: {
-        description: "Find out more about Swagger",
-        url: "https://gitlab.com/koleg1/api/-/blob/develop/swagger/swagger.yml"
-      },
-      servers: [
-        {
-        url: "http://localhost:8080/",
-        description: "Local development server"
+        info: {
+          description: description || 'Koleg rest api',
+          title: title || 'Koleg 👩‍💼',
+          version: apiVersion || '1.0.0',
         },
-        {
-          url: "https://api.koleg.nofreedisk.space/",
-          description: "Development server"
+        externalDocs: {
+          description: "Find out more about Swagger",
+          url: "https://gitlab.com/koleg1/api/-/blob/develop/swagger/swagger.yml"
         },
-        {
-          url: "https://api.staging.koleg.com/",
-          description: "Staging server"
-        },
-        {
-          url: "https://api.koleg.com/",
-          description: "Production server"
-        }
-      ]
-    })
+        servers: [
+          {
+            url: "http://localhost:8080/",
+            description: "Local development server"
+          },
+          {
+            url: "https://api.koleg.nofreedisk.space/",
+            description: "Development server"
+          },
+          {
+            url: "https://api.staging.koleg.com/",
+            description: "Staging server"
+          },
+          {
+            url: "https://api.koleg.com/",
+            description: "Production server"
+          }
+        ]
+      })
 
     this._app.use(
-        '/docs',
-        swaggerUiExpress.serve,
-        swaggerUiExpress.setup(this._spec, this._swaggerOptions)
+      '/docs',
+      swaggerUiExpress.serve,
+      swaggerUiExpress.setup(this._spec, this._swaggerOptions)
     );
   }
 
   public start(): void {
     this._app.listen(this._port, () => console.log(`Koleg is listening on port ${this._port}!`));
     this._app.get('/', (_req, res) => {
-        res.json(this._spec)
+      res.json(this._spec)
     })
   }
 

@@ -19,145 +19,145 @@ import { genUserId } from './user';
 // import { strict } from 'assert';
 
 describe('Organisation', () => {
-    describe('#init()', () => {
-      it('should be created without error', (done) => {
-        try {
-            const organisation:Organisation = genOrganisation();
-            if(!organisation) {
-                const err = "There is not organisation created.";
-                done(err);
-            }
-        } catch (err) {
-            done(err);
+  describe('#init()', () => {
+    it('should be created without error', (done) => {
+      try {
+        const organisation:Organisation = genOrganisation();
+        if(!organisation) {
+          const err = "There is not organisation created.";
+          done(err);
         }
-        done();
+      } catch (err) {
+        done(err);
+      }
+      done();
     });
-    });
+  });
 });
 
 describe('Identity', () => {
-    describe('#init()', () => {
-      it('should be created without error', (done) => {
-          const identity:UserIdentity = genUserIdentity();
-          if(!identity) {
-              const err = "User identity is undefined";
-              done(err);
-          }
-        done();
+  describe('#init()', () => {
+    it('should be created without error', (done) => {
+      const identity:UserIdentity = genUserIdentity();
+      if(!identity) {
+        const err = "User identity is undefined";
+        done(err);
+      }
+      done();
     });
-    });
+  });
 });
 
 describe('Password', () => {
-    describe('#init()', () => {
-      it('should be created without error', (done) => {
-        try {
-            const passwordWithExpiration:Password = genPassword();
-        } catch (err) {
-            done(err);
-        }
-        done();
+  describe('#init()', () => {
+    it('should be created without error', (done) => {
+      try {
+        const passwordWithExpiration:Password = genPassword();
+      } catch (err) {
+        done(err);
+      }
+      done();
     });
-    });
+  });
 });
 
 describe('Job', () => {
-    describe('#init()', () => {
-      it('should be created without error', (done) => {
-        try {
-            const job:Job = genJob();
-        } catch (err) {
-            done(err);
-        }
-        done();
+  describe('#init()', () => {
+    it('should be created without error', (done) => {
+      try {
+        const job:Job = genJob();
+      } catch (err) {
+        done(err);
+      }
+      done();
     });
-    });
+  });
 });
 
 describe('Group', () => {
-    describe('#init()', () => {
-      it('should be created without error', (done) => {
-        try {
-            const organisation:Organisation = genOrganisation();
-            const groupId:string = genGroupId(organisation);
+  describe('#init()', () => {
+    it('should be created without error', (done) => {
+      try {
+        const organisation:Organisation = genOrganisation();
+        const groupId:string = genGroupId(organisation);
 
-            if(!organisation.getGroupPropertiesById(groupId)) {
-                const err = "There is not group into organisation";
-                done(err);
-            }
-        } catch (err) {
-            done(err);
+        if(!organisation.getGroupPropertiesById(groupId)) {
+          const err = "There is not group into organisation";
+          done(err);
         }
+      } catch (err) {
+        done(err);
+      }
 
-        done();
-      });
+      done();
     });
+  });
 });
 
 describe('Group', () => {
-    describe('#init() with parent', () => {
-      it('should be created without error', (done) => {
-        try {
-            const organisation:Organisation = genOrganisation();
-            const parentGroupId:string = genGroupId(organisation);
-            const childGroupId:string = genGroupId(organisation, parentGroupId);
+  describe('#init() with parent', () => {
+    it('should be created without error', (done) => {
+      try {
+        const organisation:Organisation = genOrganisation();
+        const parentGroupId:string = genGroupId(organisation);
+        const childGroupId:string = genGroupId(organisation, parentGroupId);
 
-            if(
-              !organisation.getGroupPropertiesById(parentGroupId)
+        if(
+          !organisation.getGroupPropertiesById(parentGroupId)
               || !organisation.getGroupPropertiesById(childGroupId)
-            ) {
-                const err = "There is not group into organisation";
-                done(err);
-            }
-        } catch (err) {
-            done(err);
+        ) {
+          const err = "There is not group into organisation";
+          done(err);
         }
+      } catch (err) {
+        done(err);
+      }
 
-        done();
-      });
+      done();
     });
+  });
 });
 
 
 describe('SshKey', () => {
-    describe('#init()', () => {
-      it('should be created without error', (done) => {
-        try {
-            const sshKey:SshKey = genSshKey();
-        } catch (err) {
-            done(err);
-        }
-        done();
+  describe('#init()', () => {
+    it('should be created without error', (done) => {
+      try {
+        const sshKey:SshKey = genSshKey();
+      } catch (err) {
+        done(err);
+      }
+      done();
     });
-    });
+  });
 });
 
 describe('PhoneNumber', () => {
-    describe('#init()', () => {
-      it('should be created without error', (done) => {
-        try {
-            const phoneNumber: PhoneNumber = genPhoneNumber();
-        } catch (err) {
-            done(err)
-        }
-        done();
+  describe('#init()', () => {
+    it('should be created without error', (done) => {
+      try {
+        const phoneNumber: PhoneNumber = genPhoneNumber();
+      } catch (err) {
+        done(err)
+      }
+      done();
     });
-    });
+  });
 });
 
 describe('StatelessUser', () => {
-    describe('#init()', () => {
-      it('should be created without error', (done) => {
-          const organisation:Organisation = genOrganisation();
+  describe('#init()', () => {
+    it('should be created without error', (done) => {
+      const organisation:Organisation = genOrganisation();
 
-          const statelessUser: StatelessUser = genStatelessUser(organisation);
-          if(!statelessUser) {
-              const err = "statelessUser is undefined";
-              done(err);
-          }
-        done();
+      const statelessUser: StatelessUser = genStatelessUser(organisation);
+      if(!statelessUser) {
+        const err = "statelessUser is undefined";
+        done(err);
+      }
+      done();
     });
-    });
+  });
 });
 
 

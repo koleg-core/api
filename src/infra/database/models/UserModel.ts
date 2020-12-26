@@ -1,20 +1,20 @@
 import {
-    Sequelize,
-    Model,
-    ModelDefined,
-    DataTypes,
-    HasManyGetAssociationsMixin,
-    HasManyAddAssociationMixin,
-    HasManyHasAssociationMixin,
-    Association,
-    HasManyCountAssociationsMixin,
-    HasManyCreateAssociationMixin,
-    Optional,
-    BelongsToManyGetAssociationsMixin,
-    BelongsToGetAssociationMixin,
-    BelongsToSetAssociationMixin,
-    HasManySetAssociationsMixin
-  } from "sequelize";
+  Sequelize,
+  Model,
+  ModelDefined,
+  DataTypes,
+  HasManyGetAssociationsMixin,
+  HasManyAddAssociationMixin,
+  HasManyHasAssociationMixin,
+  Association,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  Optional,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  HasManySetAssociationsMixin
+} from "sequelize";
 import { JobModel } from "./JobModel";
 import { UserPhone } from "./UserPhone";
 
@@ -28,7 +28,7 @@ import { UserPhone } from "./UserPhone";
 
   type UserCreationAttributes = Optional<UserAttributes, "id">
 
-  export class UserModel extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes{
+export class UserModel extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes{
     public id!: number;
     public username!:string;
     public uuid!:string;
@@ -36,4 +36,4 @@ import { UserPhone } from "./UserPhone";
     setJob: BelongsToSetAssociationMixin<JobModel, JobModel['id']>;
     getPhones: HasManyGetAssociationsMixin<UserPhone>;
     setPhones: HasManySetAssociationsMixin<UserPhone,UserPhone['value']>;
-  }
+}

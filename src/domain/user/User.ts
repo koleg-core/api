@@ -69,7 +69,7 @@ export class User {
         .some(password => {
           password.hasSameValue(statelessUser.password)
         }
-      )) {
+        )) {
         throw new Error(`Your given password was not into history`);
       }
     }

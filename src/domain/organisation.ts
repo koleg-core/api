@@ -4,6 +4,7 @@ import { ReturnCodes } from './enums/return-codes.enum';
 import { Group } from './group/Group';
 import { ReadableGroup } from './group/readableGroup';
 import { User } from './user/User';
+import { UserIdentity } from './user/UserIdentity';
 import { Job } from './user/Job';
 import { ReadableUser } from './user/ReadableUser';
 import { StatelessUser } from './user/StatelessUser';
@@ -19,43 +20,43 @@ export class Organisation {
         private _name?: string,
         private _description?: string,
     ) {
-        this._id = uuid();
+      this._id = uuid();
     }
 
     public getId(): string {
-        return this._id;
+      return this._id;
     }
 
     public getName(): string {
-        return this._name;
+      return this._name;
     }
 
     public setName(name: string): ReturnCodes {
-        if (!name) {
-            throw new Error('Invalid argument name: string');
-        }
+      if (!name) {
+        throw new Error('Invalid argument name: string');
+      }
 
-        if (name === this._name) {
-            return ReturnCodes.NOTHING_CHANGED;
-        }
-        this._name = name;
-        return ReturnCodes.UPDATED;
+      if (name === this._name) {
+        return ReturnCodes.NOTHING_CHANGED;
+      }
+      this._name = name;
+      return ReturnCodes.UPDATED;
     }
 
     public getDescription(): string {
-        return this._description;
+      return this._description;
     }
 
     public setDescription(description: string): ReturnCodes {
-        if (!description) {
-            throw new Error('Invalid argument name: string');
-        }
+      if (!description) {
+        throw new Error('Invalid argument name: string');
+      }
 
-        if (description === this._description) {
-            return ReturnCodes.NOTHING_CHANGED;
-        }
-        this._description = description;
-        return ReturnCodes.UPDATED;
+      if (description === this._description) {
+        return ReturnCodes.NOTHING_CHANGED;
+      }
+      this._description = description;
+      return ReturnCodes.UPDATED;
     }
 
     // ####################
@@ -63,55 +64,55 @@ export class Organisation {
     // ####################
 
     public containsGroupById(groupId: string): boolean {
-        if (this._groups.has(groupId)) {
-            return true;
-        }
-        return false;
+      if (this._groups.has(groupId)) {
+        return true;
+      }
+      return false;
     }
 
     public getGroupPropertiesById(groupId: string): ReadableGroup {
-        const group: Group = this._groups.get(groupId);
-        return group.getReadableGroup();
+      const group: Group = this._groups.get(groupId);
+      return group.getReadableGroup();
     }
 
     public addGroup(
-        id: string,
-        name: string,
-        description: string,
-        parentGroupId: string = null,
-        childsGroupsId?: string[],
-        imgUrl?: URL
+      id: string,
+      name: string,
+      description: string,
+      parentGroupId: string = null,
+      childsGroupsId?: string[],
+      imgUrl?: URL
     ): string {
 
-        if(id === undefined) {
-          throw new Error(`Child group should be defined or null.`);
-        }
-        const parentGroup: Group = this._groups.get(parentGroupId);
-        const childsGroups: Group[] = [];
+      if(id === undefined) {
+        throw new Error(`Child group should be defined or null.`);
+      }
+      const parentGroup: Group = this._groups.get(parentGroupId);
+      const childsGroups: Group[] = [];
 
-        if(childsGroupsId) {
-          childsGroupsId.forEach(childsGroupId => {
-            if (!this._groups.has(childsGroupId)) {
-              throw new Error(`Child group ${childsGroupId} does not exist.`);
-            }
-            const childGroup: Group = this._groups.get(childsGroupId);
-            childsGroups.push(childGroup);
-          })
-        }
-        const newGroup: Group = new Group(
-          id,
-          name,
-          description,
-          parentGroup,
-          childsGroups,
-          imgUrl || null
-        );
-        if (!newGroup) {
-            throw new Error('Group was not created');
-        }
+      if(childsGroupsId) {
+        childsGroupsId.forEach(childsGroupId => {
+          if (!this._groups.has(childsGroupId)) {
+            throw new Error(`Child group ${childsGroupId} does not exist.`);
+          }
+          const childGroup: Group = this._groups.get(childsGroupId);
+          childsGroups.push(childGroup);
+        })
+      }
+      const newGroup: Group = new Group(
+        id,
+        name,
+        description,
+        parentGroup,
+        childsGroups,
+        imgUrl || null
+      );
+      if (!newGroup) {
+        throw new Error('Group was not created');
+      }
 
-        this._groups.set(newGroup.getId(), newGroup);
-        return newGroup.getId();
+      this._groups.set(newGroup.getId(), newGroup);
+      return newGroup.getId();
     }
 
     // ####################
@@ -119,35 +120,35 @@ export class Organisation {
     // ####################
 
     public getReadableUsers(): ReadableUser[] {
-        const readableUsers: ReadableUser[] = [];
+      const readableUsers: ReadableUser[] = [];
 
-        this._users.forEach(user => {
-            readableUsers.push(user.getReadable());
-        })
+      this._users.forEach(user => {
+        readableUsers.push(user.getReadable());
+      })
 
-        return readableUsers;
+      return readableUsers;
     }
 
     public containsUserById(userId: string): boolean {
-        if (!userId)
-            throw new Error('Invalid argument userId: string');
+      if (!userId)
+        throw new Error('Invalid argument userId: string');
 
-        if (this._users.get(userId)) {
-            return true;
-        }
-        return false;
+      if (this._users.get(userId)) {
+        return true;
+      }
+      return false;
     }
 
     public getReadableUserById(userId: string): ReadableUser {
-        if (!userId) {
-            throw new Error('Invalid argument userId: string');
-        }
+      if (!userId) {
+        throw new Error('Invalid argument userId: string');
+      }
 
-        const user: User = this._users.get(userId);
-        if (!user) {
-            return null;
-        }
-        return user.getReadable();
+      const user: User = this._users.get(userId);
+      if (!user) {
+        return null;
+      }
+      return user.getReadable();
     }
 
     public getStatelessUser(userId: string): StatelessUser {
@@ -166,9 +167,9 @@ export class Organisation {
       }
       console.log("ID", statelessUser.id);
       if(statelessUser.id) {
-          throw new Error(
-            `Invalid argument statelessUser can't had id, please use updateUser() instead.`
-          );
+        throw new Error(
+          `Invalid argument statelessUser can't had id, please use updateUser() instead.`
+        );
       }
       const userGroups: string[] = statelessUser.groupsIds;
       userGroups.forEach(groupId => {
@@ -178,6 +179,14 @@ export class Organisation {
       });
 
       const newUser = new User(statelessUser);
+      this._users.forEach(user => {
+        const identity: UserIdentity = user.getIdentity();
+        if(identity.controlWithIdentity(newUser.getIdentity())) {
+          throw new Error('User already exist.');
+        }
+
+      })
+
       this._users.set(newUser.getId(), newUser);
 
       return newUser.getId();
@@ -185,7 +194,7 @@ export class Organisation {
 
     public deleteUser(userId: string): ReturnCodes {
       if (!userId) {
-          throw new Error('Invalid argument userId: string');
+        throw new Error('Invalid argument userId: string');
       }
 
       if(!this._users.has(userId)) {
@@ -203,54 +212,54 @@ export class Organisation {
 
     // TODO: fill this functions
     public verifyUserPassword(userUuid: string, password: string): string {
-        return null;
+      return null;
     }
 
     public updateUser(statelessUser: StatelessUser): ReturnCodes {
-        if (!statelessUser) {
-          throw new Error('Invalid argument statelessUser: StatelessUser')
-        }
-        if(!statelessUser.id) {
-          throw new Error(
-            'Invalid argument statelessUser.id should be setted, or use addUser instead.'
-          );
-        }
-        if (!this._users.has(statelessUser.id)) {
-            return ReturnCodes.NOT_FOUND;
-        }
-        if (!statelessUser.identity) {
-            throw new Error('statelessUser.identity Should not be empty');
-        }
+      if (!statelessUser) {
+        throw new Error('Invalid argument statelessUser: StatelessUser')
+      }
+      if(!statelessUser.id) {
+        throw new Error(
+          'Invalid argument statelessUser.id should be setted, or use addUser instead.'
+        );
+      }
+      if (!this._users.has(statelessUser.id)) {
+        return ReturnCodes.NOT_FOUND;
+      }
+      if (!statelessUser.identity) {
+        throw new Error('statelessUser.identity Should not be empty');
+      }
 
-        const user: User = this._users.get(statelessUser.id);
-        user.updateIdentity(statelessUser.identity);
+      const user: User = this._users.get(statelessUser.id);
+      user.updateIdentity(statelessUser.identity);
 
-        if (Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0) {
+      if (Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0) {
 
-            statelessUser.groupsIds.some(groupId => {
-                if (!this._groups.has(groupId)) {
-                    throw new Error(`Invalid groupId: ${groupId}`);
-                }
-            });
+        statelessUser.groupsIds.some(groupId => {
+          if (!this._groups.has(groupId)) {
+            throw new Error(`Invalid groupId: ${groupId}`);
+          }
+        });
 
-            user.updateGroups(statelessUser.groupsIds);
-        }
-        user.updateJob(statelessUser.job);
-        if (statelessUser.birthdate) {
-            user.updateBirthDate(statelessUser.birthdate);
-        }
-        if (statelessUser.password && !statelessUser.password.hasSameValue(user.getPassword())) {
-            user.updatePassword(statelessUser.password);
-        }
-        if (statelessUser.profilePictureUrl) {
-            user.updateProfilePictureUrl(statelessUser.profilePictureUrl);
-        }
-        if (statelessUser.sshKey) {
-            user.updateSshKey(statelessUser.sshKey);
-        }
+        user.updateGroups(statelessUser.groupsIds);
+      }
+      user.updateJob(statelessUser.job);
+      if (statelessUser.birthdate) {
+        user.updateBirthDate(statelessUser.birthdate);
+      }
+      if (statelessUser.password && !statelessUser.password.hasSameValue(user.getPassword())) {
+        user.updatePassword(statelessUser.password);
+      }
+      if (statelessUser.profilePictureUrl) {
+        user.updateProfilePictureUrl(statelessUser.profilePictureUrl);
+      }
+      if (statelessUser.sshKey) {
+        user.updateSshKey(statelessUser.sshKey);
+      }
 
-        // return ReturnCodes.NOTHING_CHANGED;
-        return ReturnCodes.UPDATED;
+      // return ReturnCodes.NOTHING_CHANGED;
+      return ReturnCodes.UPDATED;
     }
 
     // ####################
@@ -258,24 +267,24 @@ export class Organisation {
     // ####################
 
     public getJobs(filter?:string): Job[] {
-        return this._jobs;
+      return this._jobs;
     }
 
     public containsJob(givenJob: Job): boolean {
-        if (this._jobs.some(job => job.equals(givenJob))) {
-            return true;
-        }
+      if (this._jobs.some(job => job.equals(givenJob))) {
+        return true;
+      }
 
-        return false
+      return false
     }
 
     public addJob(newJob: Job): ReturnCodes {
-        if (this.containsJob(newJob)) {
-            return ReturnCodes.CONFLICTING;
-        }
+      if (this.containsJob(newJob)) {
+        return ReturnCodes.CONFLICTING;
+      }
 
-        this._jobs.push(newJob);
-        return ReturnCodes.CREATED;
+      this._jobs.push(newJob);
+      return ReturnCodes.CREATED;
     }
 
     public getJob(name: string): Job {

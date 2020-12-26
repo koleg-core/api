@@ -56,23 +56,25 @@ export class OrganisationService {
 
   public async updateUser(user: StatelessUser): Promise<ReturnCodes> {
     if(!user.id) {
-        throw Error('Invalid user argument property: id of user: StatelessUser should not be null.');
+      throw Error('Invalid user argument property: id of user: StatelessUser should not be null.');
     }
     await this._updateOrganisation();
     const returnCode = this._organisation.updateUser(user);
     if (returnCode === ReturnCodes.UPDATED) {
-      this.repository.updateUser(user.id, user);
+      this.repository.updateUser(user);
     }
     return returnCode;
   }
 
   public async createUser(user: StatelessUser): Promise<string> {
     await this._updateOrganisation();
-    const userId = this._organisation.addUser(user);
+    const userId: string = this._organisation.addUser(user);
     if (userId) {
-      this.repository.createUser(userId, user);
+      const userToSave: StatelessUser = this._organisation.getStatelessUser(userId);
+      this.repository.createUser(userToSave);
+      return userId;
     }
-    return userId;
+    throw new Error('Something was wrong in user creation.');
   }
 
   public async deleteUser(id: string): Promise<ReturnCodes> {

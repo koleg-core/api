@@ -10,7 +10,7 @@ class OrganisationInMemoryRepository implements OrganisationRepository {
     private _organisation: Organisation;
 
     constructor() {
-        this._organisation = new Organisation("demo organisation", "this is a memory organisation");
+      this._organisation = new Organisation("demo organisation", "this is a memory organisation");
     }
     save(organisation: Organisation): void {
       this._organisation = organisation;

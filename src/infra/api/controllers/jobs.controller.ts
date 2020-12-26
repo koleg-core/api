@@ -17,9 +17,9 @@ export class JobsController {
   @Inject('organisation.service')
   private readonly _organisationService: OrganisationService;
   private readonly _fuseOptions: Fuse.IFuseOptions<Job> = {
-      includeScore: false,
-      keys: ['_name'] // This break private things, but don't care
-    }
+    includeScore: false,
+    keys: ['_name'] // This break private things, but don't care
+  }
 
   @Get('/jobs')
   async getAll(@QueryParam("filter") filter?: string): Promise<ResponseModel | ApiError> {
@@ -34,7 +34,7 @@ export class JobsController {
             fuzeJobs.forEach(
               job => {
                 jobsResponse.push(JobApiModel.toJobModel(job.item))
-            });
+              });
           } else {
             jobs.forEach(job => jobsResponse.push(JobApiModel.toJobModel(job)));
           }
