@@ -1,4 +1,4 @@
-import { PhoneType } from "../enums/phone-type.enum"
+import { PhoneType } from "../enums/phone-type.enum";
 
 export class PhoneNumber {
 
@@ -9,15 +9,15 @@ export class PhoneNumber {
       public readonly value: string
     ) {
       if (!type) {
-        throw new Error('Invalid argument type: PhoneType');
+        throw new Error("Invalid argument type: PhoneType");
       }
 
       if (this.value) {
         if (!this.isPhoneNumberValid(value)) {
-          throw new Error("Invalid argument number: Don't respect constraint")
+          throw new Error("Invalid argument number: Don't respect constraint");
         }
       } else {
-        throw new Error('Invalid argument value: string');
+        throw new Error("Invalid argument value: string");
       }
     }
 

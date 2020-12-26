@@ -1,4 +1,4 @@
-import { default as slugify } from 'slugify';
+import { default as slugify } from "slugify";
 
 // while this class don't have any methods,
 // It's will be useless
@@ -8,7 +8,7 @@ export class Job {
         private name: string
   ) {
     if (!this.name) {
-      throw new Error('Invalid argument name: string');
+      throw new Error("Invalid argument name: string");
     }
   }
 
@@ -20,7 +20,7 @@ export class Job {
     return slugify(
       this.getName(),
       {
-        replacement: '.', // replace spaces with replacement character, defaults to `-`
+        replacement: ".", // replace spaces with replacement character, defaults to `-`
         lower: true,      // convert to lower case, defaults to `false`
         remove: /[*+~.()'"!:@?%$]/g, // Remove these chartes matching regex
         strict: true,    // strip special characters except replacement, defaults to `false`
@@ -30,7 +30,7 @@ export class Job {
 
   public equals(obj: unknown): boolean {
     if(typeof(obj) !== typeof(this)) {
-      return false
+      return false;
     }
 
     const compareJob: Job = obj as Job;

@@ -3,7 +3,7 @@ import { SshKey } from "domain/user/SshKey";
 import { UserIdentity } from "domain/user/UserIdentity";
 import { PhoneNumber } from "domain/user/PhoneNumber";
 import { Password } from "domain/user/Password";
-import { PhoneNumberApiModel } from "./phone-number-api.model"
+import { PhoneNumberApiModel } from "./phone-number-api.model";
 import { JobApiModel } from "./job-api.model";
 import { StatelessUser } from "domain/user/StatelessUser";
 import { ReadableUser } from "domain/user/ReadableUser";

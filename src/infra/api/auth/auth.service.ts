@@ -8,7 +8,7 @@ import {
   IVerifyOptions
 } from "passport-local";
 
-import { ReadableUser } from '../../../domain/user/ReadableUser'
+import { ReadableUser } from "../../../domain/user/ReadableUser";
 import { Organisation } from "../../../domain/organisation";
 import { OrganisationRepository } from "../../../domain/repos/organisation.repository";
 
@@ -19,7 +19,7 @@ export class AuthService {
 
   constructor(private _repository: OrganisationRepository) {
     if (!this._repository) {
-      throw new Error('Invalid argument repository: OrganisationRepository is not defined.');
+      throw new Error("Invalid argument repository: OrganisationRepository is not defined.");
     }
   }
 
@@ -59,10 +59,10 @@ export class AuthService {
     case Strategy.JWT: {
       const opts = {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: 'secret', // TODO find way to give secret from configs
-        issuer: 'kwt issuer',
-        audience: 'localhost:8080' // TODO find way to give it from config
-      }
+        secretOrKey: "secret", // TODO find way to give secret from configs
+        issuer: "kwt issuer",
+        audience: "localhost:8080" // TODO find way to give it from config
+      };
       this._passport.use(new JwtStrategy(
         opts,
         async (token, done) => {
@@ -72,7 +72,7 @@ export class AuthService {
             done(error);
           }
         }
-      ))
+      ));
       break;
     }
     }
@@ -86,6 +86,6 @@ export class AuthService {
       user?: ReadableUser,
       options?: IVerifyOptions
     ) => void): void {
-    this._passport.authenticate('login', done);
+    this._passport.authenticate("login", done);
   }
 }

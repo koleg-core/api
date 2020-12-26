@@ -1,4 +1,4 @@
-import { Organisation } from 'domain/organisation';
+import { Organisation } from "domain/organisation";
 
 export const genGroupId = (
   organisation:Organisation,
@@ -9,4 +9,4 @@ export const genGroupId = (
     return organisation.addGroup(null, "Test group", "Test Group", parentGroupId, null, imgUrl);
   }
   return organisation.addGroup(null, "Test group", "Test Group", null);
-}
+};

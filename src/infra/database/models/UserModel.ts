@@ -22,8 +22,8 @@ import { UserPhone } from "./UserPhone";
     id: number;
     username: string;
     uuid: string;
-    job?: JobModel | JobModel['id'];
-    phones?: UserPhone[] | UserPhone['value'][];
+    job?: JobModel | JobModel["id"];
+    phones?: UserPhone[] | UserPhone["value"][];
   }
 
   type UserCreationAttributes = Optional<UserAttributes, "id">
@@ -33,7 +33,7 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
     public username!:string;
     public uuid!:string;
     getJob: BelongsToGetAssociationMixin<JobModel>;
-    setJob: BelongsToSetAssociationMixin<JobModel, JobModel['id']>;
+    setJob: BelongsToSetAssociationMixin<JobModel, JobModel["id"]>;
     getPhones: HasManyGetAssociationsMixin<UserPhone>;
-    setPhones: HasManySetAssociationsMixin<UserPhone,UserPhone['value']>;
+    setPhones: HasManySetAssociationsMixin<UserPhone,UserPhone["value"]>;
 }

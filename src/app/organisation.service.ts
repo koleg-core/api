@@ -16,7 +16,7 @@ export class OrganisationService {
   // JOBS
 
   public async getJobs(): Promise<Job[]> {
-    await this._updateOrganisation()
+    await this._updateOrganisation();
     return this._organisation.getJobs();
   }
 
@@ -26,7 +26,7 @@ export class OrganisationService {
   }
 
   public async createJob(job: Job): Promise<ReturnCodes> {
-    await this._updateOrganisation()
+    await this._updateOrganisation();
     const returnCode = this._organisation.addJob(job);
     if (returnCode === ReturnCodes.CREATED) {
       this.repository.createJob(job);
@@ -45,18 +45,18 @@ export class OrganisationService {
 
   // USERS
   public async getUsers(): Promise<ReadableUser[]> {
-    await this._updateOrganisation()
+    await this._updateOrganisation();
     return this._organisation.getReadableUsers();
   }
 
   public async getUserById(id: string): Promise<ReadableUser> {
-    await this._updateOrganisation()
+    await this._updateOrganisation();
     return this._organisation.getReadableUserById(id);
   }
 
   public async updateUser(user: StatelessUser): Promise<ReturnCodes> {
     if(!user.id) {
-      throw Error('Invalid user argument property: id of user: StatelessUser should not be null.');
+      throw Error("Invalid user argument property: id of user: StatelessUser should not be null.");
     }
     await this._updateOrganisation();
     const returnCode = this._organisation.updateUser(user);
@@ -74,7 +74,7 @@ export class OrganisationService {
       this.repository.createUser(userToSave);
       return userId;
     }
-    throw new Error('Something was wrong in user creation.');
+    throw new Error("Something was wrong in user creation.");
   }
 
   public async deleteUser(id: string): Promise<ReturnCodes> {
@@ -88,24 +88,24 @@ export class OrganisationService {
 
   // GROUPS
   public getGroups() {
-    throw new Error('Method not implemented.');
+    throw new Error("Method not implemented.");
   }
 
   public getGroup() {
-    throw new Error('Method not implemented.');
+    throw new Error("Method not implemented.");
   }
 
   public createGroup() {
-    throw new Error('Method not implemented.');
+    throw new Error("Method not implemented.");
   }
 
   public updateGroup() {
-    throw new Error('Method not implemented.');
+    throw new Error("Method not implemented.");
 
   }
 
   public deleteGroup() {
-    throw new Error('Method not implemented.');
+    throw new Error("Method not implemented.");
   }
 
   private async _updateOrganisation() {

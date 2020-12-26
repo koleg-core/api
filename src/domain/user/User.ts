@@ -1,13 +1,13 @@
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 
-import { Job } from './Job';
-import { Password } from './Password';
-import { PhoneNumber } from './PhoneNumber';
-import { SshKey } from './SshKey';
-import { UserIdentity } from './UserIdentity';
-import { ReturnCodes } from '../enums/return-codes.enum';
-import { ReadableUser } from './ReadableUser';
-import { StatelessUser } from './StatelessUser';
+import { Job } from "./Job";
+import { Password } from "./Password";
+import { PhoneNumber } from "./PhoneNumber";
+import { SshKey } from "./SshKey";
+import { UserIdentity } from "./UserIdentity";
+import { ReturnCodes } from "../enums/return-codes.enum";
+import { ReadableUser } from "./ReadableUser";
+import { StatelessUser } from "./StatelessUser";
 
 export class User {
 
@@ -29,19 +29,19 @@ export class User {
 
   constructor(statelessUser: StatelessUser) {
     if(!statelessUser) {
-      throw new Error(`Invalid argument parameter, statelessUser.`);
+      throw new Error("Invalid argument parameter, statelessUser.");
     }
     if (!statelessUser.identity) {
-      throw new Error(`Invalid argument parameter, statelessUser.identity.`);
+      throw new Error("Invalid argument parameter, statelessUser.identity.");
     }
     if (!statelessUser.password) {
-      throw new Error(`Invalid argument parameter, statelessUser.password.`);
+      throw new Error("Invalid argument parameter, statelessUser.password.");
     }
     if (!statelessUser.birthdate) {
-      throw new Error(`Invalid argument parameter, statelessUser.birthdate`);
+      throw new Error("Invalid argument parameter, statelessUser.birthdate");
     }
     if (statelessUser.birthdate > new Date()) {
-      throw new Error(`Negativ age, birthdate is into the future`);
+      throw new Error("Negativ age, birthdate is into the future");
     }
 
     if(!statelessUser.id){
@@ -67,10 +67,10 @@ export class User {
         this._passwordHistory.push(this._password);
       } else if(statelessUser.passwordHistory
         .some(password => {
-          password.hasSameValue(statelessUser.password)
+          password.hasSameValue(statelessUser.password);
         }
         )) {
-        throw new Error(`Your given password was not into history`);
+        throw new Error("Your given password was not into history");
       }
     }
 
@@ -100,7 +100,7 @@ export class User {
 
   public updateIdentity(identity: UserIdentity): ReturnCodes {
     if (!identity) {
-      throw new Error('Invalid argument identity: UserIdentity');
+      throw new Error("Invalid argument identity: UserIdentity");
     }
 
     if (!this._isEditable()) {
@@ -115,7 +115,7 @@ export class User {
   // Password =======
   public updatePassword(password: Password): ReturnCodes {
     if (!password) {
-      throw new Error('Invalid argument password: Password');
+      throw new Error("Invalid argument password: Password");
     }
 
     if (!this._isEditable()) {
@@ -144,11 +144,11 @@ export class User {
 
   public updateBirthDate(birthdayDate: Date): ReturnCodes {
     if (!birthdayDate) {
-      throw new Error('Invalid argument birthdayDate: Date.');
+      throw new Error("Invalid argument birthdayDate: Date.");
     }
 
     if (birthdayDate > new Date()) {
-      throw new Error('Invalid argument you birthdayDate is in future.');
+      throw new Error("Invalid argument you birthdayDate is in future.");
     }
 
     if (!this._isEditable()) {
@@ -167,7 +167,7 @@ export class User {
 
   public addPhoneNumber(phoneNumber: PhoneNumber): ReturnCodes {
     if (!phoneNumber) {
-      throw new Error('Invalid argument phoneNumber: is null.');
+      throw new Error("Invalid argument phoneNumber: is null.");
     }
 
     if (!this._isEditable()) {
@@ -189,7 +189,7 @@ export class User {
 
   public removePhoneNumber(phoneNumber: PhoneNumber): ReturnCodes {
     if (!phoneNumber) {
-      throw new Error('Invalid argument phoneNumber: is null');
+      throw new Error("Invalid argument phoneNumber: is null");
     }
 
     const phoneNumberIndex = this._findPhoneNumberIndexInList(phoneNumber);
@@ -206,7 +206,7 @@ export class User {
   // Groups =======
   public addGroup(newGroupId: string): ReturnCodes {
     if (!newGroupId) {
-      throw new Error('Invalid argument newGroup: Group');
+      throw new Error("Invalid argument newGroup: Group");
     }
 
     if (!this._isEditable()) {
@@ -227,7 +227,7 @@ export class User {
 
   public removeGroup(groupId: string): ReturnCodes {
     if (!groupId) {
-      throw new Error('Invalid argument newGroup: Group');
+      throw new Error("Invalid argument newGroup: Group");
     }
 
     if (!this._isEditable()) {
@@ -255,7 +255,7 @@ export class User {
 
   public updateJob(job: Job): ReturnCodes {
     if (!job) {
-      throw new Error('Invalid argument job: Job');
+      throw new Error("Invalid argument job: Job");
     }
 
     if (!this._isEditable()) {
@@ -278,7 +278,7 @@ export class User {
     // It's might be redondant with disabling notion
     // Can expiration be disableDate in the future ?
     if (!this._disableDate) {
-      returnCode = ReturnCodes.UPDATED
+      returnCode = ReturnCodes.UPDATED;
       this._disableDate = new Date();
       this._update();
     }
@@ -289,7 +289,7 @@ export class User {
     let returnCode: ReturnCodes = ReturnCodes.NOTHING_CHANGED;
 
     if (this._disableDate) {
-      returnCode = ReturnCodes.UPDATED
+      returnCode = ReturnCodes.UPDATED;
       this._disableDate = null;
       this._update();
     }
@@ -303,7 +303,7 @@ export class User {
 
   public updateProfilePictureUrl(profilePictureUrl: URL): ReturnCodes {
     if (!profilePictureUrl) {
-      throw new Error('Invalid argument profilePictureUrl: URL');
+      throw new Error("Invalid argument profilePictureUrl: URL");
     }
 
     if (!this._isEditable()) {
@@ -318,7 +318,7 @@ export class User {
   // SshKey =======
   public updateSshKey(sshKey: SshKey): ReturnCodes {
     if (!sshKey) {
-      throw new Error('Invalid argument sshKay: SshKey');
+      throw new Error("Invalid argument sshKay: SshKey");
     }
 
     if (!this._isEditable()) {
@@ -400,7 +400,7 @@ export class User {
   }
 
   private _isEditable(): boolean {
-    return !this.isExpired() && !this.isDisabled()
+    return !this.isExpired() && !this.isDisabled();
   }
 
   private _update(): void {

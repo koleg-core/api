@@ -1,5 +1,5 @@
-import { User } from './user/User';
-import { Group } from './group/Group';
+import { User } from "./user/User";
+import { Group } from "./group/Group";
 
 export class Right {
 

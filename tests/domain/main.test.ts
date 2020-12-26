@@ -1,26 +1,26 @@
-import { Organisation } from 'domain/organisation';
-import { UserIdentity } from 'domain/user/UserIdentity';
-import { Password } from 'domain/user/Password';
-import { StatelessUser } from 'domain/user/StatelessUser';
-import { SshKey } from 'domain/user/SshKey';
-import { Job } from 'domain/user/Job';
-import { PhoneNumber } from 'domain/user/PhoneNumber';
+import { Organisation } from "domain/organisation";
+import { UserIdentity } from "domain/user/UserIdentity";
+import { Password } from "domain/user/Password";
+import { StatelessUser } from "domain/user/StatelessUser";
+import { SshKey } from "domain/user/SshKey";
+import { Job } from "domain/user/Job";
+import { PhoneNumber } from "domain/user/PhoneNumber";
 // import { Group } from 'domain/group/Group';
 
-import { genStatelessUser } from './statelessUser';
-import { genOrganisation } from './organisation';
-import { genUserIdentity } from './userIdentity';
-import { genPassword } from './password';
-import { genPhoneNumber } from './phoneNumber';
-import { genSshKey } from './sshKey';
-import { genJob } from './job';
-import { genGroupId } from './group';
-import { genUserId } from './user';
+import { genStatelessUser } from "./statelessUser";
+import { genOrganisation } from "./organisation";
+import { genUserIdentity } from "./userIdentity";
+import { genPassword } from "./password";
+import { genPhoneNumber } from "./phoneNumber";
+import { genSshKey } from "./sshKey";
+import { genJob } from "./job";
+import { genGroupId } from "./group";
+import { genUserId } from "./user";
 // import { strict } from 'assert';
 
-describe('Organisation', () => {
-  describe('#init()', () => {
-    it('should be created without error', (done) => {
+describe("Organisation", () => {
+  describe("#init()", () => {
+    it("should be created without error", (done) => {
       try {
         const organisation:Organisation = genOrganisation();
         if(!organisation) {
@@ -35,9 +35,9 @@ describe('Organisation', () => {
   });
 });
 
-describe('Identity', () => {
-  describe('#init()', () => {
-    it('should be created without error', (done) => {
+describe("Identity", () => {
+  describe("#init()", () => {
+    it("should be created without error", (done) => {
       const identity:UserIdentity = genUserIdentity();
       if(!identity) {
         const err = "User identity is undefined";
@@ -48,9 +48,9 @@ describe('Identity', () => {
   });
 });
 
-describe('Password', () => {
-  describe('#init()', () => {
-    it('should be created without error', (done) => {
+describe("Password", () => {
+  describe("#init()", () => {
+    it("should be created without error", (done) => {
       try {
         const passwordWithExpiration:Password = genPassword();
       } catch (err) {
@@ -61,9 +61,9 @@ describe('Password', () => {
   });
 });
 
-describe('Job', () => {
-  describe('#init()', () => {
-    it('should be created without error', (done) => {
+describe("Job", () => {
+  describe("#init()", () => {
+    it("should be created without error", (done) => {
       try {
         const job:Job = genJob();
       } catch (err) {
@@ -74,9 +74,9 @@ describe('Job', () => {
   });
 });
 
-describe('Group', () => {
-  describe('#init()', () => {
-    it('should be created without error', (done) => {
+describe("Group", () => {
+  describe("#init()", () => {
+    it("should be created without error", (done) => {
       try {
         const organisation:Organisation = genOrganisation();
         const groupId:string = genGroupId(organisation);
@@ -94,9 +94,9 @@ describe('Group', () => {
   });
 });
 
-describe('Group', () => {
-  describe('#init() with parent', () => {
-    it('should be created without error', (done) => {
+describe("Group", () => {
+  describe("#init() with parent", () => {
+    it("should be created without error", (done) => {
       try {
         const organisation:Organisation = genOrganisation();
         const parentGroupId:string = genGroupId(organisation);
@@ -119,9 +119,9 @@ describe('Group', () => {
 });
 
 
-describe('SshKey', () => {
-  describe('#init()', () => {
-    it('should be created without error', (done) => {
+describe("SshKey", () => {
+  describe("#init()", () => {
+    it("should be created without error", (done) => {
       try {
         const sshKey:SshKey = genSshKey();
       } catch (err) {
@@ -132,22 +132,22 @@ describe('SshKey', () => {
   });
 });
 
-describe('PhoneNumber', () => {
-  describe('#init()', () => {
-    it('should be created without error', (done) => {
+describe("PhoneNumber", () => {
+  describe("#init()", () => {
+    it("should be created without error", (done) => {
       try {
         const phoneNumber: PhoneNumber = genPhoneNumber();
       } catch (err) {
-        done(err)
+        done(err);
       }
       done();
     });
   });
 });
 
-describe('StatelessUser', () => {
-  describe('#init()', () => {
-    it('should be created without error', (done) => {
+describe("StatelessUser", () => {
+  describe("#init()", () => {
+    it("should be created without error", (done) => {
       const organisation:Organisation = genOrganisation();
 
       const statelessUser: StatelessUser = genStatelessUser(organisation);
@@ -162,11 +162,11 @@ describe('StatelessUser', () => {
 
 
 
-describe('Organisation', () => {
-  describe('#User()', () => {
+describe("Organisation", () => {
+  describe("#User()", () => {
     const organisation:Organisation = genOrganisation();
     let userId: string;
-    it('user should be added without error', (done) => {
+    it("user should be added without error", (done) => {
       try {
         userId = genUserId(organisation);
         if(!organisation.getReadableUserById(userId)) {
@@ -174,11 +174,11 @@ describe('Organisation', () => {
           done(err);
         }
       } catch (err) {
-        done(err)
+        done(err);
       }
       done();
     });
-    it('user should be without error', (done) => {
+    it("user should be without error", (done) => {
       try {
         if(!organisation.getReadableUsers()) {
           const err = "There is no ReadableUser list";
@@ -189,18 +189,18 @@ describe('Organisation', () => {
           done(err);
         }
       } catch (err) {
-        done(err)
+        done(err);
       }
       done();
     });
-    it('user should be removed without error', (done) => {
+    it("user should be removed without error", (done) => {
       try {
         if(!organisation.deleteUser(userId)) {
           const err = "There is no ReturnCode";
           done(err);
         }
       } catch (err) {
-        done(err)
+        done(err);
       }
       done();
     });

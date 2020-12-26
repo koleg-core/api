@@ -1,9 +1,9 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import { Sequelize, DataTypes } from "sequelize";
 import { JobModel } from "./models/JobModel";
 import {PhoneType} from "./models/PhoneType";
 import {UserModel} from "./models/UserModel";
-import { UserPhone } from './models/UserPhone';
-import { UserPwdHistory } from './models/UserPwdHistory';
+import { UserPhone } from "./models/UserPhone";
+import { UserPwdHistory } from "./models/UserPwdHistory";
 
 export class Database {
   constructor(
@@ -73,11 +73,11 @@ export class Database {
         },
         idUser:{
           type: DataTypes.INTEGER,
-          field: 'id_user'
+          field: "id_user"
         },
         idPhoneType:{
           type: DataTypes.INTEGER,
-          field: 'id_phonetype'
+          field: "id_phonetype"
         }
       },
       {
@@ -85,7 +85,7 @@ export class Database {
         tableName: "user_phones",
         timestamps: false,
       });
-    UserPhone.removeAttribute('id');
+    UserPhone.removeAttribute("id");
 
     UserPwdHistory.init(
       {
@@ -96,7 +96,7 @@ export class Database {
         },
         updateDate: {
           type: DataTypes.DATE,
-          field: 'update_date'/*,
+          field: "update_date"/*,
                     references:{
                         model: PhoneType,
                         key:'id'
@@ -105,7 +105,7 @@ export class Database {
         },
         idUser:{
           type: DataTypes.INTEGER,
-          field: 'id_user'
+          field: "id_user"
         },
         password:{
           type: DataTypes.STRING
@@ -116,14 +116,14 @@ export class Database {
         tableName: "users_pwd_history",
         timestamps: false,
       });
-    JobModel.hasMany(UserModel, {as:'users', foreignKey: 'id_job' });
-    UserModel.belongsTo(JobModel,{as:'job',foreignKey: 'id_job'});
-    UserModel.removeAttribute('JobModelId');
+    JobModel.hasMany(UserModel, {as:"users", foreignKey: "id_job" });
+    UserModel.belongsTo(JobModel,{as:"job",foreignKey: "id_job"});
+    UserModel.removeAttribute("JobModelId");
 
-    UserModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_user'});
-    UserPhone.belongsTo(UserModel,{as:'user',foreignKey:'id_user'});
-    PhoneType.hasMany(UserPhone,{as:'phones',foreignKey:'id_phonetype'});
-    UserPhone.belongsTo(PhoneType,{as:'type',foreignKey:'id_phonetype'});
+    UserModel.hasMany(UserPhone,{as:"phones",foreignKey:"id_user"});
+    UserPhone.belongsTo(UserModel,{as:"user",foreignKey:"id_user"});
+    PhoneType.hasMany(UserPhone,{as:"phones",foreignKey:"id_phonetype"});
+    UserPhone.belongsTo(PhoneType,{as:"type",foreignKey:"id_phonetype"});
 
 
     /*UserModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_user'});
@@ -158,8 +158,8 @@ export class Database {
           .then(res=>{
             const userPhone = new UserPhone({value:phone,idUser:response.id,idPhoneType:res.id});
             userPhone.save();
-          })
-      })
+          });
+      });
   }
 
   /*getUserPhone(uuid:string,phone:string,type:string): Promise<UserPhone>{

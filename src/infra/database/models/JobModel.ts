@@ -16,7 +16,7 @@ import { UserModel } from "./UserModel";
 interface JobAttributes{
   id: number;
   name: string;
-  users?: UserModel[] | UserModel['id'][];
+  users?: UserModel[] | UserModel["id"][];
 }
 
 type JobCreationAttributes = Optional<JobAttributes, "id">

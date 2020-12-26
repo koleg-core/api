@@ -1,13 +1,13 @@
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 
-import { ReturnCodes } from './enums/return-codes.enum';
-import { Group } from './group/Group';
-import { ReadableGroup } from './group/readableGroup';
-import { User } from './user/User';
-import { UserIdentity } from './user/UserIdentity';
-import { Job } from './user/Job';
-import { ReadableUser } from './user/ReadableUser';
-import { StatelessUser } from './user/StatelessUser';
+import { ReturnCodes } from "./enums/return-codes.enum";
+import { Group } from "./group/Group";
+import { ReadableGroup } from "./group/readableGroup";
+import { User } from "./user/User";
+import { UserIdentity } from "./user/UserIdentity";
+import { Job } from "./user/Job";
+import { ReadableUser } from "./user/ReadableUser";
+import { StatelessUser } from "./user/StatelessUser";
 
 // This is the aggregate
 export class Organisation {
@@ -33,7 +33,7 @@ export class Organisation {
 
     public setName(name: string): ReturnCodes {
       if (!name) {
-        throw new Error('Invalid argument name: string');
+        throw new Error("Invalid argument name: string");
       }
 
       if (name === this._name) {
@@ -49,7 +49,7 @@ export class Organisation {
 
     public setDescription(description: string): ReturnCodes {
       if (!description) {
-        throw new Error('Invalid argument name: string');
+        throw new Error("Invalid argument name: string");
       }
 
       if (description === this._description) {
@@ -85,7 +85,7 @@ export class Organisation {
     ): string {
 
       if(id === undefined) {
-        throw new Error(`Child group should be defined or null.`);
+        throw new Error("Child group should be defined or null.");
       }
       const parentGroup: Group = this._groups.get(parentGroupId);
       const childsGroups: Group[] = [];
@@ -97,7 +97,7 @@ export class Organisation {
           }
           const childGroup: Group = this._groups.get(childsGroupId);
           childsGroups.push(childGroup);
-        })
+        });
       }
       const newGroup: Group = new Group(
         id,
@@ -108,7 +108,7 @@ export class Organisation {
         imgUrl || null
       );
       if (!newGroup) {
-        throw new Error('Group was not created');
+        throw new Error("Group was not created");
       }
 
       this._groups.set(newGroup.getId(), newGroup);
@@ -124,14 +124,14 @@ export class Organisation {
 
       this._users.forEach(user => {
         readableUsers.push(user.getReadable());
-      })
+      });
 
       return readableUsers;
     }
 
     public containsUserById(userId: string): boolean {
       if (!userId)
-        throw new Error('Invalid argument userId: string');
+        throw new Error("Invalid argument userId: string");
 
       if (this._users.get(userId)) {
         return true;
@@ -141,7 +141,7 @@ export class Organisation {
 
     public getReadableUserById(userId: string): ReadableUser {
       if (!userId) {
-        throw new Error('Invalid argument userId: string');
+        throw new Error("Invalid argument userId: string");
       }
 
       const user: User = this._users.get(userId);
@@ -153,22 +153,22 @@ export class Organisation {
 
     public getStatelessUser(userId: string): StatelessUser {
       if (!userId) {
-        throw new Error('Invalid argument userId: string');
+        throw new Error("Invalid argument userId: string");
       }
       if(!this._users.has(userId)) {
-        throw new Error('There is no user with this id');
+        throw new Error("There is no user with this id");
       }
       return this._users.get(userId).getStateLessUser();
     }
 
     public addUser(statelessUser: StatelessUser): string {
       if (!statelessUser) {
-        throw new Error('Invalid argument statelessUser: StatelessUser');
+        throw new Error("Invalid argument statelessUser: StatelessUser");
       }
       console.log("ID", statelessUser.id);
       if(statelessUser.id) {
         throw new Error(
-          `Invalid argument statelessUser can't had id, please use updateUser() instead.`
+          "Invalid argument statelessUser can't had id, please use updateUser() instead."
         );
       }
       const userGroups: string[] = statelessUser.groupsIds;
@@ -182,10 +182,10 @@ export class Organisation {
       this._users.forEach(user => {
         const identity: UserIdentity = user.getIdentity();
         if(identity.controlWithIdentity(newUser.getIdentity())) {
-          throw new Error('User already exist.');
+          throw new Error("User already exist.");
         }
 
-      })
+      });
 
       this._users.set(newUser.getId(), newUser);
 
@@ -194,7 +194,7 @@ export class Organisation {
 
     public deleteUser(userId: string): ReturnCodes {
       if (!userId) {
-        throw new Error('Invalid argument userId: string');
+        throw new Error("Invalid argument userId: string");
       }
 
       if(!this._users.has(userId)) {
@@ -207,7 +207,7 @@ export class Organisation {
 
     // TODO: fill this functions
     public getUserByIdentifier(userIdentifier: string): string {
-      throw Error('Not implemented yet');
+      throw Error("Not implemented yet");
     }
 
     // TODO: fill this functions
@@ -217,18 +217,18 @@ export class Organisation {
 
     public updateUser(statelessUser: StatelessUser): ReturnCodes {
       if (!statelessUser) {
-        throw new Error('Invalid argument statelessUser: StatelessUser')
+        throw new Error("Invalid argument statelessUser: StatelessUser");
       }
       if(!statelessUser.id) {
         throw new Error(
-          'Invalid argument statelessUser.id should be setted, or use addUser instead.'
+          "Invalid argument statelessUser.id should be setted, or use addUser instead."
         );
       }
       if (!this._users.has(statelessUser.id)) {
         return ReturnCodes.NOT_FOUND;
       }
       if (!statelessUser.identity) {
-        throw new Error('statelessUser.identity Should not be empty');
+        throw new Error("statelessUser.identity Should not be empty");
       }
 
       const user: User = this._users.get(statelessUser.id);
@@ -275,7 +275,7 @@ export class Organisation {
         return true;
       }
 
-      return false
+      return false;
     }
 
     public addJob(newJob: Job): ReturnCodes {
@@ -292,7 +292,7 @@ export class Organisation {
       const requestedJob = this._jobs.find(job => job.equals(queryJob));
 
       if (!requestedJob) {
-        throw new Error('Job not found')
+        throw new Error("Job not found");
       }
 
       return requestedJob;
@@ -316,7 +316,7 @@ export class Organisation {
       if (deleteJobs[0].getName() === jobName) {
         return ReturnCodes.REMOVED;
       } else {
-        throw new Error('Failure to delete the user');
+        throw new Error("Failure to delete the user");
       }
     }
 }

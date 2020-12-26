@@ -1,6 +1,6 @@
-import { Job } from '../../domain/user/Job';
-import { Organisation } from '../../domain/organisation';
-import { StatelessUser } from '../../domain/user/StatelessUser';
+import { Job } from "../../domain/user/Job";
+import { Organisation } from "../../domain/organisation";
+import { StatelessUser } from "../../domain/user/StatelessUser";
 
 export interface OrganisationRepository {
     // While we don't have many organisation,

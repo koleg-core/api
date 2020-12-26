@@ -2,7 +2,9 @@
     "root": true,
     "parser": "@typescript-eslint/parser",
     "rules": {
-        "indent": ["error", 2]
+        "indent": ["error", 2],
+        "semi": ["error", "always"],
+        "quotes": ["error", "double"]
     },
     "plugins": [
         "@typescript-eslint"

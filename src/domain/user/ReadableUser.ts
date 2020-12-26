@@ -1,8 +1,8 @@
-import deepEqual from 'deep-equal';
+import deepEqual from "deep-equal";
 
-import { PhoneNumber } from './PhoneNumber';
-import { UserIdentity } from './UserIdentity';
-import { Job } from './Job';
+import { PhoneNumber } from "./PhoneNumber";
+import { UserIdentity } from "./UserIdentity";
+import { Job } from "./Job";
 
 export class ReadableUser {
   constructor(

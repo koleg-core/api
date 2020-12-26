@@ -1,8 +1,8 @@
-import { PhoneNumber } from './PhoneNumber';
-import { UserIdentity } from './UserIdentity';
-import { Job } from './Job';
-import { Password } from './Password';
-import { SshKey } from './SshKey';
+import { PhoneNumber } from "./PhoneNumber";
+import { UserIdentity } from "./UserIdentity";
+import { Job } from "./Job";
+import { Password } from "./Password";
+import { SshKey } from "./SshKey";
 
 export class StatelessUser {
   constructor(

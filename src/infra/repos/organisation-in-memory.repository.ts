@@ -1,11 +1,11 @@
-import { Service } from 'typedi';
+import { Service } from "typedi";
 
-import { OrganisationRepository } from '../../domain/repos/organisation.repository';
-import { Organisation } from '../../domain/organisation';
-import { Job } from '../../domain/user/Job';
-import { StatelessUser } from '../../domain/user/StatelessUser';
+import { OrganisationRepository } from "../../domain/repos/organisation.repository";
+import { Organisation } from "../../domain/organisation";
+import { Job } from "../../domain/user/Job";
+import { StatelessUser } from "../../domain/user/StatelessUser";
 
-@Service('organisation.repository')
+@Service("organisation.repository")
 class OrganisationInMemoryRepository implements OrganisationRepository {
     private _organisation: Organisation;
 

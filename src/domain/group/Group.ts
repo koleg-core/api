@@ -1,8 +1,8 @@
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 
-import { ReturnCodes } from '../enums/return-codes.enum';
+import { ReturnCodes } from "../enums/return-codes.enum";
 
-import { ReadableGroup } from './readableGroup';
+import { ReadableGroup } from "./readableGroup";
 
 export class Group {
   constructor(
@@ -35,7 +35,7 @@ export class Group {
 
   public setDescription(description: string): ReturnCodes {
     if(!description) {
-      throw new Error('Invalid argument description: string');
+      throw new Error("Invalid argument description: string");
     }
 
     this._description = description;
@@ -48,7 +48,7 @@ export class Group {
 
   public updateImgUrl(imgUrl: URL): ReturnCodes {
     if(!imgUrl) {
-      throw new Error('Invalid argument imgUrl: URL');
+      throw new Error("Invalid argument imgUrl: URL");
     }
     this._imgUrl = imgUrl;
     return ReturnCodes.UPDATED;
@@ -134,6 +134,6 @@ export class Group {
       this.getParentId(),
       this.getChildsId(),
       this._imgUrl
-    )
+    );
   }
 }

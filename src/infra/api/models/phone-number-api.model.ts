@@ -15,6 +15,6 @@ export class PhoneNumberApiModel {
     return new PhoneNumber(
             this.type as PhoneType,
             this.value
-    )
+    );
   }
 }

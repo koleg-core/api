@@ -1,16 +1,16 @@
 import morgan from "morgan";
 import "reflect-metadata"; // this shim is required
 import { getMetadataArgsStorage, useContainer, createExpressServer, RoutingControllersOptions } from "routing-controllers";
-import { routingControllersToSpec } from 'routing-controllers-openapi';
-import * as swaggerUiExpress from 'swagger-ui-express'
+import { routingControllersToSpec } from "routing-controllers-openapi";
+import * as swaggerUiExpress from "swagger-ui-express";
 // import { validationMetadatasToSchemas } from 'class-validator-jsonschema'
-import { OpenAPIObject } from 'openapi3-ts'
-import { Container } from 'typedi';
+import { OpenAPIObject } from "openapi3-ts";
+import { Container } from "typedi";
 import { Application } from "express";
 
-import { UsersController } from "./controllers/users.controller"
+import { UsersController } from "./controllers/users.controller";
 import { JobsController } from "./controllers/jobs.controller";
-import { OrganisationService } from '../../app/organisation.service';
+import { OrganisationService } from "../../app/organisation.service";
 
 export class Api {
   private _app: Application;
@@ -19,7 +19,7 @@ export class Api {
   private readonly _routingControllersOptions: RoutingControllersOptions;
   private _spec: OpenAPIObject;
   private _swaggerOptions = {
-    customCss: '.swagger-ui .topbar { display: none }'
+    customCss: ".swagger-ui .topbar { display: none }"
   };
 
   constructor(
@@ -27,12 +27,12 @@ export class Api {
   ) {
 
     if (!this._organisationService) {
-      throw new Error('Invalid argument _organisationService: OrganisationService is not defined.');
+      throw new Error("Invalid argument _organisationService: OrganisationService is not defined.");
     }
 
     // TODO externalize it into config
-    Container.set('saltRounds.security.config', 10);
-    Container.set('organisation.service', this._organisationService);
+    Container.set("saltRounds.security.config", 10);
+    Container.set("organisation.service", this._organisationService);
 
     // To have working typedi
     useContainer(Container);
@@ -43,13 +43,13 @@ export class Api {
         UsersController,
         JobsController
       ]
-    }
+    };
 
     this._app = createExpressServer(this._routingControllersOptions);
     // this._authService = new AuthService(this._repository);
 
     // TODO externalize log lever into config
-    this._app.use(morgan('dev'));
+    this._app.use(morgan("dev"));
   }
 
   public config(
@@ -67,7 +67,7 @@ export class Api {
     // console.log(schemas);
 
     // Parse routing-controllers classes into OpenAPI spec:
-    const storage = getMetadataArgsStorage()
+    const storage = getMetadataArgsStorage();
     this._spec = routingControllersToSpec(
       storage,
       this._routingControllersOptions,
@@ -76,15 +76,15 @@ export class Api {
         // schemas,
           securitySchemes: {
             basicAuth: {
-              scheme: 'basic',
-              type: 'http',
+              scheme: "basic",
+              type: "http",
             },
           },
         },
         info: {
-          description: description || 'Koleg rest api',
-          title: title || 'Koleg 👩‍💼',
-          version: apiVersion || '1.0.0',
+          description: description || "Koleg rest api",
+          title: title || "Koleg 👩‍💼",
+          version: apiVersion || "1.0.0",
         },
         externalDocs: {
           description: "Find out more about Swagger",
@@ -108,10 +108,10 @@ export class Api {
             description: "Production server"
           }
         ]
-      })
+      });
 
     this._app.use(
-      '/docs',
+      "/docs",
       swaggerUiExpress.serve,
       swaggerUiExpress.setup(this._spec, this._swaggerOptions)
     );
@@ -119,9 +119,9 @@ export class Api {
 
   public start(): void {
     this._app.listen(this._port, () => console.log(`Koleg is listening on port ${this._port}!`));
-    this._app.get('/', (_req, res) => {
-      res.json(this._spec)
-    })
+    this._app.get("/", (_req, res) => {
+      res.json(this._spec);
+    });
   }
 
   // public getApp(): Application {

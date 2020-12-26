@@ -8,7 +8,7 @@ export class App {
         private _port: number = 8080
   ) {
     if (!this._api) {
-      throw new Error('Invalid argument api: Api is not defined.');
+      throw new Error("Invalid argument api: Api is not defined.");
     }
 
     this._api.config(this._port);
