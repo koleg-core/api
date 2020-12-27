@@ -42,6 +42,9 @@ import {
       for(const group of groups){
         allGroups.push(group);
       }*/
+    async getGroupFromUuid(uuid: string) : Promise<GroupsModel>{
+      return await GroupsModel.findOne({ where: { uuid } });
+    }
 
 
     

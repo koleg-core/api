@@ -1,3 +1,4 @@
+import { User } from "domain/user/User";
 import {
     Sequelize,
     Model,
@@ -14,7 +15,10 @@ import {
     BelongsToGetAssociationMixin,
     BelongsToSetAssociationMixin,
     HasManySetAssociationsMixin,
-    BelongsToManyAddAssociationsMixin
+    BelongsToManyAddAssociationsMixin,
+    HasManyRemoveAssociationMixin,
+    HasManyRemoveAssociationsMixin,
+    BelongsToManyRemoveAssociationMixin
   } from "sequelize";
 import { GroupsModel } from "./GroupsModel";
 import { JobModel } from "./JobModel";
@@ -66,14 +70,19 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
     public updateDate!: Date;
     public expirationDate!: Date;
     public disableDate!: Date;
-    
+    public job?: JobModel | JobModel['id'];
+    public phones?: UserPhone[] | UserPhone['value'][];
+    public groupsIds?: string[];
     getJob: BelongsToGetAssociationMixin<JobModel>;
     setJob: BelongsToSetAssociationMixin<JobModel, JobModel['id']>;
     getPhones: HasManyGetAssociationsMixin<UserPhone>;
     setPhones: HasManySetAssociationsMixin<UserPhone,UserPhone['value']>;
+    //removePhone: HasManyRemoveAssociationMixin<UserPhone,UserPhone['value']>;
+    //removePhones: HasManyRemoveAssociationsMixin<UserPhone,UserPhone['value']>;
     getPasswords: HasManyGetAssociationsMixin<UserPwdHistory>;
     getGroups: BelongsToManyGetAssociationsMixin<GroupsModel>;
     addGroup: BelongsToManyAddAssociationsMixin<GroupsModel, GroupsModel['id']>;
+    removeGroup: BelongsToManyRemoveAssociationMixin<GroupsModel, GroupsModel['id']>;
 
     getPasswordsTest(): Promise<any>{
       return this.getPhones()
@@ -85,5 +94,9 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
           console.log(result.dataValues.value);
       }
       })
+    }
+    async deletePhones() {
+      const phones = await this.getPhones();
+      await phones[0].destroy();
     }
   }

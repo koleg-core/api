@@ -7,15 +7,35 @@ import { PhoneNumberSerializer } from "./phone-number.serializer";
 import { UserIdentity } from "domain/user/UserIdentity";
 import { Password } from "domain/user/Password";
 import { SshKey } from "domain/user/SshKey";
+import { UserPhone } from "../models/UserPhone";
+import { PhoneTypeSerializer } from "./phone-type.serializer";
+import { GroupsModel } from "../models/GroupsModel";
 
 export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> {
 
     public serialize(user: StatelessUser): UserModel {
-        return new UserModel({uuid: user.id, username: user.identity.username, firstname: user.identity.firstName, 
-        lastname: user.identity.lastName, password: user.identity.lastName, passwordDateLimit: user.password.getDateLimit(),
-    birthdate: user.birthdate, email: user.identity.email, imgUrl: user.profilePictureUrl.toString(), sshPublicKey: user.sshKey.publicKey,
-    sshPrivateKey: user.sshKey.privateKey, creationDate: user.creationDate, updateDate: user.updateDate,expirationDate: user.expirationDate,
-    disableDate: user.disableDate});
+        let userModel = new UserModel({uuid: user.id, username: user.identity.username, firstname: user.identity.firstName, 
+            lastname: user.identity.lastName, password: user.identity.lastName, passwordDateLimit: user.password.getDateLimit(),
+        birthdate: user.birthdate, email: user.identity.email, imgUrl: user.profilePictureUrl.toString(), sshPublicKey: user.sshKey.publicKey,
+        sshPrivateKey: user.sshKey.privateKey, creationDate: user.creationDate, updateDate: user.updateDate,expirationDate: user.expirationDate,
+        disableDate: user.disableDate});
+        const job = JobSerializer.prototype.serialize(user.job);
+        let phoneNumbers: UserPhone[] = [];
+        const phones = user.phoneNumbers;
+        for(const phone of phones){
+            const phoneType = PhoneTypeSerializer.prototype.serialize(phone.type);
+            let userPhone = PhoneNumberSerializer.prototype.serialize(phone);
+            userPhone.type = phoneType;
+            userPhone.user = userModel;
+            phoneNumbers.push(userPhone);
+        }
+        userModel.job = job;
+        userModel.phones = phoneNumbers;
+        /*let groups: GroupsModel[] = [];
+        for(const groupId of user.groupsIds){
+            const groupModel = await GroupsModel.prototype.getGroupFromUuid(groupId);
+        }*/
+        return userModel; 
     }
 
     public async deserialize(userModel: UserModel): Promise<StatelessUser> {

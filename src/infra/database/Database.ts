@@ -119,8 +119,17 @@ export class Database {
                 {
                     value:{
                         type: DataTypes.STRING
+                    },
+                    idUser:{
+                        type: DataTypes.INTEGER,
+                        field: 'id_user'
+                    },
+                    idPhoneType:{
+                        type: DataTypes.INTEGER,
+                        field: 'id_phonetype'
                     }
                 },
+                
                 {
                     sequelize: this.orm,
                     tableName: "user_phones",
@@ -228,6 +237,7 @@ export class Database {
             foreignKey: 'id_group',
             timestamps: false
           });
+        
 
 
 
@@ -261,7 +271,14 @@ export class Database {
         user.save();
     }
 
-    updateUser(user: UserModel){
+    /*async updateUser(user: UserModel, job: JobModel, userPhones: UserPhone[], userGroups: GroupsModel[]){
+        const userExist = await this.getUser(user.uuid);
+        if(userExist != null){
+
+        }
+    }*/
+
+    updateUser2(user: UserModel){
         this.getUser(user.uuid)
         .then(response=>{
             user.id = response.id;
