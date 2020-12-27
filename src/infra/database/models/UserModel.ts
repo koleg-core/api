@@ -18,7 +18,8 @@ import {
     BelongsToManyAddAssociationsMixin,
     HasManyRemoveAssociationMixin,
     HasManyRemoveAssociationsMixin, 
-    BelongsToManyRemoveAssociationMixin
+    BelongsToManyRemoveAssociationMixin,
+    BelongsToManyRemoveAssociationsMixin
   } from "sequelize";
 import { GroupsModel } from "./GroupsModel";
 import { JobModel } from "./JobModel";
@@ -77,26 +78,40 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
     setJob: BelongsToSetAssociationMixin<JobModel, JobModel['id']>;
     getPhones: HasManyGetAssociationsMixin<UserPhone>;
     setPhones: HasManySetAssociationsMixin<UserPhone,UserPhone['value']>;
-    //removePhone: HasManyRemoveAssociationMixin<UserPhone,UserPhone['value']>;
-    //removePhones: HasManyRemoveAssociationsMixin<UserPhone,UserPhone['value']>;
+    removePhone: HasManyRemoveAssociationMixin<UserPhone,UserPhone['value']>;
+    removePhones: HasManyRemoveAssociationsMixin<UserPhone,UserPhone['value']>;
     getPasswords: HasManyGetAssociationsMixin<UserPwdHistory>;
     getGroups: BelongsToManyGetAssociationsMixin<GroupsModel>;
     addGroup: BelongsToManyAddAssociationsMixin<GroupsModel, GroupsModel['id']>;
     removeGroup: BelongsToManyRemoveAssociationMixin<GroupsModel, GroupsModel['id']>;
-
-    getPasswordsTest(): Promise<any>{
-      return this.getPhones()
-      .then((response:any)=>{
-        for (const result of response) {
-          /*for (const tag of result.tags) {
-              tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-          }*/
-          console.log(result.dataValues.value);
-      }
-      })
-    }
+    removeGroups: BelongsToManyRemoveAssociationsMixin<GroupsModel, GroupsModel['id']>;
     async deletePhones() {
       const phones = await this.getPhones();
       await phones[0].destroy();
+    }
+
+    async saveUser(){
+      const userExist = await UserModel.findOne({where: {uuid: this.uuid}});
+      if(userExist){
+        console.log('user existant');
+        this.id = userExist.id;
+        this.isNewRecord = false;
+        //await this.deletePhones();
+        /*const groups = await this.getGroups();
+        for(const group of groups){
+          await this.removeGroup(group);
+        }*/
+        //await this.removeGroups(await this.getGroups());
+        
+        for(const phone of this.phones){
+          console.log(phone);
+        }
+        await this.save();
+      }
+      else{
+        console.log('user inexistant');
+        console.log(userExist);
+        
+      }
     }
   }

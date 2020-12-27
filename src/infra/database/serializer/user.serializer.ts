@@ -24,16 +24,12 @@ export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> 
         for(const phone of phones){
             const phoneType = PhoneTypeSerializer.prototype.serialize(phone.type);
             let userPhone = PhoneNumberSerializer.prototype.serialize(phone);
-            userPhone.type = phoneType;
-            userPhone.user = userModel;
+            userPhone.idPhoneType = phoneType.id;
             phoneNumbers.push(userPhone);
-        }
+        } 
         userModel.job = job;
         userModel.phones = phoneNumbers;
-        /*let groups: GroupsModel[] = [];
-        for(const groupId of user.groupsIds){
-            const groupModel = await GroupsModel.prototype.getGroupFromUuid(groupId);
-        }*/
+        userModel.groupsIds = user.groupsIds;
         return userModel; 
     }
 

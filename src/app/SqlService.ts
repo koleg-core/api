@@ -100,8 +100,7 @@ sqlService.getDatabase().getUser('a70e5a16-5ad1-41be-851f-0fe9a100ddb6')
 .then(response=>{
     UserSerializer.prototype.deserialize(response)
     .then(res => {
-        console.log(res);
-        //console.log(UserSerializer.prototype.serialize(res));
+        UserSerializer.prototype.serialize(res).saveUser();
     })
     
 })
