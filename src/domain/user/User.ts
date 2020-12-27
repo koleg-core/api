@@ -339,7 +339,10 @@ export class User {
 
   // Expiration =======
   public isExpired(): boolean {
-    return this._expirationDate && this._expirationDate < new Date();
+
+    // TODO: we set !this._expirationDate cuz we don't want to return null
+    //   !null => true
+    return !( !this._expirationDate || this._expirationDate < new Date() );
   }
 
   public canLogin(password: string, declinedIdentity: string): boolean {
@@ -368,8 +371,8 @@ export class User {
       this._profilePictureUrl,
       publicKey,
       this._phoneNumbers,
-      this._birthdate, // TODO: Do we need to deepCopy date to detatch from User ?
       this._expirationDate,
+      this._birthdate,
       this._creationDate,
       disableDate,
       this._updateDate);

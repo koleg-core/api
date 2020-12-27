@@ -23,19 +23,16 @@ import { HttpStatusCode } from "../models/http-status-code.enum";
 import { OrganisationService } from "../../../app/organisation.service";
 import { ReadableUserApiModel } from "../models/readable-user-api.model";
 
-@Service("user.controller")
+@Service("auth.controller")
 @JsonController()
 export class UsersController {
-
-  @Inject("saltRounds.security.config")
-  private _saltRoudsPassword: number;
 
   @Inject("organisation.service")
   private _organisationService: OrganisationService;
 
-  @Get("/users")
+  @Post("/login")
   @HttpCode(HttpStatusCode.OK)
-  getAll(): Promise<ResponseModel | ApiError> {
+  login(): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUsers()
       .then(users => {
         const usersResponse: ReadableUserApiModel[] = [];
@@ -57,7 +54,7 @@ export class UsersController {
     return this._organisationService.createUser(statelessUser)
       .then(id => {
         if (id) {
-          return new ResponseModel(HttpStatusCode.OK, `User created with id: ${id}.`, id);
+          return new ResponseModel(HttpStatusCode.OK, `User created with id: ${id}.`);
         } else {
           throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, "User not created");
         }
@@ -82,14 +79,7 @@ export class UsersController {
   }
 
   @Put("/users/:id")
-  @HttpCode(HttpStatusCode.OK)
   async put(@Param("id") id: string, @Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
-    if(user.password) {
-      throw new ApiError(HttpStatusCode.BAD_REQUEST, ReturnCodes.NOT_UPDATED,
-        "You can't update user password with this endpoint please use users/:id/update-password instead."
-      );
-    }
-
     return this._organisationService.updateUser(user.toStatelessUser(id))
       .then(returnCode => {
         if (returnCode === ReturnCodes.NOT_FOUND) {
@@ -114,7 +104,7 @@ export class UsersController {
       });
   }
 
-  @Put("/users/:id/update-password")
+  @Post("/users/:id/update-password")
   async updatePassword(@Param("id") id: string, @Body() frontHashedPassword: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUserById(id)
       .then(readableUser => {

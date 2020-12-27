@@ -17,8 +17,8 @@ export class Organisation {
     private _jobs: Job[] = [];
 
     constructor(
-        private _name?: string,
-        private _description?: string,
+      private _name?: string,
+      private _description?: string,
     ) {
       this._id = uuid();
     }
@@ -165,6 +165,12 @@ export class Organisation {
       if (!statelessUser) {
         throw new Error("Invalid argument statelessUser: StatelessUser");
       }
+      if (!statelessUser.birthdate) {
+        throw new Error("Invalid argument statelessUser.birthdate: Date");
+      }
+      if (!statelessUser.password) {
+        throw new Error("Invalid argument statelessUser.password: Password");
+      }
       console.log("ID", statelessUser.id);
       if(statelessUser.id) {
         throw new Error(
@@ -234,6 +240,8 @@ export class Organisation {
       const user: User = this._users.get(statelessUser.id);
       user.updateIdentity(statelessUser.identity);
 
+      let returnCode: ReturnCodes = ReturnCodes.NOTHING_CHANGED;
+
       if (Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0) {
 
         statelessUser.groupsIds.some(groupId => {
@@ -243,23 +251,41 @@ export class Organisation {
         });
 
         user.updateGroups(statelessUser.groupsIds);
-      }
-      user.updateJob(statelessUser.job);
-      if (statelessUser.birthdate) {
-        user.updateBirthDate(statelessUser.birthdate);
-      }
-      if (statelessUser.password && !statelessUser.password.hasSameValue(user.getPassword())) {
-        user.updatePassword(statelessUser.password);
-      }
-      if (statelessUser.profilePictureUrl) {
-        user.updateProfilePictureUrl(statelessUser.profilePictureUrl);
-      }
-      if (statelessUser.sshKey) {
-        user.updateSshKey(statelessUser.sshKey);
+        returnCode = ReturnCodes.UPDATED;
       }
 
-      // return ReturnCodes.NOTHING_CHANGED;
-      return ReturnCodes.UPDATED;
+      if(statelessUser.job
+        && (
+          !user.getJob()
+          || !user.getJob().equals(statelessUser.job)
+        )
+      ) {
+        console.log("BBB 3");
+        user.updateJob(statelessUser.job);
+        returnCode = ReturnCodes.UPDATED;
+      }
+      console.log("AAAAAA 3");
+      if (statelessUser.birthdate) {
+        user.updateBirthDate(statelessUser.birthdate);
+        returnCode = ReturnCodes.UPDATED;
+      }
+      console.log("AAAAAA 4");
+      if (statelessUser.password && !statelessUser.password.hasSameValue(user.getPassword())) {
+        user.updatePassword(statelessUser.password);
+        returnCode = ReturnCodes.UPDATED;
+      }
+      console.log("AAAAAA 5");
+      if (statelessUser.profilePictureUrl) {
+        user.updateProfilePictureUrl(statelessUser.profilePictureUrl);
+        returnCode = ReturnCodes.UPDATED;
+      }
+      console.log("AAAAAA 6");
+      if (statelessUser.sshKey) {
+        user.updateSshKey(statelessUser.sshKey);
+        returnCode = ReturnCodes.UPDATED;
+      }
+
+      return returnCode;
     }
 
     // ####################

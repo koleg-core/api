@@ -55,10 +55,15 @@ export class OrganisationService {
   }
 
   public async updateUser(user: StatelessUser): Promise<ReturnCodes> {
+
+    if(!user) {
+      throw Error("Invalid user argument user: StatelessUser.");
+    }
     if(!user.id) {
       throw Error("Invalid user argument property: id of user: StatelessUser should not be null.");
     }
     await this._updateOrganisation();
+
     const returnCode = this._organisation.updateUser(user);
     if (returnCode === ReturnCodes.UPDATED) {
       this.repository.updateUser(user);

@@ -178,7 +178,7 @@ describe("Organisation", () => {
       }
       done();
     });
-    it("user should be without error", (done) => {
+    it("user should be get without error", (done) => {
       try {
         if(!organisation.getReadableUsers()) {
           const err = "There is no ReadableUser list";
@@ -193,6 +193,22 @@ describe("Organisation", () => {
       }
       done();
     });
+    it("user should be edited without error", (done) => {
+      try {
+        if(!organisation.get) {
+          const err = "There is no ReadableUser list";
+          done(err);
+        }
+        if(!organisation.getReadableUserById(userId)) {
+          const err = "There is no ReadableUser";
+          done(err);
+        }
+      } catch (err) {
+        done(err);
+      }
+      done();
+    });
+
     it("user should be removed without error", (done) => {
       try {
         if(!organisation.deleteUser(userId)) {

@@ -1,4 +1,4 @@
-import { ValidateNested } from "class-validator";
+import { ValidateNested, IsDefined, IsEmail} from "class-validator";
 import { SshKey } from "domain/user/SshKey";
 import { UserIdentity } from "domain/user/UserIdentity";
 import { Job } from "domain/user/Job";
@@ -7,8 +7,18 @@ import { PhoneNumber } from "domain/user/PhoneNumber";
 import { StatelessUser } from "domain/user/StatelessUser";
 
 export class WritableUserApiModel {
+  @IsDefined()
+  public readonly firstName: string;
+  @IsDefined()
+  public readonly lastName: string;
+  public readonly birthdate: string;
+  @IsDefined()
+  @IsEmail()
+  public readonly email: string;
   @ValidateNested()
   public readonly password: Password;
+  @IsDefined()
+  public readonly groupIds: string[];
   @ValidateNested({ each: true })
   public readonly phoneNumbers: PhoneNumber[];
   @ValidateNested()
@@ -17,13 +27,13 @@ export class WritableUserApiModel {
   public readonly sshKey: SshKey;
 
   constructor(
-    public firstName: string,
-    public lastName: string,
-    public birthdate: string,
-    public email: string,
+    firstName: string,
+    lastName: string,
+    birthdate: string,
+    email: string,
     password: Password,
-    public groupIds: string[],
-    phoneNumbers: PhoneNumber[], // TODO multiple phones numbers
+    groupIds: string[] = [],
+    phoneNumbers: PhoneNumber[] = [], // TODO multiple phones numbers
     public readonly username: string = null,
     public readonly profilePictureUrl: URL = null,
     job: Job = null,
@@ -31,39 +41,46 @@ export class WritableUserApiModel {
     public readonly expirationDate: string = null,
     public readonly disableDate: string = null
   ) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.birthdate = birthdate;
+    this.email = email;
     this.password = password;
+    this.groupIds = groupIds;
     this.phoneNumbers = phoneNumbers;
     this.job = job;
-    if(sshKey && Object.keys(sshKey).length !== 0) {
-      this.sshKey = sshKey;
-    }
+    this.sshKey = sshKey;
   }
 
   public static toWritableUserApiModel(user: StatelessUser): WritableUserApiModel {
     if(!user) {
       throw new Error("Invalid argument parameter user is null or undefined");
     }
+    const birthdate: string =
+      user.birthdate
+        ? user.birthdate.toISOString()
+        : null;
     const expirationDate: string =
       user.expirationDate
-        ? null
-        : user.expirationDate.toISOString();
+        ? user.expirationDate.toISOString()
+        : null;
     const disableDate: string =
       user.disableDate
-        ? null
-        : user.disableDate.toISOString();
+        ? user.disableDate.toISOString()
+        : null;
     const job: Job =
-    Object.keys(user.job).length === 0
-      ? null
-      : user.job;
+      user.job && Object.keys(user.job).length !== 0
+        ? user.job
+        : null;
     const sshKey: SshKey =
-    Object.keys(user.sshKey).length === 0
-      ? null
-      : user.sshKey;
+    user.sshKey && Object.keys(user.sshKey).length !== 0
+      ? user.sshKey
+      : null;
 
     return new WritableUserApiModel(
       user.identity.firstName,
       user.identity.lastName,
-      user.birthdate.toISOString(),
+      birthdate,
       user.identity.email,
       user.password,
       user.groupsIds,
@@ -78,22 +95,26 @@ export class WritableUserApiModel {
   }
 
   public toStatelessUser(id: string = null): StatelessUser {
+    const birthdate: Date =
+      this.birthdate
+        ? new Date(this.birthdate)
+        : null;
     const expirationDate: Date =
       this.expirationDate
-        ? null
-        : new Date(this.expirationDate);
+        ? new Date(this.expirationDate)
+        : null;
     const disableDate: Date =
       this.disableDate
-        ? null
-        : new Date(this.disableDate);
+        ? new Date(this.disableDate)
+        : null;
     const job: Job =
-      Object.keys(this.job).length === 0
-        ? null
-        : this.job;
+      this.job && Object.keys(this.job).length !== 0
+        ? this.job
+        : null;
     const sshKey: SshKey =
-      Object.keys(this.sshKey).length === 0
-        ? null
-        : this.sshKey;
+      this.sshKey && Object.keys(this.sshKey).length !== 0
+        ? this.sshKey
+        : null;
 
     return new StatelessUser(
       id,
@@ -101,7 +122,7 @@ export class WritableUserApiModel {
       null,
       new UserIdentity(this.firstName, this.lastName, this.username, this.email),
       this.password,
-      new Date(this.birthdate),
+      birthdate,
       null,
       this.phoneNumbers,
       this.groupIds,

@@ -29,7 +29,7 @@ export class Job {
   }
 
   public equals(obj: unknown): boolean {
-    if(typeof(obj) !== typeof(this)) {
+    if(!obj || typeof(obj) !== typeof(this)) {
       return false;
     }
 

@@ -10,4 +10,5 @@ export enum ReturnCodes {
   WAS_ALREADY_USED = -3,
   CONFLICTING = -4,
   SERVER_ERROR = -5,
+  NOT_UPDATED = -6,
 }
