@@ -1,5 +1,5 @@
 export interface SerializerRoot<E, T> {
 
-  deserialize(model: T): E;
+  deserialize(model: T): Promise<E>;
   serialize(model: E): T;
 }

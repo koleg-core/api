@@ -11,17 +11,27 @@ export class Password {
         throw new Error('Invalid arguement value: string');
       }
 
-      if (this._dateLimit) {
-        if (this.isExpired()) {
-          throw new Error('Invalid arguement dateLimit: cannot be in past');
+        /*if (this._dateLimit) {
+            if (this.isExpired()) {
+                throw new Error('Invalid arguement dateLimit: cannot be in past');
+            }
+        } else {
+            this._initializeDateLimit();
+        }*/
+        if(!this._dateLimit){
+            this.initializeDateLimit();
         }
-      } else {
+       else {
         this.initializeDateLimit();
       }
     }
 
     public getValue(): string {
       return this.value;
+    }
+
+    public getDateLimit(): Date {
+        return this._dateLimit;
     }
 
     public hasSameValue(password: Password): boolean {
