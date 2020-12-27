@@ -5,6 +5,7 @@ import { StatelessUser } from "domain/user/StatelessUser";
 import { SshKey } from "domain/user/SshKey";
 import { Job } from "domain/user/Job";
 import { PhoneNumber } from "domain/user/PhoneNumber";
+import { PhoneType } from "domain/enums/phone-type.enum.ts";
 // import { Group } from 'domain/group/Group';
 
 import { genStatelessUser } from "./statelessUser";
@@ -195,20 +196,38 @@ describe("Organisation", () => {
     });
     it("user should be edited without error", (done) => {
       try {
-        if(!organisation.get) {
-          const err = "There is no ReadableUser list";
-          done(err);
-        }
-        if(!organisation.getReadableUserById(userId)) {
-          const err = "There is no ReadableUser";
-          done(err);
-        }
+        const identity = new UserIdentity("thomas", "noname", "thomas.noname@test.com");
+        const password = new Password("My secret password");
+        const birthdate = new Date();
+        const profilePictureUrl = new URL("http://url.com");
+        const job = new Job("vendor");
+        const sshKey = new SshKey("publicKey", "privateKey");
+        const phoneNumbers: PhoneNumber = new PhoneNumber(PhoneType.PHONE_CELL_HOME, "+33511931123");
+
+        const statelessUser = new StatelessUser(
+          userId,
+          null,
+          null,
+          identity,
+          password,
+          birthdate,
+          null,
+          [phoneNumbers],
+          null,
+          job,
+          null,
+          profilePictureUrl,
+          sshKey,
+          null
+        );
+
+        organisation.updateUser(statelessUser);
+
       } catch (err) {
         done(err);
       }
       done();
     });
-
     it("user should be removed without error", (done) => {
       try {
         if(!organisation.deleteUser(userId)) {

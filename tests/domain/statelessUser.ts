@@ -14,7 +14,9 @@ import { genUserIdentity } from "./userIdentity";
 
 
 
-export const genStatelessUser = (organisation: Organisation): StatelessUser => {
+export const genStatelessUser = (
+  organisation: Organisation,
+): StatelessUser => {
   const identity:UserIdentity = genUserIdentity();
   const phoneNumber: PhoneNumber = genPhoneNumber();
   const passwordWithExpiration:Password = genPassword();

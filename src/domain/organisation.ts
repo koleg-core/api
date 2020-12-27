@@ -151,7 +151,7 @@ export class Organisation {
       return user.getReadable();
     }
 
-    public getStatelessUser(userId: string): StatelessUser {
+    public getStatelessUserById(userId: string): StatelessUser {
       if (!userId) {
         throw new Error("Invalid argument userId: string");
       }
@@ -260,26 +260,32 @@ export class Organisation {
           || !user.getJob().equals(statelessUser.job)
         )
       ) {
-        console.log("BBB 3");
         user.updateJob(statelessUser.job);
         returnCode = ReturnCodes.UPDATED;
       }
-      console.log("AAAAAA 3");
-      if (statelessUser.birthdate) {
+      if (statelessUser.birthdate
+          && user.getBirthDate() !== statelessUser.birthdate
+      ) {
         user.updateBirthDate(statelessUser.birthdate);
         returnCode = ReturnCodes.UPDATED;
       }
-      console.log("AAAAAA 4");
-      if (statelessUser.password && !statelessUser.password.hasSameValue(user.getPassword())) {
+      if (statelessUser.password
+          && !statelessUser.password.hasSameValue(user.getPassword())) {
         user.updatePassword(statelessUser.password);
         returnCode = ReturnCodes.UPDATED;
       }
-      console.log("AAAAAA 5");
-      if (statelessUser.profilePictureUrl) {
+      if (statelessUser.expirationDate
+          && statelessUser.expirationDate !== user.getExpirationDate()
+      ) {
+        user.updateExpirationDate(statelessUser.expirationDate);
+        returnCode = ReturnCodes.UPDATED;
+      }
+      if (statelessUser.profilePictureUrl
+          && statelessUser.profilePictureUrl !== user.getProfilePictureUrl()
+      ) {
         user.updateProfilePictureUrl(statelessUser.profilePictureUrl);
         returnCode = ReturnCodes.UPDATED;
       }
-      console.log("AAAAAA 6");
       if (statelessUser.sshKey) {
         user.updateSshKey(statelessUser.sshKey);
         returnCode = ReturnCodes.UPDATED;

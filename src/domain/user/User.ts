@@ -345,6 +345,15 @@ export class User {
     return !( !this._expirationDate || this._expirationDate < new Date() );
   }
 
+  public getExpirationDate(): Date {
+    return this._expirationDate;
+  }
+
+  public updateExpirationDate(expirationDate: Date): void {
+    this._expirationDate = expirationDate;
+    this._update();
+  }
+
   public canLogin(password: string, declinedIdentity: string): boolean {
     return !this.isDisabled()
       && this._identity.control(declinedIdentity)
@@ -354,14 +363,8 @@ export class User {
 
   // Exporting =======
   public getReadable(): ReadableUser {
-    let publicKey: string = null;
-    if(this._sshKey) {
-      publicKey = this._sshKey.publicKey;
-    }
-    let disableDate: Date = null;
-    if(this._disableDate) {
-      disableDate = this._disableDate;
-    }
+    const publicKey: string = this._sshKey ? this._sshKey.publicKey : null;
+    const disableDate: Date = this._disableDate ? this._disableDate : null;
 
     return new ReadableUser(
       this._id,
