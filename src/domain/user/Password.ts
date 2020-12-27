@@ -19,7 +19,7 @@ export class Password {
             this._initializeDateLimit();
         }*/
         if(!this._dateLimit){
-            this._initializeDateLimit();
+            this.initializeDateLimit();
         }
        else {
         this.initializeDateLimit();
