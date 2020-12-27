@@ -321,7 +321,7 @@ export class Database {
 
     getPhoneType(name:string):Promise<PhoneTypeModel>{
         return PhoneTypeModel.findOne({ where: { name } });
-    }
+    } 
 
   getJobUser(user: UserModel): Promise<JobModel>{
     return user.getJob();

@@ -21,7 +21,7 @@ import { UserModel } from "./UserModel";
 export interface UserPhoneAttributes{
     value: string;
     idUser?: number;
-    idPhoneType?: number;
+    idPhoneType?: number; 
     user?: UserModel|UserModel['id'];
     type?: PhoneTypeModel|PhoneTypeModel['id'];
   }

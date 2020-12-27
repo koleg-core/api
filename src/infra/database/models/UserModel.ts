@@ -17,7 +17,7 @@ import {
     HasManySetAssociationsMixin,
     BelongsToManyAddAssociationsMixin,
     HasManyRemoveAssociationMixin,
-    HasManyRemoveAssociationsMixin,
+    HasManyRemoveAssociationsMixin, 
     BelongsToManyRemoveAssociationMixin
   } from "sequelize";
 import { GroupsModel } from "./GroupsModel";
