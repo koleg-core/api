@@ -8,7 +8,7 @@ export class JobSerializer implements SerializerRoot<Job, JobModel> {
     return new JobModel({ name: job.getName() });
   }
 
-  public deserialize(jobModel: JobModel): Job {
+  public async deserialize(jobModel: JobModel): Promise<Job> {
     return new Job(jobModel.name);
   }
 }

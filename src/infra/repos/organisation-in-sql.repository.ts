@@ -32,7 +32,10 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     const remoteJobs = await this._database.getJobs();
     if (Array.isArray(remoteJobs) && remoteJobs.length > 0) {
       remoteJobs.forEach(remoteJob => {
-        organisation.addJob(JobSerializer.prototype.deserialize(remoteJob));
+        JobSerializer.prototype.deserialize(remoteJob)
+          .then(response => {
+            organisation.addJob(response);
+          });
       });
     }
 

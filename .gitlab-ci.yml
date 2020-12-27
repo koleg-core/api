@@ -72,6 +72,9 @@ stages:
 ☸️production_deploy:
   stage: deploy
   image: google/cloud-sdk
+  only:
+    - master
+    - develop
   script: |
     kubectl \
       set image deployment.v1.apps/$IMAGE_NAME \
