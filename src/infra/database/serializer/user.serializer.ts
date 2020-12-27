@@ -9,7 +9,6 @@ import { Password } from "domain/user/Password";
 import { SshKey } from "domain/user/SshKey";
 import { UserPhone } from "../models/UserPhone";
 import { PhoneTypeSerializer } from "./phone-type.serializer";
-import { GroupsModel } from "../models/GroupsModel";
 
 export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> {
 
