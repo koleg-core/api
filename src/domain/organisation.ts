@@ -184,6 +184,10 @@ export class Organisation {
         }
       });
 
+      if(statelessUser.job) {
+        this.addJob(statelessUser.job);
+      }
+
       const newUser = new User(statelessUser);
       this._users.forEach(user => {
         const identity: UserIdentity = user.getIdentity();
@@ -249,48 +253,77 @@ export class Organisation {
             throw new Error(`Invalid groupId: ${groupId}`);
           }
         });
-
-        user.updateGroups(statelessUser.groupsIds);
+        returnCode = user.updateGroups(statelessUser.groupsIds);
+        if(returnCode < 0 ) {
+          return returnCode;
+        }
         returnCode = ReturnCodes.UPDATED;
       }
 
+      const job = user.getJob();
       if(statelessUser.job
         && (
           !user.getJob()
-          || !user.getJob().equals(statelessUser.job)
+          || !user.getJob().hasSameName(statelessUser.job)
         )
       ) {
-        user.updateJob(statelessUser.job);
+        returnCode = user.updateJob(statelessUser.job);
+        if(returnCode < 0 ) {
+          return returnCode;
+        }
+        if(statelessUser.job) {
+          this.addJob(statelessUser.job);
+        }
         returnCode = ReturnCodes.UPDATED;
       }
       if (statelessUser.birthdate
           && user.getBirthDate() !== statelessUser.birthdate
       ) {
-        user.updateBirthDate(statelessUser.birthdate);
+        returnCode = user.updateBirthDate(statelessUser.birthdate);
+        if(returnCode < 0 ) {
+          return returnCode;
+        }
         returnCode = ReturnCodes.UPDATED;
       }
       if (statelessUser.password
           && !statelessUser.password.hasSameValue(user.getPassword())) {
-        user.updatePassword(statelessUser.password);
-        returnCode = ReturnCodes.UPDATED;
-      }
-      if (statelessUser.expirationDate
-          && statelessUser.expirationDate !== user.getExpirationDate()
-      ) {
-        user.updateExpirationDate(statelessUser.expirationDate);
+        returnCode = user.updatePassword(statelessUser.password);
+        if(returnCode < 0) {
+          return returnCode;
+        }
         returnCode = ReturnCodes.UPDATED;
       }
       if (statelessUser.profilePictureUrl
           && statelessUser.profilePictureUrl !== user.getProfilePictureUrl()
       ) {
-        user.updateProfilePictureUrl(statelessUser.profilePictureUrl);
+        returnCode = user.updateProfilePictureUrl(statelessUser.profilePictureUrl);
+        if(returnCode < 0) {
+          return returnCode;
+        }
         returnCode = ReturnCodes.UPDATED;
       }
       if (statelessUser.sshKey) {
-        user.updateSshKey(statelessUser.sshKey);
+        returnCode = user.updateSshKey(statelessUser.sshKey);
+        if(returnCode < 0) {
+          return returnCode;
+        }
+        returnCode = ReturnCodes.UPDATED;
+      }
+      // Expiration date must be done last
+      // so as not to disrupt the other modifications.
+      if (statelessUser.expirationDate
+          && statelessUser.expirationDate !== user.getExpirationDate()
+      ) {
+        console.log("expirationDate");
+        returnCode = user.updateExpirationDate(statelessUser.expirationDate);
+        if(returnCode < 0) {
+          return returnCode;
+        }
         returnCode = ReturnCodes.UPDATED;
       }
 
+      // console.log("NEW USER", user);
+      this._users.set(user.getId(), user);
       return returnCode;
     }
 
@@ -303,7 +336,7 @@ export class Organisation {
     }
 
     public containsJob(givenJob: Job): boolean {
-      if (this._jobs.some(job => job.equals(givenJob))) {
+      if (this._jobs.some(job => job.hasSameName(givenJob))) {
         return true;
       }
 
@@ -321,7 +354,7 @@ export class Organisation {
 
     public getJob(name: string): Job {
       const queryJob = new Job(name);
-      const requestedJob = this._jobs.find(job => job.equals(queryJob));
+      const requestedJob = this._jobs.find(job => job.hasSameName(queryJob));
 
       if (!requestedJob) {
         throw new Error("Job not found");
@@ -340,7 +373,7 @@ export class Organisation {
       const deleteJobs = this._jobs.splice(requestedJobIndex, 1);
       // Wipe users jobs
       this._users.forEach(user => {
-        if( this._jobs[requestedJobIndex].equals(user.getJob())){
+        if( this._jobs[requestedJobIndex].hasSameName(user.getJob())){
           user.updateJob(null);
         }
       });

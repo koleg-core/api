@@ -1,4 +1,5 @@
 import { Service } from "typedi";
+import { classToPlain } from "class-transformer";
 
 import { OrganisationRepository } from "../../domain/repos/organisation.repository";
 import { Organisation } from "../../domain/organisation";
