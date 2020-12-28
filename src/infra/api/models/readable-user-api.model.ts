@@ -1,28 +1,89 @@
-import { ValidateNested, IsDefined, IsEmail} from "class-validator";
+import {
+  ValidateNested,
+  IsUUID,
+  IsString,
+  IsEmail,
+  IsDate,
+  IsUrl
+} from "class-validator";
+
 import { Job } from "domain/user/Job";
-import { UserIdentity } from "domain/user/UserIdentity";
 import { PhoneNumber } from "domain/user/PhoneNumber";
+import { UserIdentity } from "domain/user/UserIdentity";
 import { StatelessUser } from "domain/user/StatelessUser";
 import { ReadableUser } from "domain/user/ReadableUser";
+import {JobApiModel} from "./job-api.model";
+import { PhoneNumberApiModel } from "./phone-number-api.model";
 
 export class ReadableUserApiModel {
 
+  @IsUUID()
+  public readonly id: string;
+  @IsString()
+  public readonly firstName: string;
+  @IsString()
+  public readonly lastName: string;
+  @IsString()
+  public readonly username: string;
+  @IsDate()
+  public readonly birthdate: string;
+  @IsEmail()
+  public readonly email: string;
+  public readonly groupIds: string[];
+  @IsUrl()
+  public readonly profilePictureUrl: string;
+  @ValidateNested()
+  public readonly job: JobApiModel;
+  @ValidateNested({each: true})
+  public readonly phones: PhoneNumberApiModel[]; // TODO multiple phones numbers
+  @IsString()
+  public readonly sshPublicKey: string;
+  @IsDate()
+  public readonly expirationDate: string;
+  @IsDate()
+  public readonly disableDate: string;
+  @IsDate()
+  public readonly updateDate: string;
+  @IsDate()
+  public readonly creationDate: string;
   constructor(
-    public readonly id: string,
-    public readonly firstName: string,
-    public readonly lastName: string,
-    public readonly username: string,
-    public readonly birthdate: string,
-    public readonly email: string,
-    public readonly groupIds: string[],
-    public readonly profilePictureUrl: string,
-    public readonly job: Job,
-    public readonly phones: PhoneNumber[], // TODO multiple phones numbers
-    public readonly sshPublicKey: string, public readonly expirationDate: string,
-    public readonly disableDate: string,
-    public readonly updateDate: string,
-    public readonly creationDate: string
+    id: string,
+    firstName: string,
+    lastName: string,
+    username: string,
+    birthdate: string,
+    email: string,
+    groupIds: string[],
+    profilePictureUrl: string,
+    job: JobApiModel,
+    phones: PhoneNumberApiModel[], // TODO multiple phones numbers
+    sshPublicKey: string,
+    expirationDate: string,
+    disableDate: string,
+    updateDate: string,
+    creationDate: string
   ) {
+    // IMPORTANT:
+    // The class validator fill object after creation,
+    // then this constructor is here to external manipulations.
+    // For the same reason, we can't throw error into constructor
+    // for missing properties.
+
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.username = username;
+    this.birthdate = birthdate;
+    this.email = email;
+    this.groupIds = groupIds;
+    this.profilePictureUrl = profilePictureUrl;
+    this.job = job;
+    this.phones = phones;
+    this.sshPublicKey = sshPublicKey;
+    this.expirationDate = expirationDate;
+    this.disableDate = disableDate;
+    this.updateDate = updateDate;
+    this.creationDate = creationDate;
   }
 
   public static toReadableUserApiModel(user: ReadableUser): ReadableUserApiModel {
@@ -36,10 +97,18 @@ export class ReadableUserApiModel {
       user.getDisableDate()
         ? user.getDisableDate().toISOString()
         : null;
-    const job: Job =
+    const job: JobApiModel =
       user.getJob() && Object.keys(user.getJob() ).length !== 0
-        ? user.getJob()
+        ? JobApiModel.toJobModel(user.getJob())
         : null;
+    const phoneNumbersApiModel: PhoneNumberApiModel[] = [];
+    user.getPhoneNumbers().forEach(
+      phoneNumber => {
+        phoneNumbersApiModel.push(
+          PhoneNumberApiModel.toPhoneNumberApiModel(phoneNumber)
+        );
+      }
+    );
     const sshPublicKey: string =
       user.getSshPublicKey()
         ? user.getSshPublicKey()
@@ -55,7 +124,7 @@ export class ReadableUserApiModel {
       user.getGroupIds(),
       user.getProfilePictureUrl().toString(),
       job,
-      user.getPhoneNumbers(),
+      phoneNumbersApiModel,
       sshPublicKey,
       expirationDate,
       disableDate,
@@ -74,9 +143,17 @@ export class ReadableUserApiModel {
       this.disableDate
         ? new Date(this.disableDate)
         : null;
+    const phoneNumbers: PhoneNumber[] = [];
+    this.phones.forEach(
+      phoneNumberApiModel => {
+        phoneNumbers.push(
+          phoneNumberApiModel.toPhoneNumber()
+        );
+      }
+    );
     const job: Job =
     this.job && Object.keys(this.job).length !== 0
-      ? this.job
+      ? this.job.toJob()
       : null;
 
     return new StatelessUser(
@@ -87,7 +164,7 @@ export class ReadableUserApiModel {
       null,
       new Date(this.birthdate),
       null,
-      this.phones,
+      phoneNumbers,
       this.groupIds,
       job,
       disableDate,

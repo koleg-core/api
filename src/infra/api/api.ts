@@ -3,7 +3,6 @@ import "reflect-metadata"; // this shim is required
 import {
   getMetadataArgsStorage,
   useContainer,
-  useExpressServer,
   createExpressServer,
   RoutingControllersOptions
 } from "routing-controllers";
@@ -16,7 +15,7 @@ import { Application } from "express";
 
 import { UsersController } from "./controllers/users.controller";
 import { JobsController } from "./controllers/jobs.controller";
-import { OrganisationService } from "../../app/organisation.service";
+import { OrganisationService } from "app/organisation.service";
 
 export class Api {
   private _app: Application;
@@ -70,8 +69,6 @@ export class Api {
     // TODO: schema is not working, fix it
     // Parse class-validator classes into JSON Schema:
     const schemas = validationMetadatasToSchemas();
-    // validationMetadatasToSchemas
-    console.log(schemas);
 
     // Parse routing-controllers classes into OpenAPI spec:
     const storage = getMetadataArgsStorage();

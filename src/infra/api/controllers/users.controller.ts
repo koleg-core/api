@@ -52,7 +52,6 @@ export class UsersController {
   @Post("/users")
   @HttpCode(HttpStatusCode.CREATED)
   async post(@Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
-    console.log(user);
     const statelessUser: StatelessUser = user.toStatelessUser();
     return this._organisationService.createUser(statelessUser)
       .then(id => {

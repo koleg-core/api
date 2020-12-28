@@ -59,9 +59,7 @@ export class OrganisationService {
     if(!user) {
       throw Error("Invalid user argument user: StatelessUser.");
     }
-    if(!user.id) {
-      throw Error("Invalid user argument property: id of user: StatelessUser should not be null.");
-    }
+
     await this._updateOrganisation();
 
     const returnCode = this._organisation.updateUser(user);
@@ -75,7 +73,7 @@ export class OrganisationService {
     await this._updateOrganisation();
     const userId: string = this._organisation.addUser(user);
     if (userId) {
-      const userToSave: StatelessUser = this._organisation.getStatelessUser(userId);
+      const userToSave: StatelessUser = this._organisation.getStatelessUserById(userId);
       this.repository.createUser(userToSave);
       return userId;
     }

@@ -28,14 +28,9 @@ export class Job {
     );
   }
 
-  public equals(obj: unknown): boolean {
-    if(!obj || typeof(obj) !== typeof(this)) {
-      return false;
-    }
+  public hasSameName(job: Job): boolean {
 
-    const compareJob: Job = obj as Job;
-
-    if(this.getSlugifyName() === compareJob.getSlugifyName()) {
+    if(this.getSlugifyName() === job.getSlugifyName()) {
       return true;
     }
     return false;

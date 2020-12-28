@@ -5,13 +5,13 @@ export class Password {
 
     constructor(
         private value: string,
-        private _dateLimit: Date = null
+        private dateLimit: Date = null
     ) {
       if (!value) {
         throw new Error("Invalid arguement value: string");
       }
 
-      /*if (this._dateLimit) {
+      /*if (this.dateLimit) {
             if (this.isExpired()) {
                 throw new Error('Invalid arguement dateLimit: cannot be in past');
             }
@@ -25,7 +25,7 @@ export class Password {
     }
 
     public getDateLimit(): Date {
-      return this._dateLimit;
+      return this.dateLimit;
     }
 
     public hasSameValue(password: Password): boolean {
@@ -33,7 +33,7 @@ export class Password {
     }
 
     public isExpired(): boolean {
-      return this._dateLimit <= new Date();
+      return this.dateLimit <= new Date();
     }
 
     public isValueValid(valueToCheck: string): boolean {
@@ -42,6 +42,6 @@ export class Password {
 
     private initializeDateLimit(): void {
       const now = new Date();
-      this._dateLimit = new Date(now.setMonth(now.getMonth() + this.DATE_LIMIT_MONTH));
+      this.dateLimit = new Date(now.setMonth(now.getMonth() + this.DATE_LIMIT_MONTH));
     }
 }
