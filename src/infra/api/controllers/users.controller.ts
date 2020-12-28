@@ -113,6 +113,7 @@ export class UsersController {
       });
   }
 
+  @HttpCode(HttpStatusCode.ACCEPTED)
   @Put("/users/:id/update-password")
   async updatePassword(@Param("id") id: string, @Body() frontHashedPassword: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUserById(id)
