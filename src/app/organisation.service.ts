@@ -16,7 +16,7 @@ export class OrganisationService {
   // ORGANISATION
   public async getName(): Promise<string> {
     await this._updateOrganisation();
-    return  this._organisation.getName();
+    return  this._organisation.getId();
   }
 
   // JOBS
@@ -59,6 +59,11 @@ export class OrganisationService {
     return this._organisation.getReadableUserById(id);
   }
 
+  public async getUserByIdWithPassword(id: string): Promise<StatelessUser> {
+    await this._updateOrganisation();
+    return this._organisation.getStatelessUserById(id);
+  }
+
   public async updateUser(user: StatelessUser): Promise<ReturnCodes> {
 
     if(!user) {
@@ -72,6 +77,21 @@ export class OrganisationService {
       this.repository.updateUser(user);
     }
     return returnCode;
+  }
+
+  public async updateUserPassword(userId: string, newPassword: string): Promise<ReturnCodes> {
+    await this._updateOrganisation();
+    
+    const returnCode = this._organisation.updateUserPassword(userId, newPassword);
+    if (returnCode === ReturnCodes.UPDATED) {
+      this.repository.updateUser(this._organisation.getStatelessUserById(userId));
+    }
+    return returnCode;
+  }
+
+  public async findUserByIdentifier(identifier: string): Promise<string> {
+    await this._updateOrganisation();
+    return this._organisation.findUserByIdentifier(identifier);
   }
 
   public async createUser(user: StatelessUser): Promise<string> {
@@ -92,6 +112,11 @@ export class OrganisationService {
       this.repository.deleteUser(id);
     }
     return returnCode;
+  }
+
+  public async verifyUserPassword(id: string, password: string): Promise<boolean> {
+    await this._updateOrganisation();
+    return this._organisation.verifyUserPassword(id, password);
   }
 
   // GROUPS

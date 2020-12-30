@@ -12,7 +12,7 @@ import { PhoneNumber } from "domain/user/PhoneNumber";
 import { UserIdentity } from "domain/user/UserIdentity";
 import { StatelessUser } from "domain/user/StatelessUser";
 import { ReadableUser } from "domain/user/ReadableUser";
-import {JobApiModel} from "./job-api.model";
+import { JobApiModel } from "./job-api.model";
 import { PhoneNumberApiModel } from "./phone-number-api.model";
 
 export class ReadableUserApiModel {
@@ -34,7 +34,7 @@ export class ReadableUserApiModel {
   public readonly profilePictureUrl: string;
   @ValidateNested()
   public readonly job: JobApiModel;
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   public readonly phones: PhoneNumberApiModel[]; // TODO multiple phones numbers
   @IsString()
   public readonly sshPublicKey: string;
@@ -98,7 +98,7 @@ export class ReadableUserApiModel {
         ? user.getDisableDate().toISOString()
         : null;
     const job: JobApiModel =
-      user.getJob() && Object.keys(user.getJob() ).length !== 0
+      user.getJob() && Object.keys(user.getJob()).length !== 0
         ? JobApiModel.toJobModel(user.getJob())
         : null;
     const phoneNumbersApiModel: PhoneNumberApiModel[] = [];
@@ -123,7 +123,7 @@ export class ReadableUserApiModel {
       identity.firstName,
       identity.lastName,
       identity.username,
-      user.getBirthDate().toISOString(),
+      user.getBirthDate()?.toISOString(),
       identity.email,
       user.getGroupIds(),
       profilePictureUrl,
@@ -132,8 +132,8 @@ export class ReadableUserApiModel {
       sshPublicKey,
       expirationDate,
       disableDate,
-      user.getUpdateDate().toISOString(),
-      user.getCreationDate().toISOString()
+      user.getUpdateDate()?.toISOString(),
+      user.getCreationDate()?.toISOString()
     );
   }
 
@@ -156,9 +156,9 @@ export class ReadableUserApiModel {
       }
     );
     const job: Job =
-    this.job && Object.keys(this.job).length !== 0
-      ? this.job.toJob()
-      : null;
+      this.job && Object.keys(this.job).length !== 0
+        ? this.job.toJob()
+        : null;
 
     return new StatelessUser(
       this.id,

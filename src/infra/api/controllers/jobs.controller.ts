@@ -2,13 +2,14 @@ import Fuse from "fuse.js";
 
 import { ReturnCodes } from "../../../domain/enums/return-codes.enum";
 import { Job } from "../../../domain/user/Job";
-import { QueryParam, Body, Delete, Get, HttpCode, JsonController, Param, Post } from "routing-controllers";
+import { QueryParam, Body, Delete, Get, HttpCode, JsonController, Param, Post, UseBefore } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { ApiError } from "../errors/api-error";
 import { ResponseModel } from "../models/response.model";
 import HttpStatusCode from "../models/http-status-code.enum";
 import { JobApiModel } from "../models/job-api.model";
 import { OrganisationService } from "../../../app/organisation.service";
+import { AuthService } from "../auth/auth.service";
 
 @Service("job.controller")
 @JsonController()
@@ -22,6 +23,7 @@ export class JobsController {
   }
 
   @Get("/jobs")
+  @UseBefore(AuthService.checkJwt)
   async getAll(@QueryParam("filter") filter?: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getJobs()
       .then(jobs => {
@@ -48,6 +50,7 @@ export class JobsController {
   }
 
   @Post("/jobs")
+  @UseBefore(AuthService.checkJwt)
   async post(@Body() job: JobApiModel): Promise<ResponseModel | ApiError> {
     return this._organisationService.createJob(job.toJob())
       .then(returnCode => {
@@ -63,6 +66,7 @@ export class JobsController {
 
   @HttpCode(HttpStatusCode.OK)
   @Get("/jobs/:name")
+  @UseBefore(AuthService.checkJwt)
   async get(@Param("name") name: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getJob(name)
       .then(job => {
@@ -78,6 +82,7 @@ export class JobsController {
 
   @HttpCode(HttpStatusCode.OK)
   @Delete("/jobs/:name")
+  @UseBefore(AuthService.checkJwt)
   async delete(@Param("name") name: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.deleteJob(name)
       .then(returnCode => {
