@@ -16,6 +16,17 @@ const schema = {
     env: "KOLEG_PORT",
     arg: "port",
   },
+  session: {
+    secretKey: {
+      doc: "The secret key that is used to",
+      format: String,
+    },
+    duration: {
+      doc: "The time duration of session",
+      format: String,
+      default: "10h",
+    },
+  },
   s3: {
     bucket: {
       doc: "URL to object storage service.",

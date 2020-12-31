@@ -11,10 +11,9 @@ export class OrganisationService {
 
   constructor(
     private repository: OrganisationRepository
-  ) { }
+  ) {}
 
   // JOBS
-
   public async getJobs(): Promise<Job[]> {
     await this._updateOrganisation();
     return this._organisation.getJobs();

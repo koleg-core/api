@@ -16,6 +16,7 @@ import { Application } from "express";
 import { UsersController } from "./controllers/users.controller";
 import { JobsController } from "./controllers/jobs.controller";
 import { OrganisationService } from "app/organisation.service";
+import {AssetsService} from "app/assets.service";
 
 export class Api {
   private _app: Application;
@@ -28,16 +29,21 @@ export class Api {
   };
 
   constructor(
-    private _organisationService: OrganisationService
+    private _organisationService: OrganisationService,
+    private _assetsService: AssetsService
   ) {
 
     if (!this._organisationService) {
       throw new Error("Invalid argument _organisationService: OrganisationService is not defined.");
     }
+    if(!this._assetsService) {
+      throw new Error("Invalid argument _assetsService: AssetsService is not defined");
+    }
 
     // TODO externalize it into config
     Container.set("saltRounds.security.config", 10);
     Container.set("organisation.service", this._organisationService);
+    Container.set("assets.service", this._assetsService);
 
     // To have working typedi
     useContainer(Container);

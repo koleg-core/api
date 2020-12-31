@@ -1,0 +1,66 @@
+// import { Client as MinioClient, ClientOptions, Region } from "minio";
+import AWS from "aws-sdk";
+import { urlJoin } from "url-join-ts";
+
+export class S3 {
+
+  private bucketNameCache: string;
+  private readonly config: AWS.Config;
+  private readonly s3: AWS.S3;
+  // TODO: create metaData from profile picture file uploaded
+  private readonly metaData = {
+    "Content-Type": "application/octet-stream",
+    "X-Amz-Meta-Testing": 1234,
+    "example": 5678
+  }
+
+  // TODO: replace optional arguments by config set into app.
+  constructor(
+    private readonly endpoint: string = "s3.fr-par.scw.cloud",
+    private readonly port: number = 443,
+    private readonly useSSL: boolean = true,
+    private readonly accessKey: string = "SCW61VAZ66GZV68YEBAZ",
+    private readonly secretKey: string = "4949c6de-6916-4e7b-8faa-c108b24bf1ae",
+    private region: string = "fr-par",
+    private bucket: string = "projet-web"
+  ) {
+
+    this.s3 = new AWS.S3({
+      accessKeyId: this.accessKey,
+      secretAccessKey: this.secretKey,
+      apiVersion: "v4",
+      region: this.region,
+      sslEnabled: this.useSSL,
+      endpoint: this.endpoint,
+    });
+  }
+
+  public getS3Url(path: string): URL {
+    if(!path) {
+      throw new Error("Invalid arguments parameters path: string");
+    }
+
+    const protocol = this.useSSL ? "https" : "http";
+    const stringUrl = urlJoin(`${protocol}://${this.endpoint}`, this.bucketNameCache, path);
+    console.log(stringUrl);
+    return new URL(stringUrl);
+  }
+
+  public async uploadContent(data: Buffer, path: string): Promise<void> {
+
+    // var param = {
+    //     Key:  file_name,
+    //     Body: buf,
+    //     ACL: 'public-read',
+    //     ContentType: mime.getType(file_name)
+    // };
+    this.s3.putObject({
+      Bucket: this.bucket,
+      Key: path,
+      ACL: "public-read",
+      Body: data,
+    }, (err, data) => {
+      console.log("AMAZON", err, data);
+    });
+  }
+}

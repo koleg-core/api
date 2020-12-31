@@ -1,6 +1,7 @@
 import { Service, Inject } from "typedi";
 import {
   JsonController,
+  UploadedFile,
   HttpCode,
   Body,
   Get,
@@ -9,18 +10,19 @@ import {
   Delete,
   Param
 } from "routing-controllers";
-
 import { hash } from "bcrypt";
 
 import { ReturnCodes } from "domain/enums/return-codes.enum";
 import {Password} from "domain/user/Password";
 import {StatelessUser} from "domain/user/StatelessUser";
 
+import { OrganisationService } from "app/organisation.service";
+import {AssetsService} from "app/assets.service";
+
 import { ApiError } from "../errors/api-error";
 import { WritableUserApiModel } from "../models/writable-user-api.model";
 import { ResponseModel } from "../models/response.model";
 import { HttpStatusCode } from "../models/http-status-code.enum";
-import { OrganisationService } from "../../../app/organisation.service";
 import { ReadableUserApiModel } from "../models/readable-user-api.model";
 
 @Service("user.controller")
@@ -33,9 +35,12 @@ export class UsersController {
   @Inject("organisation.service")
   private _organisationService: OrganisationService;
 
+  @Inject("assets.service")
+  private _assetService: AssetsService;
+
   @Get("/users")
   @HttpCode(HttpStatusCode.OK)
-  getAll(): Promise<ResponseModel | ApiError> {
+  async getAll(): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUsers()
       .then(users => {
         const usersResponse: ReadableUserApiModel[] = [];
@@ -138,5 +143,19 @@ export class UsersController {
 
         return new ResponseModel(HttpStatusCode.ACCEPTED, `Your password changment for user: ${id} was aknoleged.`);
       });
+  }
+  @HttpCode(HttpStatusCode.ACCEPTED)
+  @Post("/users/:id/upload_image")
+  async uploadImage(@Param("id") id: string, @UploadedFile("profilePicture") profilePicture: Express.Multer.File): Promise<ResponseModel | ApiError> {
+    const newProfilePictureUrl: URL = this._assetService.uploadProfilePicture(id, profilePicture);
+    const stateLessUser = new StatelessUser(id, null, null, null, null, null, null, null, null, null, null, newProfilePictureUrl);
+    this._organisationService.updateUser(stateLessUser)
+      .then( returnCode => {
+        if(returnCode < 0) {
+          console.log("RETURN CODE", returnCode);
+          throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, "Profile picture was not updated");
+        }
+      });
+    return new ResponseModel(HttpStatusCode.ACCEPTED, "User profile picture will be updated", newProfilePictureUrl.href);
   }
 }

@@ -76,7 +76,6 @@ export class User {
 
     this._creationDate = new Date();
     this._updateDate = this._creationDate;
-    console.log("MY SUPA USER:",this);
   }
 
   // Id =======
@@ -255,20 +254,15 @@ export class User {
   }
 
   public updateJob(job: Job): ReturnCodes {
-    console.log("USER DOMAIN JOB", this._job, job);
     if (!job) {
       throw new Error("Invalid argument job: Job");
     }
 
-    console.log("INSIDE", this._isEditable());
     if (!this._isEditable()) {
-      console.log("WHY ARE WE INSIDE HA");
       return ReturnCodes.NOT_EDITABLE;
     }
-    console.log("INSIDE");
 
     this._job = job;
-    console.log("USER DOMAIN JOB AFTER UPDATE", this._job, job);
     this._update();
     return ReturnCodes.UPDATED;
   }
@@ -416,7 +410,6 @@ export class User {
   }
 
   private _isEditable(): boolean {
-    console.log("Expired and editable", !this.isExpired(), !this.isDisabled());
     return !this.isExpired() && !this.isDisabled();
   }
 

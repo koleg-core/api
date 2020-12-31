@@ -171,7 +171,6 @@ export class Organisation {
       if (!statelessUser.password) {
         throw new Error("Invalid argument statelessUser.password: Password");
       }
-      console.log("ID", statelessUser.id);
       if(statelessUser.id) {
         throw new Error(
           "Invalid argument statelessUser can't had id, please use updateUser() instead."
@@ -237,14 +236,13 @@ export class Organisation {
       if (!this._users.has(statelessUser.id)) {
         return ReturnCodes.NOT_FOUND;
       }
-      if (!statelessUser.identity) {
-        throw new Error("statelessUser.identity Should not be empty");
-      }
-
-      const user: User = this._users.get(statelessUser.id);
-      user.updateIdentity(statelessUser.identity);
 
       let returnCode: ReturnCodes = ReturnCodes.NOTHING_CHANGED;
+
+      const user: User = this._users.get(statelessUser.id);
+      if(statelessUser.identity) {
+        returnCode = user.updateIdentity(statelessUser.identity);
+      }
 
       if (Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0) {
 
@@ -260,7 +258,6 @@ export class Organisation {
         returnCode = ReturnCodes.UPDATED;
       }
 
-      const job = user.getJob();
       if(statelessUser.job
         && (
           !user.getJob()
@@ -314,7 +311,6 @@ export class Organisation {
       if (statelessUser.expirationDate
           && statelessUser.expirationDate !== user.getExpirationDate()
       ) {
-        console.log("expirationDate");
         returnCode = user.updateExpirationDate(statelessUser.expirationDate);
         if(returnCode < 0) {
           return returnCode;
@@ -322,9 +318,13 @@ export class Organisation {
         returnCode = ReturnCodes.UPDATED;
       }
 
-      // console.log("NEW USER", user);
       this._users.set(user.getId(), user);
       return returnCode;
+    }
+
+    public updateUserProfilePictureUrl(id: string, profilePictureUrl: URL): ReturnCodes {
+      const user = this._users.get(id);
+      return user.updateProfilePictureUrl(profilePictureUrl);
     }
 
     // ####################
