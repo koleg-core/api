@@ -10,26 +10,27 @@
         "esModuleInterop": true,
         "composite": true,
         "noEmit": true,
-        "rootDir": "./src",
         "outDir": "dist",
-        "baseUrl": "./src/",
+        "rootDir": ".",
+        "baseUrl": ".",
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
         "emitDecoratorMetadata": true,
         "paths": {
-            "domain/*": ["./domain/*"],
-            "infra/*": ["./infra/*"],
-            "app/*": ["./app/*"],
+            "domain/*": ["./src/domain/*"],
+            "infra/*": ["./src/infra/*"],
+            "app/*": ["./src/app/*"],
             "*": [
-                "node_modules/*"
+                "./types/*"
             ]
         }
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "types/*.d.ts"
     ],
     "exclude": [
-        "node_modules",
+        "./node_modules",
         "dist",
         ".vscode"
     ]

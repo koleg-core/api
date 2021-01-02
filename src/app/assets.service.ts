@@ -24,7 +24,9 @@ export class AssetsService {
     return this.s3Client.getS3Url(filePath);
   }
 
-  uploadVcards(userId: string, vcardData: Buffer): void {
-    throw new Error("Not implemented yet");
+  uploadVcards(userId: string, vcard: Buffer): void {
+    const filePath = `vcard/${userId}.vcf`;
+
+    this.s3Client.uploadContent(vcard, filePath, "text/plain");
   }
 }

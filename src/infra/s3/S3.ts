@@ -74,7 +74,7 @@ export class S3 {
             "s3:GetObject"
           ],
           "Resource": [
-            `arn:aws:s3:::${this.bucket}/*`
+            `arn:aws:s3:::${this.bucket}/${path}`
           ],
           "Condition": {
             "StringEquals": {

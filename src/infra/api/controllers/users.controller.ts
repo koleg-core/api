@@ -24,6 +24,7 @@ import { WritableUserApiModel } from "../models/writable-user-api.model";
 import { ResponseModel } from "../models/response.model";
 import { HttpStatusCode } from "../models/http-status-code.enum";
 import { ReadableUserApiModel } from "../models/readable-user-api.model";
+import {VcardApiModel} from "infra/vcards/models/vcard-api-model";
 
 @Service("user.controller")
 @JsonController()
@@ -94,11 +95,25 @@ export class UsersController {
       );
     }
 
-    return this._organisationService.updateUser(user.toStatelessUser(id))
+    const statelessUser = user.toStatelessUser(id);
+    return this._organisationService.updateUser(statelessUser)
       .then(returnCode => {
         if (returnCode === ReturnCodes.NOT_FOUND) {
           throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, "User not found");
         }
+        // Move to private method
+        this._organisationService.getName()
+          .then(organisationName => {
+            const vcard = new VcardApiModel(statelessUser, organisationName);
+            this._assetService.uploadVcards(id, vcard.serializeAsBuffer());
+          }).catch(error => {
+            throw new ApiError(
+              HttpStatusCode.INTERNAL_SERVER_ERROR,
+              returnCode,
+              `User was sucessfully updated but vcard creation has failed:
+              ${error}`
+            );
+          });
         return new ResponseModel(returnCode, `Request returns with status : ${returnCode}.`);
       })
       .catch(error => {
@@ -144,6 +159,7 @@ export class UsersController {
         return new ResponseModel(HttpStatusCode.ACCEPTED, `Your password changment for user: ${id} was aknoleged.`);
       });
   }
+
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Post("/users/:id/upload_image")
   async uploadImage(@Param("id") id: string, @UploadedFile("profilePicture") profilePicture: Express.Multer.File): Promise<ResponseModel | ApiError> {

@@ -13,6 +13,12 @@ export class OrganisationService {
     private repository: OrganisationRepository
   ) {}
 
+  // ORGANISATION
+  public async getName(): Promise<string> {
+    await this._updateOrganisation();
+    return  this._organisation.getName();
+  }
+
   // JOBS
   public async getJobs(): Promise<Job[]> {
     await this._updateOrganisation();
