@@ -10,7 +10,8 @@ import {
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
   Optional,
-  BelongsToGetAssociationMixin
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin
 } from "sequelize";
 
   interface GroupsModelAttributes{
@@ -31,21 +32,18 @@ export class GroupsModel extends Model<GroupsModelAttributes, GroupsModelCreatio
     public name!:string;
     public description!: string;
     public imgUrl: string;
+    public parentGroup?: GroupsModel | GroupsModel['id'];
     getGroups: HasManyGetAssociationsMixin<GroupsModel>;
     getParentGroup: BelongsToGetAssociationMixin<GroupsModel>;
+    setParentGroup: BelongsToSetAssociationMixin<GroupsModel,GroupsModel['id']>;
 
-    /*async getAllGroups(): Promise<GroupsModel[]>{
-      let allGroups: GroupsModel[] = [];
-      const parentGroup = await this.getParentGroup();
-      allGroups.push(parentGroup);
-      const groups = await this.getGroups();
-      for(const group of groups){
-        allGroups.push(group);
-      }*/
     async getGroupFromUuid(uuid: string) : Promise<GroupsModel>{
       return await GroupsModel.findOne({ where: { uuid } });
     }
-
-
+    
+    async saveGroup(){
+      const record = await this.save();
+      await record.setParentGroup(this.parentGroup);
+    }
     
 }

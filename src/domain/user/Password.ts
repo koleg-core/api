@@ -11,7 +11,7 @@ export class Password {
         throw new Error("Invalid arguement value: string");
       }
 
-      /*if (this.dateLimit) {
+      /*if (this._dateLimit) {
             if (this.isExpired()) {
                 throw new Error('Invalid arguement dateLimit: cannot be in past');
             }

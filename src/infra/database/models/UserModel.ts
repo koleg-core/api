@@ -69,9 +69,9 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
     public updateDate!: Date;
     public expirationDate!: Date;
     public disableDate!: Date;
-    public job?: JobModel | JobModel["id"];
-    public phones?: UserPhone[] | UserPhone["value"][];
-    public groupsIds?: string[];
+    public job?: JobModel | JobModel['id'];
+    public phones?: UserPhone[];
+    public groups?: GroupsModel[];
     getJob: BelongsToGetAssociationMixin<JobModel>;
     setJob: BelongsToSetAssociationMixin<JobModel, JobModel["id"]>;
     getPhones: HasManyGetAssociationsMixin<UserPhone>;
@@ -80,36 +80,28 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
     removePhones: HasManyRemoveAssociationsMixin<UserPhone,UserPhone["value"]>;
     getPasswords: HasManyGetAssociationsMixin<UserPwdHistory>;
     getGroups: BelongsToManyGetAssociationsMixin<GroupsModel>;
-    addGroup: BelongsToManyAddAssociationsMixin<GroupsModel, GroupsModel["id"]>;
-    removeGroup: BelongsToManyRemoveAssociationMixin<GroupsModel, GroupsModel["id"]>;
-    removeGroups: BelongsToManyRemoveAssociationsMixin<GroupsModel, GroupsModel["id"]>;
+    addGroups: BelongsToManyAddAssociationsMixin<GroupsModel, GroupsModel['id']>;
+    removeGroup: BelongsToManyRemoveAssociationMixin<GroupsModel, GroupsModel['id']>;
+    removeGroups: BelongsToManyRemoveAssociationsMixin<GroupsModel, GroupsModel['id']>;
+    
     async deletePhones() {
       const phones = await this.getPhones();
       await phones[0].destroy();
     }
 
     async saveUser(){
-      const userExist = await UserModel.findOne({where: {uuid: this.uuid}});
-      if(userExist){
-        console.log("user existant");
-        this.id = userExist.id;
-        this.isNewRecord = false;
-        //await this.deletePhones();
-        /*const groups = await this.getGroups();
-        for(const group of groups){
-          await this.removeGroup(group);
-        }*/
-        //await this.removeGroups(await this.getGroups());
+      if(this.id){
+        await this.deletePhones();
         
-        for(const phone of this.phones){
-          console.log(phone);
-        }
-        await this.save();
+        await this.removeGroups(await this.getGroups());
       }
-      else{
-        console.log("user inexistant");
-        console.log(userExist);
-        
+      const user = await this.save();
+      for(const phone of this.phones){
+        phone.idUser = user.id;
+        await phone.save()
       }
+      await this.addGroups(this.groups);
+      await this.setJob(this.job);
+
     }
 }
