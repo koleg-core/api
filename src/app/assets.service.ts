@@ -12,9 +12,12 @@ export class AssetsService {
 
 
   uploadProfilePicture(userId: string, profilePicture: Express.Multer.File): URL {
+    if(!profilePicture.mimetype.startsWith("image/")) {
+      throw new Error("Invalid file, the profile picture is not a picture.");
+    }
     const filePath = `profile-picture/${userId}/${profilePicture.originalname}`;
     const profilePictureDataBuffer = profilePicture.buffer;
-    this.s3Client.uploadContent(profilePictureDataBuffer, filePath).then(() => {
+    this.s3Client.uploadContent(profilePictureDataBuffer, filePath, profilePicture.mimetype as string).then(() => {
       this.s3Client.setPathPublic(filePath).then(() => console.log("ALO"));
     });
 

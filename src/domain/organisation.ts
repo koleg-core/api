@@ -11,7 +11,7 @@ import { StatelessUser } from "./user/StatelessUser";
 
 // This is the aggregate
 export class Organisation {
-    private _id: string
+    private readonly _id: string
     private _groups: Map<string, Group> = new Map();
     private _users: Map<string, User> = new Map();
     private _jobs: Job[] = [];

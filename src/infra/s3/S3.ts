@@ -1,39 +1,41 @@
-import { Client as MinioClient, ClientOptions, Region } from "minio";
+// import { Client as MinioClient, ClientOptions, Region } from "minio";
+import AWS from "aws-sdk";
+import {ContentType} from "aws-sdk/clients/cloudsearchdomain";
 import { urlJoin } from "url-join-ts";
 
 export class S3 {
 
-  private bucketNameCache: string;
-  private readonly config: ClientOptions;
-  private readonly minioClient: MinioClient;
+  private readonly config: AWS.S3.ClientConfiguration;
+  private readonly s3Client: AWS.S3;
   // TODO: create metaData from profile picture file uploaded
-  private readonly metaData = {
-    "Content-Type": "application/octet-stream",
-    "X-Amz-Meta-Testing": 1234,
-    "example": 5678
-  }
+  // private readonly metaData = {
+  //   "Content-Type": "application/octet-stream",
+  //   "X-Amz-Meta-Testing": 1234,
+  //   "example": 5678
+  // }
 
   // TODO: replace optional arguments by config set into app.
   constructor(
-    private readonly endPoint: string = "",
     private readonly port: number = 443,
     private readonly useSSL: boolean = true,
-    private readonly accessKey: string = "",
-    private readonly secretKey: string = "",
-    private zone: Region = "",
-    private bucket: string = "",
-    private pathStyle: boolean = false
+    private readonly accessKey: string = "SCWB68DF4N2GG4P3E1Y8",
+    private readonly secretKey: string = "5564d38e-8c9d-4f91-a569-00877a4d37ad",
+    private readonly region: string = "fr-par",
+    private readonly bucket: string = "koleg-public",
+    private readonly endpoint: string = `s3.${region}.scw.cloud`,
+    private readonly pathStyle: boolean = false
   ) {
+
     this.config = {
-      endPoint: this.endPoint,
-      port: this.port,
-      useSSL: this.useSSL,
-      accessKey: this.accessKey,
-      secretKey: this.secretKey,
-      region: this.zone,
-      pathStyle: this.pathStyle,
-    }, // TODO add type of config model here
-    this.minioClient = new MinioClient(this.config);
+      accessKeyId: this.accessKey,
+      secretAccessKey: this.secretKey,
+      apiVersion: "v4",
+      region: this.region,
+      sslEnabled: this.useSSL,
+      endpoint: this.endpoint,
+      s3ForcePathStyle: pathStyle
+    };
+    this.s3Client = new AWS.S3(this.config);
   }
 
   public getS3Url(path: string): URL {
@@ -42,23 +44,26 @@ export class S3 {
     }
     const protocol = this.useSSL ? "https" : "http";
     const baseUrl = this.pathStyle
-      ? `${protocol}://${urlJoin(this.endPoint, this.bucket)}`
-      : `${protocol}://${this.bucket}.${this.endPoint}`;
+      ? `${protocol}://${urlJoin(this.endpoint, this.bucket)}`
+      : `${protocol}://${this.bucket}.${this.endpoint}`;
     const stringUrl = urlJoin(baseUrl, path);
     console.log(stringUrl);
     return new URL(stringUrl);
   }
 
-  public async uploadContent(data: Buffer, path: string): Promise<void> {
-    const error = await this.minioClient.putObject(
-      this.bucket,
-      path,
-      data,
-    );
-    console.log(error);
+  public async uploadContent(data: Buffer, path: string, contentType: string): Promise<void> {
+    this.s3Client.putObject({
+      Bucket: this.bucket,
+      Key: path,
+      ACL: "public-read",
+      Tagging: "public=yes",
+      Body: data,
+      ContentType: contentType as AWS.S3.ContentType,
+    }, (err, data) => {
+      console.log("AMAZON", err, data);
+    });
   }
 
-  // Scaleway don't support policy
   public async setPathPublic(path: string): Promise<void> {
     const publicReadPolicy = {
       "Version": "2012-10-17",
@@ -70,13 +75,19 @@ export class S3 {
           ],
           "Resource": [
             `arn:aws:s3:::${this.bucket}/*`
-          ]
+          ],
+          "Condition": {
+            "StringEquals": {
+              "s3:ExistingObjectTag/public": "yes"
+            }
+          }
         }
       ]
     };
-    this.minioClient.setBucketPolicy(
-      this.bucket,
-      JSON.stringify(publicReadPolicy)
-    );
+    const bucketPolicyParams = {
+      Bucket: this.bucket,
+      Policy: JSON.stringify(publicReadPolicy)
+    };
+    this.s3Client.putBucketPolicy(bucketPolicyParams);
   }
 }
