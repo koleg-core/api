@@ -109,6 +109,10 @@ export class ReadableUserApiModel {
         );
       }
     );
+    const profilePictureUrl: string =
+      user.getProfilePictureUrl
+        ? user.getProfilePictureUrl.toString()
+        : null;
     const sshPublicKey: string =
       user.getSshPublicKey()
         ? user.getSshPublicKey()
@@ -122,7 +126,7 @@ export class ReadableUserApiModel {
       user.getBirthDate().toISOString(),
       identity.email,
       user.getGroupIds(),
-      user.getProfilePictureUrl().toString(),
+      profilePictureUrl,
       job,
       phoneNumbersApiModel,
       sshPublicKey,

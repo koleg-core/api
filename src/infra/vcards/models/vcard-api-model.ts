@@ -25,7 +25,9 @@ export class VcardApiModel {
     this.vcard.addLastName(statelessUser.identity.lastName);
     this.vcard.addTitle(statelessUser.job.getName());
     this.vcard.addOrganization(this.organisationName, []);
-    this.vcard.addPhoto(statelessUser.profilePictureUrl.toString());
+    if(statelessUser.profilePictureUrl) {
+      this.vcard.addPhoto(statelessUser.profilePictureUrl.toString());
+    }
     this.vcard.addEmail(this.statelessUser.identity.email);
     if(this.statelessUser.phoneNumbers) {
       this.statelessUser.phoneNumbers.forEach(

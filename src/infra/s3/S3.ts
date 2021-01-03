@@ -1,6 +1,5 @@
 // import { Client as MinioClient, ClientOptions, Region } from "minio";
 import AWS from "aws-sdk";
-import {ContentType} from "aws-sdk/clients/cloudsearchdomain";
 import { urlJoin } from "url-join-ts";
 
 export class S3 {
@@ -18,10 +17,10 @@ export class S3 {
   constructor(
     private readonly port: number = 443,
     private readonly useSSL: boolean = true,
-    private readonly accessKey: string = "SCWB68DF4N2GG4P3E1Y8",
-    private readonly secretKey: string = "5564d38e-8c9d-4f91-a569-00877a4d37ad",
+    private readonly accessKey: string = "SCW4WPDT1SRFBY89BT8C",
+    private readonly secretKey: string = "6c1b27f8-f4be-4e25-b3a0-29488ac0e1ae",
     private readonly region: string = "fr-par",
-    private readonly bucket: string = "koleg-public",
+    private readonly bucket: string = "koleg-dev",
     private readonly endpoint: string = `s3.${region}.scw.cloud`,
     private readonly pathStyle: boolean = false
   ) {
@@ -51,11 +50,16 @@ export class S3 {
     return new URL(stringUrl);
   }
 
-  public async uploadContent(data: Buffer, path: string, contentType: string): Promise<void> {
+  public async uploadContent(
+    data: Buffer,
+    path: string,
+    contentType: string,
+    visibility: "public-read" | "private"
+  ): Promise<void> {
     this.s3Client.putObject({
       Bucket: this.bucket,
       Key: path,
-      ACL: "public-read",
+      ACL: visibility,
       Tagging: "public=yes",
       Body: data,
       ContentType: contentType as AWS.S3.ContentType,
@@ -64,47 +68,30 @@ export class S3 {
     });
   }
 
-  public async setPathPublic(path: string): Promise<void> {
-    const publicReadPolicy = {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Effect": "Allow",
-          "Action": [
-            "s3:GetObject"
-          ],
-          "Resource": [
-            `arn:aws:s3:::${this.bucket}/${path}`
-          ]
-        }
-      ]
-    };
-    const bucketPolicyParams = {
-      Bucket: this.bucket,
-      Policy: JSON.stringify(publicReadPolicy)
-    };
-    this.s3Client.putBucketPolicy(bucketPolicyParams);
+  public removeContent(path: string): number {
+    console.log("Path to remove", path);
+    try {
+      this.s3Client.deleteObject({
+        Bucket: this.bucket,
+        Key: path
+      });
+      return 0;
+    } catch (error) {
+      console.log(error);
+      return -1;
+    }
   }
 
-  public async setPathPrivate(path: string): Promise<void> {
-    const publicReadPolicy = {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Effect": "Deny",
-          "Action": [
-            "s3:GetObject"
-          ],
-          "Resource": [
-            `arn:aws:s3:::${this.bucket}/${path}`
-          ]
-        }
-      ]
-    };
-    const bucketPolicyParams = {
-      Bucket: this.bucket,
-      Policy: JSON.stringify(publicReadPolicy)
-    };
-    this.s3Client.putBucketPolicy(bucketPolicyParams);
+  public async getTemporaryPublicUrl(path: string, durationInSeconds = 60): Promise<URL> {
+    try {
+      const url = await this.s3Client.getSignedUrlPromise("getObject", {
+        Bucket: this.bucket,
+        Key: path,
+        Expires: durationInSeconds
+      });
+      return new URL(url);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

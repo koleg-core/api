@@ -62,6 +62,7 @@ export class UsersController {
     return this._organisationService.createUser(statelessUser)
       .then(id => {
         if (id) {
+          this.uploadVcard(statelessUser, id);
           return new ResponseModel(HttpStatusCode.OK, `User created with id: ${id}.`, id);
         } else {
           throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, "User not created");
@@ -101,21 +102,8 @@ export class UsersController {
         if (returnCode === ReturnCodes.NOT_FOUND) {
           throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, "User not found");
         }
-        // Move to private method
-        this._organisationService.getName()
-          .then(organisationName => {
-            const vcard = new VcardApiModel(statelessUser, organisationName);
-            this._assetService.uploadVcards(id, vcard.serializeAsBuffer());
-          }).catch(error => {
-            console.log(error);
-            throw new ApiError(
-              HttpStatusCode.INTERNAL_SERVER_ERROR,
-              returnCode,
-              `User was sucessfully updated but vcard creation has failed:
-              ${error}`
-            );
-          });
-        return new ResponseModel(returnCode, `Request returns with status : ${returnCode}.`);
+        this.uploadVcard(statelessUser);
+        return new ResponseModel(returnCode, `Request returns with status : ${returnCode}.`, id);
       })
       .catch(error => {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
@@ -123,10 +111,11 @@ export class UsersController {
   }
 
   @Delete("/users/:id")
-  remove(@Param("id") id: string): Promise<ResponseModel | ApiError> {
+  async remove(@Param("id") id: string): Promise<ResponseModel | ApiError> {
 
     return this._organisationService.deleteUser(id)
       .then(returnCode => {
+        this._assetService.deleteVcard(id);
         return new ResponseModel(returnCode, `Request returns with status : ${returnCode}.`);
       })
       .catch(error => {
@@ -174,5 +163,32 @@ export class UsersController {
         }
       });
     return new ResponseModel(HttpStatusCode.ACCEPTED, "User profile picture will be updated", newProfilePictureUrl.href);
+  }
+
+  @HttpCode(HttpStatusCode.OK)
+  @Get("/users/:id/vcard")
+  async getVcardTemporaryUrl(@Param("id") id: string): Promise<ResponseModel | ApiError> {
+    try {
+      const vcardUrl = await this._assetService.getVcardTemporaryUrl(id);
+      return new ResponseModel(HttpStatusCode.OK, `Temporary vcard url for user: ${id}`, vcardUrl.toString());
+    } catch (error) {
+      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
+    }
+  }
+
+  private async uploadVcard(statelessUser: StatelessUser, userId?: string): Promise<void> {
+    this._organisationService.getName()
+      .then(organisationName => {
+        const vcard = new VcardApiModel(statelessUser, organisationName);
+        this._assetService.uploadVcard(statelessUser.id || userId, vcard.serializeAsBuffer());
+      }).catch(error => {
+        console.log(error);
+        throw new ApiError(
+          HttpStatusCode.INTERNAL_SERVER_ERROR,
+          ReturnCodes.SERVER_ERROR,
+          `User was sucessfully updated but vcard creation has failed:
+          ${error}`
+        );
+      });
   }
 }
