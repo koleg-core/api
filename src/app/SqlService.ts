@@ -14,7 +14,6 @@ import { User } from "domain/user/User";
 import { StatelessUser } from "domain/user/StatelessUser";
 import { UserIdentity } from "domain/user/UserIdentity";
 import { GroupSerializer } from "infra/database/serializer/group.serializer";
-import { Group } from "domain/group/Group";
 export class SqlService {
     private orm: Sequelize;
     private database: Database;
