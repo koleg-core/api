@@ -1,4 +1,6 @@
 node_modules/
+tsconfig.tsbuildinfo
+.tsbuildinfo
 .*.swp
 .vagrant
 vendor

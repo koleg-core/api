@@ -3,34 +3,30 @@
         "module": "commonjs",
         "esModuleInterop": true,
         "skipLibCheck": true,
+        "incremental": true,
         "target": "es6",
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": true,
-        "esModuleInterop": true,
-        "composite": true,
-        "noEmit": true,
+        "rootDir": "./src",
         "outDir": "dist",
-        "rootDir": ".",
-        "baseUrl": ".",
+        "baseUrl": "./src/",
         "experimentalDecorators": true,
-        "allowSyntheticDefaultImports": true,
         "emitDecoratorMetadata": true,
         "paths": {
-            "domain/*": ["./src/domain/*"],
-            "infra/*": ["./src/infra/*"],
-            "app/*": ["./src/app/*"],
+            "domain/*": ["./domain/*"],
+            "infra/*": ["./infra/*"],
+            "app/*": ["./app/*"],
             "*": [
-                "./types/*"
+                "node_modules/*"
             ]
         }
     },
     "include": [
-        "src/**/*.ts",
-        "types/*.d.ts"
+        "src/**/*.ts"
     ],
     "exclude": [
-        "./node_modules",
+        "node_modules",
         "dist",
         ".vscode"
     ]
