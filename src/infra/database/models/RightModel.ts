@@ -10,19 +10,19 @@ import {
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
   Optional,
-  BelongsToGetAssociationMixin
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin
 } from "sequelize";
-import { UserModel } from "./UserModel";
 
-  interface RightsModelAttributes{
+  interface RightModelAttributes{
     id: number;
     name: string;
     description: string;
   }
 
-  type RightsModelCreationAttributes = Optional<RightsModelAttributes, "id">
+  type RightModelCreationAttributes = Optional<RightModelAttributes, "id">
 
-export class RightModel extends Model<RightsModelAttributes, RightsModelCreationAttributes> implements RightsModelAttributes{
+export class RightModel extends Model<RightModelAttributes, RightModelCreationAttributes> implements RightModelAttributes{
     public id!: number;
     public name!:string;
     public description!: string;

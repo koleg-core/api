@@ -35,8 +35,8 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
         JobSerializer.prototype.deserialize(remoteJob)
           .then(response => {
             organisation.addJob(response);
-          });
-      });
+          })
+      })
     }
 
     // const remoteGroups = await this._database.getGroups();
@@ -56,8 +56,8 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     return organisation;
   }
 
-  createJob(job: Job): void {
-    this._database.createJob(JobSerializer.prototype.serialize(job));
+  async createJob(job: Job): Promise<void> {
+    this._database.createJob(await JobSerializer.prototype.serialize(job));
   }
 
   deleteJob(name: string): void {
