@@ -1,10 +1,14 @@
-import { Sequelize, DataTypes } from "sequelize";
-import { GroupsModel } from "./models/GroupsModel";
+
+import { User } from 'domain/user/User';
+import { Sequelize, DataTypes } from 'sequelize';
+import { GroupsModel } from './models/GroupsModel';
 import { JobModel } from "./models/JobModel";
 import {PhoneTypeModel} from "./models/PhoneTypeModel";
+import { RightModel } from './models/RightModel';
 import {UserModel} from "./models/UserModel";
-import { UserPhone } from "./models/UserPhone";
-import { UserPwdHistory } from "./models/UserPwdHistory";
+import { UserPhone } from './models/UserPhone';
+import { UserPwdHistory } from './models/UserPwdHistory';
+import { UserRightModel } from './models/UserRightModel';
 
 export class Database {
   constructor(
@@ -71,7 +75,7 @@ export class Database {
         },
         passwordDateLimit:{
           type: DataTypes.DATE,
-          field: "password_datelimit"
+          field: 'password_datelimit'
         },
         birthdate:{
           type: DataTypes.DATE
@@ -81,31 +85,31 @@ export class Database {
         },
         imgUrl:{
           type: DataTypes.STRING,
-          field: "img_url"
+          field: 'img_url'
         },
         sshPublicKey:{
           type: DataTypes.STRING,
-          field: "ssh_publickey"
+          field: 'ssh_publickey'
         },
         sshPrivateKey:{
           type: DataTypes.STRING,
-          field: "ssh_privatekey"
+          field: 'ssh_privatekey'
         },
         creationDate:{
           type: DataTypes.DATE,
-          field: "creation_date"
+          field: 'creation_date'
         },
         updateDate:{
           type: DataTypes.DATE,
-          field: "update_date"
+          field: 'update_date'
         },
         expirationDate:{
           type: DataTypes.DATE,
-          field: "expiration_date"
+          field: 'expiration_date'
         },
         disableDate:{
           type: DataTypes.DATE,
-          field: "disable_date"
+          field: 'disable_date'
         }
       },
       {
@@ -121,11 +125,11 @@ export class Database {
         },
         idUser:{
           type: DataTypes.INTEGER,
-          field: "id_user"
+          field: 'id_user'
         },
         idPhoneType:{
           type: DataTypes.INTEGER,
-          field: "id_phonetype"
+          field: 'id_phonetype'
         }
       },
                 
@@ -134,7 +138,7 @@ export class Database {
         tableName: "user_phones",
         timestamps: false,
       });
-    UserPhone.removeAttribute("id");
+    UserPhone.removeAttribute('id');
 
     UserPwdHistory.init(
       {
@@ -145,7 +149,7 @@ export class Database {
         },
         updateDate: {
           type: DataTypes.DATE,
-          field: "update_date"/*,
+          field: 'update_date'/*,
                     references:{
                         model: PhoneType,
                         key:'id'
@@ -182,7 +186,7 @@ export class Database {
         },
         imgUrl: {
           type: DataTypes.STRING,
-          field: "img_url"
+          field: 'img_url'
           // allowNull defaults to true
         }
       },
@@ -192,60 +196,93 @@ export class Database {
         timestamps: false,
       });
 
-    JobModel.hasMany(UserModel, {as:"users", foreignKey: "id_job" });
-    UserModel.belongsTo(JobModel,{as:"job",foreignKey: "id_job"});
-    UserModel.removeAttribute("JobModelId");
+    RightModel.init(
+      {
+        id: {
+          type: DataTypes.INTEGER,
+          primaryKey: true,
+          autoIncrement: true
+        },
+        name: {
+          type: DataTypes.STRING
+          // allowNull defaults to true
+        },
+        description: {
+          type: DataTypes.STRING
+          // allowNull defaults to true
+        }
+      },
+      {
+        sequelize: this.orm,
+        tableName: "rights",
+        timestamps: false,
+      });
+            
+    UserRightModel.init(
+      {
+        id: {
+          type: DataTypes.INTEGER,
+          primaryKey: true,
+          autoIncrement: true
+        },
+        idUser:{
+          type: DataTypes.INTEGER,
+          field: 'id_user'
+        },
+        idRight:{
+          type: DataTypes.INTEGER,
+          field: 'id_right'
+        },
+        idImpactedGroup:{
+          type: DataTypes.INTEGER,
+          field: 'id_impacted_group'
+        },
+        idImpactedUser:{
+          type: DataTypes.INTEGER,
+          field: 'id_impacted_user'
+        }
+      },
+                
+      {
+        sequelize: this.orm,
+        tableName: "user_phones",
+        timestamps: false,
+      });
 
-    UserModel.hasMany(UserPhone,{as:"phones",foreignKey:"id_user"});
-    UserPhone.belongsTo(UserModel,{as:"user",foreignKey:"id_user"});
-    PhoneTypeModel.hasMany(UserPhone,{as:"phones",foreignKey:"id_phonetype"});
-    UserPhone.belongsTo(PhoneTypeModel,{as:"type",foreignKey:"id_phonetype"});
+    JobModel.hasMany(UserModel, {as:'users', foreignKey: 'id_job' });
+    UserModel.belongsTo(JobModel,{as:'job',foreignKey: 'id_job'});
+    UserModel.removeAttribute('JobModelId');
 
-    /*UserModel.belongsToMany(PhoneType,{
-            through: 'user_phones',
-            as: 'phones',
-            foreignKey: 'id_user',
-            timestamps: false
-        });
+    UserModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_user'});
+    UserPhone.belongsTo(UserModel,{as:'user',foreignKey:'id_user'});
+    PhoneTypeModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_phonetype'});
+    UserPhone.belongsTo(PhoneTypeModel,{as:'type',foreignKey:'id_phonetype'});
 
-        PhoneType.belongsToMany(UserModel,{
-            through: 'user_phones',
-            as: 'users',
-            foreignKey: 'id_user',
-            timestamps: false
-        });*/
+    UserModel.hasMany(UserPwdHistory,{as:'passwords', foreignKey: 'id_user'});
+    UserPwdHistory.belongsTo(UserModel,{as:'user',foreignKey: 'id_user'});
+    UserPwdHistory.removeAttribute('UserModelId');
 
-
-    UserModel.hasMany(UserPwdHistory,{as:"passwords", foreignKey: "id_user"});
-    UserPwdHistory.belongsTo(UserModel,{as:"user",foreignKey: "id_user"});
-    UserPwdHistory.removeAttribute("UserModelId");
-
-    GroupsModel.hasMany(GroupsModel, {as:"groups", foreignKey: "id_parentgroup"});
-    GroupsModel.belongsTo(GroupsModel, {as : "parentGroup", foreignKey: "id_parentgroup"});
-    GroupsModel.removeAttribute("GroupsModelId");
+    GroupsModel.hasMany(GroupsModel, {as:'groups', foreignKey: 'id_parentgroup'});
+    GroupsModel.belongsTo(GroupsModel, {as : 'parentGroup', foreignKey: 'id_parentgroup'});
+    GroupsModel.removeAttribute('GroupsModelId');
 
     UserModel.belongsToMany(GroupsModel, {
-      through: "user_groups",
-      as: "groups",
-      foreignKey: "id_user",
+      through: 'user_groups',
+      as: 'groups',
+      foreignKey: 'id_user',
       timestamps: false
     });
     GroupsModel.belongsToMany(UserModel, {
-      through: "user_groups",
-      as: "users",
-      foreignKey: "id_group",
+      through: 'user_groups',
+      as: 'users',
+      foreignKey: 'id_group',
       timestamps: false
     });
-        
 
-
-
-    /*UserModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_user'});
-        UserPhone.belongsTo(UserModel,{as:'user',foreign(Key:'id_user'});
-        UserPhone.removeAttribute('UserModelId');
-        PhoneType.hasMany(UserPhone,{as:'phones',foreignKey:'id_phonetype'});
-        UserPhone.belongsTo(PhoneType,{as:'phoneType',foreignKey:'id_phonetype'});
-        UserPhone.removeAttribute('PhoneTypeId');*/
+    RightModel.belongsToMany(UserModel,{
+      through: 'user_rights',
+      as: ''
+    })
   }
 
   // JobModel
@@ -268,23 +305,6 @@ export class Database {
   // UserModel
   createUser(user: UserModel){
     user.save();
-  }
-
-  /*async updateUser(user: UserModel, job: JobModel, userPhones: UserPhone[], userGroups: GroupsModel[]){
-        const userExist = await this.getUser(user.uuid);
-        if(userExist != null){
-
-        }
-    }*/
-
-  updateUser2(user: UserModel){
-    this.getUser(user.uuid)
-      .then(response=>{
-        user.id = response.id;
-        response = user;
-        response.isNewRecord = false;
-        response.save();
-      });
   }
 
   getUsers(): Promise<UserModel[]>{
