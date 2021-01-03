@@ -28,6 +28,7 @@
   },
   "homepage": "https://gitlab.com/koleg1/api#readme",
   "dependencies": {
+    "@covve/easy-vcard": "^1.0.0",
     "@types/convict": "^5.2.1",
     "aws-sdk": "^2.819.0",
     "bcrypt": "^5.0.0",

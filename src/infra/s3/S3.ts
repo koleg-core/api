@@ -75,12 +75,29 @@ export class S3 {
           ],
           "Resource": [
             `arn:aws:s3:::${this.bucket}/${path}`
+          ]
+        }
+      ]
+    };
+    const bucketPolicyParams = {
+      Bucket: this.bucket,
+      Policy: JSON.stringify(publicReadPolicy)
+    };
+    this.s3Client.putBucketPolicy(bucketPolicyParams);
+  }
+
+  public async setPathPrivate(path: string): Promise<void> {
+    const publicReadPolicy = {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Deny",
+          "Action": [
+            "s3:GetObject"
           ],
-          "Condition": {
-            "StringEquals": {
-              "s3:ExistingObjectTag/public": "yes"
-            }
-          }
+          "Resource": [
+            `arn:aws:s3:::${this.bucket}/${path}`
+          ]
         }
       ]
     };

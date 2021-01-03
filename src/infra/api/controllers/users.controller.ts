@@ -107,6 +107,7 @@ export class UsersController {
             const vcard = new VcardApiModel(statelessUser, organisationName);
             this._assetService.uploadVcards(id, vcard.serializeAsBuffer());
           }).catch(error => {
+            console.log(error);
             throw new ApiError(
               HttpStatusCode.INTERNAL_SERVER_ERROR,
               returnCode,
@@ -164,9 +165,9 @@ export class UsersController {
   @Post("/users/:id/upload_image")
   async uploadImage(@Param("id") id: string, @UploadedFile("profilePicture") profilePicture: Express.Multer.File): Promise<ResponseModel | ApiError> {
     const newProfilePictureUrl: URL = this._assetService.uploadProfilePicture(id, profilePicture);
-    const stateLessUser = new StatelessUser(id, null, null, null, null, null, null, null, null, null, null, newProfilePictureUrl);
-    this._organisationService.updateUser(stateLessUser)
-      .then( returnCode => {
+    const statelessUser = new StatelessUser(id, null, null, null, null, null, null, null, null, null, null, newProfilePictureUrl);
+    this._organisationService.updateUser(statelessUser)
+      .then(returnCode => {
         if(returnCode < 0) {
           console.log("RETURN CODE", returnCode);
           throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, "Profile picture was not updated");

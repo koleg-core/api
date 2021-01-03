@@ -1,4 +1,5 @@
-import { VCard } from "vcard-creator";
+// import VCard from "VCard";
+import * as vcard from "@covve/easy-vcard";
 
 import {StatelessUser} from "domain/user/StatelessUser";
 
@@ -7,7 +8,7 @@ import {StatelessUser} from "domain/user/StatelessUser";
 // Move this into s3 model
 // Create small api model that store vcard url
 export class VcardApiModel {
-  private vcard: VCard = new VCard();
+  private vcard: vcard.VCard;
 
   constructor(
     private readonly statelessUser: StatelessUser,
@@ -18,18 +19,18 @@ export class VcardApiModel {
     // then this constructor is here to external manipulations.
     // For the same reason, we can't throw error into constructor
     // for missing properties.
+    this.vcard = new vcard.VCard();
 
-    this.vcard.addName(
-      this.statelessUser.identity.lastName,
-      this.statelessUser.identity.firstName
-    );
-    this.vcard.addCompagny(this.organisationName);
-    this.vcard.addJobTitle(this.statelessUser.job.getName());
+    this.vcard.addFirstName(statelessUser.identity.firstName);
+    this.vcard.addLastName(statelessUser.identity.lastName);
+    this.vcard.addTitle(statelessUser.job.getName());
+    this.vcard.addOrganization(this.organisationName, []);
+    this.vcard.addPhoto(statelessUser.profilePictureUrl.toString());
     this.vcard.addEmail(this.statelessUser.identity.email);
     if(this.statelessUser.phoneNumbers) {
       this.statelessUser.phoneNumbers.forEach(
         phoneNumber => {
-          this.vcard.addPhoneNumber(phoneNumber.value, phoneNumber.type);
+          this.vcard.addPhone(phoneNumber.value, {type: phoneNumber.type});
         }
       );
     }
@@ -37,6 +38,7 @@ export class VcardApiModel {
   }
 
   public serializeAsBuffer(): Buffer {
+    console.log(this.vcard.toString());
     return Buffer.from(this.vcard.toString(), "utf8");
   }
 }
