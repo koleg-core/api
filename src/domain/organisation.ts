@@ -150,18 +150,15 @@ export class Organisation {
     if (!statelessUser) {
       throw new Error("Invalid argument statelessUser: StatelessUser");
     }
+
     if (!statelessUser.birthdate) {
       throw new Error("Invalid argument statelessUser.birthdate: Date");
     }
+
     if (!statelessUser.password) {
       throw new Error("Invalid argument statelessUser.password: Password");
     }
-    console.log("ID", statelessUser.id);
-    if (statelessUser.id) {
-      throw new Error(
-        "Invalid argument statelessUser can't had id, please use updateUser() instead."
-      );
-    }
+
     const userGroups: string[] = statelessUser.groupsIds;
     userGroups.forEach(groupId => {
       if (!this._groups.has(groupId)) {

@@ -1,5 +1,4 @@
 import Fuse from "fuse.js";
-
 import { ReturnCodes } from "../../../domain/enums/return-codes.enum";
 import { Job } from "../../../domain/user/Job";
 import { QueryParam, Body, Delete, Get, HttpCode, JsonController, Param, Post, UseBefore } from "routing-controllers";
@@ -19,28 +18,38 @@ export class JobsController {
   private readonly _organisationService: OrganisationService;
   private readonly _fuseOptions: Fuse.IFuseOptions<Job> = {
     includeScore: false,
-    keys: ["_name"] // This break private things, but don't care
+    keys: ["name"] // This break private things, but don't care
   }
 
   @Get("/jobs")
   @UseBefore(AuthService.checkJwt)
-  async getAll(@QueryParam("filter") filter?: string): Promise<ResponseModel | ApiError> {
+  async getAll(
+    @QueryParam('filter') filter?: string,
+    @QueryParam('page') page?: number,
+    @QueryParam('itemsNumber') itemsNumber?: number
+  ): Promise<ResponseModel | ApiError> {
     return this._organisationService.getJobs()
       .then(jobs => {
 
-        const jobsResponse: JobApiModel[] = [];
+        let jobsResponse: JobApiModel[] = [];
         if (Array.isArray(jobs) && jobs.length > 0) {
-          if(filter) {
+
+          if (filter) {
             const fuse: Fuse<Job> = new Fuse(jobs, this._fuseOptions);
             const fuzeJobs = fuse.search(filter);
-            fuzeJobs.forEach(
-              job => {
-                jobsResponse.push(JobApiModel.toJobModel(job.item));
-              });
+            fuzeJobs.forEach(job => jobsResponse.push(JobApiModel.toJobModel(job.item)));
           } else {
             jobs.forEach(job => jobsResponse.push(JobApiModel.toJobModel(job)));
           }
 
+          const realPage = page || 1;
+          const realItemsNumber = itemsNumber || 20;
+
+          if (realPage * realItemsNumber <= jobsResponse.length) {
+            jobsResponse = jobsResponse.slice((realPage - 1) * realItemsNumber, realPage * realItemsNumber);
+          } else {
+            jobsResponse = jobsResponse.slice((realPage - 1) * realItemsNumber, jobsResponse.length);
+          }
         }
         return new ResponseModel(HttpStatusCode.OK, "Success", jobsResponse);
       })
