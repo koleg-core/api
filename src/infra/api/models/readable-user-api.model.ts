@@ -110,8 +110,8 @@ export class ReadableUserApiModel {
       }
     );
     const profilePictureUrl: string =
-      user.getProfilePictureUrl
-        ? user.getProfilePictureUrl.toString()
+      user.getProfilePictureUrl()
+        ? user.getProfilePictureUrl().toString()
         : null;
     const sshPublicKey: string =
       user.getSshPublicKey()
