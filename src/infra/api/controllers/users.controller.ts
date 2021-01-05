@@ -24,7 +24,7 @@ import { WritableUserApiModel } from "../models/writable-user-api.model";
 import { ResponseModel } from "../models/response.model";
 import { HttpStatusCode } from "../models/http-status-code.enum";
 import { ReadableUserApiModel } from "../models/readable-user-api.model";
-import {VcardApiModel} from "infra/vcards/models/vcard-api-model";
+//import {VcardApiModel} from "infra/vcards/models/vcard-api-model";
 
 @Service("user.controller")
 @JsonController()
@@ -95,8 +95,8 @@ export class UsersController {
         "You can't update user password with this endpoint please use users/:id/update-password instead."
       );
     }
-
-    const statelessUser = user.toStatelessUser(id);
+    return null;
+    /*const statelessUser = user.toStatelessUser(id);
     return this._organisationService.updateUser(statelessUser)
       .then(returnCode => {
         if (returnCode === ReturnCodes.NOT_FOUND) {
@@ -107,7 +107,7 @@ export class UsersController {
       })
       .catch(error => {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
-      });
+      });*/
   }
 
   @Delete("/users/:id")
