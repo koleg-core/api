@@ -46,7 +46,6 @@ export class S3 {
       ? `${protocol}://${urlJoin(this.endpoint, this.bucket)}`
       : `${protocol}://${this.bucket}.${this.endpoint}`;
     const stringUrl = urlJoin(baseUrl, path);
-    console.log(stringUrl);
     return new URL(stringUrl);
   }
 
@@ -66,14 +65,13 @@ export class S3 {
       Body: data,
       ContentType: contentType as AWS.S3.ContentType,
     }, (err, data) => {
-      console.log("AMAZON", err, data);
+      console.log(err);
       returnCode = -1;
     });
     return returnCode;
   }
 
   public removeContent(path: string): number {
-    console.log("Path to remove", path);
     let returnCode = 0;
     // If you don't add callback error not works
     this.s3Client.deleteObject({
@@ -95,8 +93,8 @@ export class S3 {
         Expires: durationInSeconds
       });
       return new URL(url);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   }
 }

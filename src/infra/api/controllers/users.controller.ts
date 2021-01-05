@@ -158,7 +158,6 @@ export class UsersController {
     this._organisationService.updateUser(statelessUser)
       .then(returnCode => {
         if(returnCode < 0) {
-          console.log("RETURN CODE", returnCode);
           throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, "Profile picture was not updated");
         }
       });

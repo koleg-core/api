@@ -18,8 +18,7 @@ export class AssetsService {
     const filePath = this.getUserProfilePicturePath(userId, profilePicture.originalname);
     const profilePictureDataBuffer = profilePicture.buffer;
     this.s3Client.uploadContent(profilePictureDataBuffer, filePath, profilePicture.mimetype as string, "public-read").then(() => {
-      console.log("ON est la 1");
-      // this.s3Client.setPathPublic("profile-picture").then(() => console.log("Public path was setted."));
+      console.log("Profile picture was uploaded");
     });
 
     return this.s3Client.getS3Url(filePath);
@@ -29,8 +28,7 @@ export class AssetsService {
 
     const filePath = this.getUserVCardPath(userId);
     this.s3Client.uploadContent(vcard, filePath, "text/plain", "private").then(() => {
-      console.log("ON est la");
-      // this.s3Client.setPathPrivate(`vcards/${userId}`).then(() => console.log("Private path was setted."));
+      console.log("Vcard was uploaded");
     });
     return this.s3Client.getS3Url(filePath);
   }

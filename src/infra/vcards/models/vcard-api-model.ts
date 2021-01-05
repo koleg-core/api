@@ -1,4 +1,3 @@
-// import VCard from "VCard";
 import * as vcard from "@covve/easy-vcard";
 
 import {StatelessUser} from "domain/user/StatelessUser";
