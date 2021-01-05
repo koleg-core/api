@@ -15,56 +15,56 @@ import { Job } from "domain/user/Job";
 export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> {
 
   public async serialize(user: StatelessUser): Promise<UserModel> {
-    const userExist = await UserModel.findOne({ where: { uuid: user.id } });
-    let imgUrl;
-    let sshPublicKey;
-    let sshPrivateKey;
-    let job;
-    const phoneNumbers: UserPhone[] = [];
-    const groups: GroupsModel[] = [];
 
-    if (user.profilePictureUrl) {
-      imgUrl = user.profilePictureUrl.toString();
-    }
-    if (user.sshKey) {
-      sshPublicKey = user.sshKey.publicKey;
-      sshPrivateKey = user.sshKey.privateKey;
-    }
     const userModel = new UserModel({
-      uuid: user.id, username: user.identity.username, firstname: user.identity.firstName,
-      lastname: user.identity.lastName, password: user.identity.lastName, passwordDateLimit: user.password.getDateLimit(),
-      birthdate: user.birthdate, email: user.identity.email, imgUrl: imgUrl, sshPublicKey: sshPublicKey,
-      sshPrivateKey: sshPrivateKey, creationDate: user.creationDate, updateDate: user.updateDate, expirationDate: user.expirationDate,
-      disableDate: user.disableDate
+      uuid: user.id,
+      username: user.identity ? user.identity.username : null,
+      firstname: user.identity ? user.identity.firstName : null,
+      lastname: user.identity ? user.identity.lastName : null,
+      password: user.password ? user.password.getValue() : null,
+      passwordDateLimit: user.password ? user.password.getDateLimit() : null,
+      birthdate: user.birthdate ? user.birthdate : null,
+      email: user.identity ? user.identity.email : null,
+      imgUrl: user.profilePictureUrl ? user.profilePictureUrl.toString() : null,
+      sshPublicKey: (user.sshKey && user.sshKey.publicKey) ? user.sshKey.publicKey : null,
+      sshPrivateKey: (user.sshKey && user.sshKey.privateKey) ? user.sshKey.privateKey : null,
+      creationDate: user.creationDate ? user.creationDate : null,
+      updateDate: user.updateDate ? user.updateDate : null,
+      expirationDate: user.expirationDate ? user.expirationDate : null,
+      disableDate: user.disableDate ? user.disableDate : null
     });
+
+    const userExist = await UserModel.findOne({ where: { uuid: user.id } });
+
     if (userExist) {
       userModel.id = userExist.id;
       userModel.isNewRecord = false;
     }
+
+    let job = null;
     if (user.job) {
       job = await JobSerializer.prototype.serialize(user.job);
-      userModel.job = job;
     }
+    userModel.job = job;
 
-    if (user.phoneNumbers) {
-      for (const phone of user.phoneNumbers) {
+    const phoneNumbers: UserPhone[] = [];
+    if (Array.isArray(user.phoneNumbers) && user.phoneNumbers.length > 0) {
+      for await (let phone of user.phoneNumbers) {
         const phoneType = await PhoneTypeSerializer.prototype.serialize(phone.type);
         const userPhone = await PhoneNumberSerializer.prototype.serialize(phone);
         userPhone.idPhoneType = phoneType.id;
         phoneNumbers.push(userPhone);
       }
-      userModel.phones = phoneNumbers;
     }
+    userModel.phones = phoneNumbers;
 
-    if (user.groupsIds) {
-      for (const id of user.groupsIds) {
+    const groups: GroupsModel[] = [];
+    if (Array.isArray(user.groupsIds) && user.groupsIds.length > 0) {
+      for await (let id of user.groupsIds) {
         groups.push(await GroupsModel.findOne({ where: { uuid: id } }));
       }
       userModel.groups = groups;
     }
-
-
-
 
     return userModel;
   }

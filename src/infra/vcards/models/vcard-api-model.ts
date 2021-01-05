@@ -1,6 +1,7 @@
 import * as vcard from "@covve/easy-vcard";
+import { StatelessUser } from "domain/user/StatelessUser";
 
-import {StatelessUser} from "domain/user/StatelessUser";
+// import {StatelessUser} from "domain/user/StatelessUser";
 
 // TODO:
 // Add s3 serializer/and options in organisation service to regen vcards at each user update and store it on s3

@@ -5,8 +5,8 @@ import { PhoneTypeSerializer } from "./phone-type.serializer";
 
 export class PhoneNumberSerializer implements SerializerRoot<PhoneNumber, UserPhone> {
 
-  public async serialize(PhoneNumber: PhoneNumber): Promise<UserPhone> {
-    return new UserPhone({ value: PhoneNumber.value });
+  public async serialize(phoneNumber: PhoneNumber): Promise<UserPhone> {
+    return new UserPhone({ value: phoneNumber.value });
   }
 
   public async deserialize(userPhone: UserPhone): Promise<PhoneNumber> {

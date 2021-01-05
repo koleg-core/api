@@ -41,10 +41,14 @@ export class User {
       throw new Error("Invalid argument parameter, statelessUser.birthdate");
     }
     if (statelessUser.birthdate > new Date()) {
-      throw new Error("Negativ age, birthdate is into the future");
+      throw new Error("Negative age, birthdate is into the future");
     }
-    
-    this._id = uuid();
+
+    if (statelessUser.id) {
+      this._id = statelessUser.id;
+    } else {
+      this._id = uuid();
+    }
 
     this._identity = statelessUser.identity;
     this._password = statelessUser.password;

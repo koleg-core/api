@@ -8,7 +8,7 @@ export class Password {
         private dateLimit: Date = null
     ) {
       if (!value) {
-        throw new Error("Invalid arguement value: string");
+        throw new Error("Invalid argument value: string");
       }
 
       /*if (this._dateLimit) {

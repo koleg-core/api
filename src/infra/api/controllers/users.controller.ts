@@ -94,13 +94,7 @@ export class UsersController {
   @Put("/users/:id")
   @HttpCode(HttpStatusCode.OK)
   async put(@Param("id") id: string, @Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
-    if (user.password) {
-      throw new ApiError(HttpStatusCode.BAD_REQUEST, ReturnCodes.NOT_UPDATED,
-        "You can't update user password with this endpoint please use users/:id/update-password instead."
-      );
-    }
-    return null;
-    /*const statelessUser = user.toStatelessUser(id);
+    const statelessUser = user.toStatelessUser(id);
     return this._organisationService.updateUser(statelessUser)
       .then(returnCode => {
         if (returnCode === ReturnCodes.NOT_FOUND) {
@@ -111,7 +105,7 @@ export class UsersController {
       })
       .catch(error => {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
-      });*/
+      });
   }
 
   @Delete("/users/:id")
@@ -165,7 +159,7 @@ export class UsersController {
     const statelessUser = new StatelessUser(id, null, null, null, null, null, null, null, null, null, null, newProfilePictureUrl);
     this._organisationService.updateUser(statelessUser)
       .then(returnCode => {
-        if(returnCode < 0) {
+        if (returnCode < 0) {
           throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, "Profile picture was not updated");
         }
       });

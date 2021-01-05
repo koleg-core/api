@@ -63,12 +63,13 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
   }
 
   async createUser(user: StatelessUser): Promise<void> {
-    const userModel = await UserSerializer.prototype.serialize(user)
+    const userModel = await UserSerializer.prototype.serialize(user);
     userModel.saveUser();
   }
 
   async updateUser(user: StatelessUser): Promise<void> {
-    const userModel = await UserSerializer.prototype.serialize(user)
+    const userModel = await UserSerializer.prototype.serialize(user);
+    console.log(userModel);
     userModel.saveUser();
   }
 
