@@ -245,7 +245,7 @@ export class Database {
                 
       {
         sequelize: this.orm,
-        tableName: "user_phones",
+        tableName: "user_rights",
         timestamps: false,
       });
 
@@ -283,6 +283,14 @@ export class Database {
       through: 'user_rights',
       as: ''
     })
+  }
+
+  async updatePassword(uuid: string, password: string){
+    await UserModel.update({ password: password }, {
+      where: {
+        uuid: uuid
+      }
+    });
   }
 
   // JobModel

@@ -1,4 +1,4 @@
-import { VCard } from "vcard-creator";
+/*import { VCard } from "vcard-creator";
 
 import {StatelessUser} from "domain/user/StatelessUser";
 
@@ -39,4 +39,4 @@ export class VcardApiModel {
   public serializeAsBuffer(): Buffer {
     return Buffer.from(this.vcard.toString(), "utf8");
   }
-}
+}*/
