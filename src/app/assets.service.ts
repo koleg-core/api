@@ -34,9 +34,9 @@ export class AssetsService {
     });
     return this.s3Client.getS3Url(filePath);
   }
-  public deleteVcard(userId: string): void {
+  public deleteVcard(userId: string): number {
     const filePath = this.getUserVCardPath(userId);
-    this.s3Client.removeContent(filePath);
+    return this.s3Client.removeContent(filePath);
   }
 
   public async getVcardTemporaryUrl(userId: string): Promise<URL> {

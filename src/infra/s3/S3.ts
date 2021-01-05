@@ -55,7 +55,9 @@ export class S3 {
     path: string,
     contentType: string,
     visibility: "public-read" | "private"
-  ): Promise<void> {
+  ): Promise<number> {
+    let returnCode = 0;
+    // Interrogation how s3 manage callback
     this.s3Client.putObject({
       Bucket: this.bucket,
       Key: path,
@@ -65,21 +67,24 @@ export class S3 {
       ContentType: contentType as AWS.S3.ContentType,
     }, (err, data) => {
       console.log("AMAZON", err, data);
+      returnCode = -1;
     });
+    return returnCode;
   }
 
   public removeContent(path: string): number {
     console.log("Path to remove", path);
-    try {
-      this.s3Client.deleteObject({
-        Bucket: this.bucket,
-        Key: path
-      });
-      return 0;
-    } catch (error) {
-      console.log(error);
-      return -1;
-    }
+    let returnCode = 0;
+    // If you don't add callback error not works
+    this.s3Client.deleteObject({
+      Bucket: this.bucket,
+      Key: path
+    }, (err) => {
+      returnCode = -1;
+      console.log(err);
+    });
+
+    return returnCode;
   }
 
   public async getTemporaryPublicUrl(path: string, durationInSeconds = 60): Promise<URL> {
