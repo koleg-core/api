@@ -159,14 +159,17 @@ export class Organisation {
       throw new Error("Invalid argument statelessUser.password: Password");
     }
 
-    const userGroups: string[] = statelessUser.groupsIds;
-    userGroups.forEach(groupId => {
-      if (!this._groups.has(groupId)) {
-        throw new Error(`Invalid groupId: ${groupId}`);
-      }
-    });
+    if (Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0) {
+      const userGroups: string[] = statelessUser.groupsIds;
+      userGroups.forEach(groupId => {
+        if (!this._groups.has(groupId)) {
+          throw new Error(`Invalid groupId: ${groupId}`);
+        }
+      });
+    }
 
     const newUser = new User(statelessUser);
+
     this._users.forEach(user => {
       const identity: UserIdentity = user.getIdentity();
       if (identity.controlWithIdentity(newUser.getIdentity())) {
@@ -259,20 +262,13 @@ export class Organisation {
       returnCode = ReturnCodes.UPDATED;
     }
 
-    if (statelessUser.job
-      && (
-        !user.getJob()
-        || !user.getJob().hasSameName(statelessUser.job)
-      )
-    ) {
-      returnCode = user.updateJob(statelessUser.job);
-      if (returnCode < 0) {
-        return returnCode;
+    if (statelessUser.job) {
+      try {
+        const job = this.getJob(statelessUser.job.getName());
+        user.updateJob(job);
+      } catch (error) {
+        throw new Error('Given job does not exist');
       }
-      if (statelessUser.job) {
-        this.addJob(statelessUser.job);
-      }
-      returnCode = ReturnCodes.UPDATED;
     }
 
     if (statelessUser.birthdate
@@ -283,6 +279,19 @@ export class Organisation {
         return returnCode;
       }
       returnCode = ReturnCodes.UPDATED;
+    }
+
+    if (Array.isArray(statelessUser.phoneNumbers)) {
+      const userPhones = [...user.getPhoneNumbers()];
+      userPhones.forEach(userPhone => {
+        user.removePhoneNumber(userPhone);
+      });
+
+      if (statelessUser.phoneNumbers.length > 0) {
+        statelessUser.phoneNumbers.forEach(userPhone => {
+          user.addPhoneNumber(userPhone);
+        });
+      }
     }
 
     if (statelessUser.profilePictureUrl
