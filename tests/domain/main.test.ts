@@ -200,7 +200,8 @@ describe("Organisation", () => {
         const password = new Password("My secret password");
         const birthdate = new Date();
         const profilePictureUrl = new URL("http://url.com");
-        const job = new Job("vendor");
+        const job = new Job("Tester job");
+        organisation.addJob(job);
         const sshKey = new SshKey("publicKey", "privateKey");
         const phoneNumbers: PhoneNumber = new PhoneNumber(PhoneType.PHONE_CELL_HOME, "+33511931123");
 
