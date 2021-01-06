@@ -28,7 +28,7 @@ export class User {
   // TODO: Add activation date, apply it into _isEditable
 
   constructor(statelessUser: StatelessUser) {
-    if(!statelessUser) {
+    if (!statelessUser) {
       throw new Error("Invalid argument parameter, statelessUser.");
     }
     if (!statelessUser.identity) {
@@ -41,10 +41,12 @@ export class User {
       throw new Error("Invalid argument parameter, statelessUser.birthdate");
     }
     if (statelessUser.birthdate > new Date()) {
-      throw new Error("Negativ age, birthdate is into the future");
+      throw new Error("Negative age, birthdate is into the future");
     }
 
-    if(!statelessUser.id){
+    if (statelessUser.id) {
+      this._id = statelessUser.id;
+    } else {
       this._id = uuid();
     }
 
@@ -60,12 +62,12 @@ export class User {
     this._sshKey = statelessUser.sshKey;
     this._expirationDate = statelessUser.expirationDate;
 
-    if(!statelessUser.passwordHistory) {
+    if (!statelessUser.passwordHistory) {
       this._passwordHistory = [];
     } else {
-      if(statelessUser.passwordHistory.length === 0) {
+      if (statelessUser.passwordHistory.length === 0) {
         this._passwordHistory.push(this._password);
-      } else if(statelessUser.passwordHistory
+      } else if (statelessUser.passwordHistory
         .some(password => {
           password.hasSameValue(statelessUser.password);
         }
@@ -269,7 +271,7 @@ export class User {
 
   // Disable =======
   public isDisabled(): boolean {
-    if(!this._disableDate) {
+    if (!this._disableDate) {
       return false;
     }
     return this._disableDate <= new Date();
@@ -345,7 +347,7 @@ export class User {
 
     // TODO: we set !this._expirationDate cuz we don't want to return null
     //   !null => true
-    return !( !this._expirationDate || this._expirationDate < new Date() );
+    return !(!this._expirationDate || this._expirationDate < new Date());
   }
 
   public getExpirationDate(): Date {

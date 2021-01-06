@@ -8,23 +8,27 @@ import {
   Post,
   Put,
   Delete,
-  Param
+  Param,
+  BodyParam,
+  UseBefore,
+  CurrentUser
 } from "routing-controllers";
 import { hash } from "bcrypt";
 
 import { ReturnCodes } from "domain/enums/return-codes.enum";
-import {Password} from "domain/user/Password";
-import {StatelessUser} from "domain/user/StatelessUser";
+import { StatelessUser } from "domain/user/StatelessUser";
 
 import { OrganisationService } from "app/organisation.service";
-import {AssetsService} from "app/assets.service";
+import { AssetsService } from "app/assets.service";
 
 import { ApiError } from "../errors/api-error";
 import { WritableUserApiModel } from "../models/writable-user-api.model";
 import { ResponseModel } from "../models/response.model";
 import { HttpStatusCode } from "../models/http-status-code.enum";
 import { ReadableUserApiModel } from "../models/readable-user-api.model";
-import {VcardApiModel} from "infra/vcards/models/vcard-api-model";
+import { VcardApiModel } from "infra/vcards/models/vcard-api-model";
+import { AuthService } from "../auth/auth.service";
+import { ReadableUser } from "domain/user/ReadableUser";
 
 @Service("user.controller")
 @JsonController()
@@ -90,12 +94,6 @@ export class UsersController {
   @Put("/users/:id")
   @HttpCode(HttpStatusCode.OK)
   async put(@Param("id") id: string, @Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
-    if(user.password) {
-      throw new ApiError(HttpStatusCode.BAD_REQUEST, ReturnCodes.NOT_UPDATED,
-        "You can't update user password with this endpoint please use users/:id/update-password instead."
-      );
-    }
-
     const statelessUser = user.toStatelessUser(id);
     return this._organisationService.updateUser(statelessUser)
       .then(returnCode => {
@@ -125,28 +123,32 @@ export class UsersController {
 
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Put("/users/:id/update-password")
-  async updatePassword(@Param("id") id: string, @Body() frontHashedPassword: string): Promise<ResponseModel | ApiError> {
-    return this._organisationService.getUserById(id)
-      .then(readableUser => {
-        hash(frontHashedPassword, this._saltRoudsPassword, (bcryptError: Error , backHashedPassword: string) => {
-          if(bcryptError) {
-            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, bcryptError?.message);
-          }
-          const password: Password = new Password(backHashedPassword);
-          const stateLessUser = new StatelessUser(
-            readableUser.getId(),
-            null,
-            null,
-            readableUser.getIdentity(),
-            password,
-            null,
-          );
-        })
-          .catch (error => {
-            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
-          });
+  async updatePassword(@Param("id") userId: string, @BodyParam('password') password: string): Promise<ResponseModel | ApiError> {
 
-        return new ResponseModel(HttpStatusCode.ACCEPTED, `Your password changment for user: ${id} was aknoleged.`);
+    if (!password) {
+      throw new ApiError(HttpStatusCode.BAD_REQUEST, HttpStatusCode.BAD_REQUEST, 'The password must not be null or empty');
+    }
+
+    const readableUser = await this._organisationService.getUserById(userId);
+
+    if (!readableUser) {
+      throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, 'User not found');
+    }
+
+    return hash(password, this._saltRoudsPassword)
+      .then(async hashedPassword => {
+        try {
+          const returnCode = await this._organisationService.updateUserPassword(userId, hashedPassword);
+          if (returnCode !== ReturnCodes.UPDATED) {
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, 'User password cannot be changed.');
+          }
+          return new ResponseModel(HttpStatusCode.ACCEPTED, `Your password changment for user: ${userId} was aknoleged.`);
+        } catch (error) {
+          throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+        }
+      })
+      .catch(error => {
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       });
   }
 
@@ -157,7 +159,7 @@ export class UsersController {
     const statelessUser = new StatelessUser(id, null, null, null, null, null, null, null, null, null, null, newProfilePictureUrl);
     this._organisationService.updateUser(statelessUser)
       .then(returnCode => {
-        if(returnCode < 0) {
+        if (returnCode < 0) {
           throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, "Profile picture was not updated");
         }
       });

@@ -5,6 +5,7 @@ import { Job } from "../../domain/user/Job";
 import { JobSerializer } from "../../infra/database/serializer/job.serializer";
 import { Sequelize } from "sequelize";
 import { StatelessUser } from "../../domain/user/StatelessUser";
+import { UserSerializer } from "infra/database/serializer/user.serializer";
 
 export class OrganisationInSqlRepository implements OrganisationRepository {
 
@@ -31,12 +32,9 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
 
     const remoteJobs = await this._database.getJobs();
     if (Array.isArray(remoteJobs) && remoteJobs.length > 0) {
-      remoteJobs.forEach(remoteJob => {
-        JobSerializer.prototype.deserialize(remoteJob)
-          .then(response => {
-            organisation.addJob(response);
-          })
-      })
+      for await (let remoteJob of remoteJobs) {
+        organisation.addJob(await JobSerializer.prototype.deserialize(remoteJob));
+      }
     }
 
     // const remoteGroups = await this._database.getGroups();
@@ -46,12 +44,12 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     //   })
     // }
 
-    // const remoteUsers = await this._database.getJobs();
-    // if (Array.isArray(remoteUsers) && remoteUsers.length > 0) {
-    //   remoteUsers.forEach(remoteJob => {
-    //     organisation.addUser(JobSerializer.deserializeUser(remoteJob));
-    //   })
-    // }
+    const remoteUsers = await this._database.getUsers();
+    if (Array.isArray(remoteUsers) && remoteUsers.length > 0) {
+      for await (let remoteUser of remoteUsers) {
+        organisation.addUser(await UserSerializer.prototype.deserialize(remoteUser));
+      }
+    }
 
     return organisation;
   }
@@ -64,18 +62,22 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     this._database.deleteJob(name);
   }
 
-  createUser(user: StatelessUser): void {
-    // this._database.createUser(userId, user);
-    throw new Error("Method not implemented.");
+  async createUser(user: StatelessUser): Promise<void> {
+    const userModel = await UserSerializer.prototype.serialize(user);
+    userModel.saveUser();
   }
 
-  updateUser(user: StatelessUser): void {
-    // this._database.updateUser(userId, user);
-    throw new Error("Method not implemented.");
+  async updateUser(user: StatelessUser): Promise<void> {
+    const userModel = await UserSerializer.prototype.serialize(user);
+    console.log(userModel);
+    userModel.saveUser();
+  }
+
+  updateUserPassword(userId: string, password: string): void {
+    this._database.updatePassword(userId, password);
   }
 
   deleteUser(userId: string): void {
-    // this._database.deleteUser(userId);
     throw new Error("Method not implemented.");
   }
 

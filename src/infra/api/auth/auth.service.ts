@@ -1,91 +1,48 @@
-import { Passport } from "passport";
-import {
-  Strategy as JwtStrategy,
-  ExtractJwt
-} from "passport-jwt";
-import {
-  Strategy as LocalStrategy,
-  IVerifyOptions
-} from "passport-local";
-
-import { ReadableUser } from "../../../domain/user/ReadableUser";
-import { Organisation } from "../../../domain/organisation";
-import { OrganisationRepository } from "../../../domain/repos/organisation.repository";
-
-import { Strategy } from "./strategy.enum";
+import { OrganisationService } from "app/organisation.service";
+import { ReadableUser } from "domain/user/ReadableUser";
+import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import { Action } from "routing-controllers";
+import HttpStatusCode from "../models/http-status-code.enum";
 
 export class AuthService {
-  private _passport = new Passport();
 
-  constructor(private _repository: OrganisationRepository) {
-    if (!this._repository) {
-      throw new Error("Invalid argument repository: OrganisationRepository is not defined.");
-    }
+  constructor(
+    private _organisationService: OrganisationService
+  ) { }
+
+  public currentUserChecker(action: Action): Promise<ReadableUser> {
+    const userId = action.response.locals.jwtPayload.data.userId;
+    console.log(userId);
+    return this._organisationService.getUserById(userId);
   }
 
-  public addAuthKind(authType: Strategy): void {
-    switch (authType) {
-    case Strategy.LOGIN: {
-      this._passport.use(new LocalStrategy(
-        (userIdentifier: string,
-          password: string,
-          done: (
-              error: unknown,
-              user?: ReadableUser,
-              options?: IVerifyOptions
-            ) => void
-        ) => {
-          try {
-            const organisation: Organisation = this._repository.read();
-            const userId: string = organisation.getUserByIdentifier(userIdentifier);
-            if (!userId) {
-              return done(null, null, { message: "User not found" });
-            }
+  public static checkJwt(req: Request, res: Response, next: NextFunction) {
 
-            if (!organisation.verifyUserPassword(userId, password)) {
-              return done(null, null, { message: "User password was invalid" });
-            }
+    const token = AuthService._extractTokenFromHeader(req);
+    let jwtPayload;
 
-            return done(null, organisation.getReadableUserById(userId));
-          } catch (err) {
-            if (err) {
-              return done(err, null, { message: "Internal servor error"});
-            }
-          }
-        }
-      ));
-      break;
+    try {
+      jwtPayload = jwt.verify(token, 'coucou-c-le-secret') as { userId: string, username: string };
+      res.locals.jwtPayload = jwtPayload;
+    } catch (error) {
+      res.status(HttpStatusCode.UNAUTHORIZED).send({ response: "You should be logged in to access this url" });
+      return;
     }
-    case Strategy.JWT: {
-      const opts = {
-        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: "secret", // TODO find way to give secret from configs
-        issuer: "kwt issuer",
-        audience: "localhost:8080" // TODO find way to give it from config
-      };
-      this._passport.use(new JwtStrategy(
-        opts,
-        async (token, done) => {
-          try {
-            return done(null, token.user);
-          } catch (error) {
-            done(error);
-          }
-        }
-      ));
-      break;
-    }
-    }
+
+    const { userId, username } = jwtPayload;
+    const newToken = jwt.sign({ data: { userId, username } }, 'coucou-c-le-secret', {
+      expiresIn: "10h"
+    });
+    res.setHeader('Authorization', `Bearer ${newToken}`);
+
+    next();
   }
 
-  public login(
-    identifier: string,
-    password: string,
-    done: (
-      error: unknown,
-      user?: ReadableUser,
-      options?: IVerifyOptions
-    ) => void): void {
-    this._passport.authenticate("login", done);
+  private static _extractTokenFromHeader = (req: Request) => {
+    const authorization = req.headers.authorization;
+    if (authorization && authorization.split(' ')[0] === 'Bearer') {
+      return authorization.split(' ')[1];
+    }
   }
 }

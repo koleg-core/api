@@ -19,6 +19,7 @@ export interface OrganisationRepository {
     createUser(user: StatelessUser): void;
     updateUser(user: StatelessUser): void;
     deleteUser(userId: string): void;
+    updateUserPassword(userId: string, password: string): void;
 
     // Group
     createGroup(organisation: Organisation, groupId: string): void;

@@ -4,7 +4,8 @@ import {
   getMetadataArgsStorage,
   useContainer,
   createExpressServer,
-  RoutingControllersOptions
+  RoutingControllersOptions,
+  Action
 } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import * as swaggerUiExpress from "swagger-ui-express";
@@ -16,11 +17,12 @@ import { Application } from "express";
 import { UsersController } from "./controllers/users.controller";
 import { JobsController } from "./controllers/jobs.controller";
 import { OrganisationService } from "app/organisation.service";
-import {AssetsService} from "app/assets.service";
+import { AssetsService } from "app/assets.service";
+import { AuthController } from "./controllers/auth.controller";
+import { AuthService } from "./auth/auth.service";
 
 export class Api {
   private _app: Application;
-  // private _authService: AuthService;
   private _port = 8080;
   private readonly _routingControllersOptions: RoutingControllersOptions;
   private _spec: OpenAPIObject;
@@ -36,7 +38,7 @@ export class Api {
     if (!this._organisationService) {
       throw new Error("Invalid argument _organisationService: OrganisationService is not defined.");
     }
-    if(!this._assetsService) {
+    if (!this._assetsService) {
       throw new Error("Invalid argument _assetsService: AssetsService is not defined");
     }
 
@@ -48,12 +50,16 @@ export class Api {
     // To have working typedi
     useContainer(Container);
 
+    const authService = new AuthService(this._organisationService);
+
     this._routingControllersOptions = {
       classTransformer: true,
       validation: { skipMissingProperties: true },
+      currentUserChecker: async (action: Action) => { return await authService.currentUserChecker(action) },
       controllers: [
         UsersController,
-        JobsController
+        JobsController,
+        AuthController
       ]
     };
 
@@ -61,7 +67,7 @@ export class Api {
     // this._authService = new AuthService(this._repository);
 
     // TODO externalize log lever into config
-    this._app.use(morgan("dev"));
+    this._app.use(morgan('dev'));
   }
 
   public config(
