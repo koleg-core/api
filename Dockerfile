@@ -1,4 +1,4 @@
-ARG NODE_VERSION=12.19.0
+ARG NODE_VERSION=15.5.1
 FROM node:${NODE_VERSION} as build
 
 ENV NODE_ENV=production \
