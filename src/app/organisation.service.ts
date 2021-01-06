@@ -11,12 +11,12 @@ export class OrganisationService {
 
   constructor(
     private repository: OrganisationRepository
-  ) {}
+  ) { }
 
   // ORGANISATION
   public async getName(): Promise<string> {
     await this._updateOrganisation();
-    return  this._organisation.getId();
+    return this._organisation.getId();
   }
 
   // JOBS
@@ -66,7 +66,7 @@ export class OrganisationService {
 
   public async updateUser(user: StatelessUser): Promise<ReturnCodes> {
 
-    if(!user) {
+    if (!user) {
       throw Error("Invalid user argument user: StatelessUser.");
     }
 
@@ -74,19 +74,20 @@ export class OrganisationService {
 
     const returnCode = this._organisation.updateUser(user);
     if (returnCode === ReturnCodes.UPDATED) {
-      this.repository.updateUser(user);
+      const userToSave: StatelessUser = this._organisation.getStatelessUserById(user.id);
+      this.repository.createUser(userToSave);
     }
     return returnCode;
   }
 
   public async updateUserPassword(userId: string, newPassword: string): Promise<ReturnCodes> {
     await this._updateOrganisation();
-    
+
     const returnCode = this._organisation.updateUserPassword(userId, newPassword);
     if (returnCode === ReturnCodes.UPDATED) {
-      this.repository.updateUser(this._organisation.getStatelessUserById(userId));
+      this.repository.updateUserPassword(userId, newPassword);
+      return returnCode;
     }
-    return returnCode;
   }
 
   public async findUserByIdentifier(identifier: string): Promise<string> {

@@ -73,6 +73,10 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     userModel.saveUser();
   }
 
+  updateUserPassword(userId: string, password: string): void {
+    this._database.updatePassword(userId, password);
+  }
+
   deleteUser(userId: string): void {
     throw new Error("Method not implemented.");
   }
