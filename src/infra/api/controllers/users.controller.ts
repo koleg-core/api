@@ -87,7 +87,7 @@ export class UsersController {
         return new ResponseModel(HttpStatusCode.OK, "Success", ReadableUserApiModel.toReadableUserApiModel(user));
       })
       .catch(error => {
-        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       });
   }
 
@@ -104,7 +104,7 @@ export class UsersController {
         return new ResponseModel(returnCode, `Request returns with status : ${returnCode}.`, id);
       })
       .catch(error => {
-        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       });
   }
 
@@ -173,7 +173,7 @@ export class UsersController {
       const vcardUrl = await this._assetService.getVcardTemporaryUrl(id);
       return new ResponseModel(HttpStatusCode.OK, `Temporary vcard url for user: ${id}`, vcardUrl.toString());
     } catch (error) {
-      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error);
+      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
     }
   }
 

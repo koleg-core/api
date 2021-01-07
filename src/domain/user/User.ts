@@ -54,8 +54,12 @@ export class User {
     this._password = statelessUser.password;
     this._birthdate = statelessUser.birthdate;
     this._passwordHistory = statelessUser.passwordHistory;
-    this._phoneNumbers = statelessUser.phoneNumbers;
-    this._groupsIds = statelessUser.groupsIds;
+    if (Array.isArray(statelessUser.phoneNumbers) && statelessUser.phoneNumbers.length > 0) {
+      this._phoneNumbers = statelessUser.phoneNumbers;
+    }
+    if (Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0) {
+      this._groupsIds = statelessUser.groupsIds;
+    }
     this._job = statelessUser.job;
     this._disableDate = statelessUser.disableDate;
     this._profilePictureUrl = statelessUser.profilePictureUrl;
@@ -163,7 +167,7 @@ export class User {
   }
 
   // PhoneNumber =======
-  public getPhoneNumber(): PhoneNumber[] {
+  public getPhoneNumbers(): PhoneNumber[] {
     return this._phoneNumbers;
   }
 

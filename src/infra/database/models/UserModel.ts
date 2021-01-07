@@ -76,8 +76,9 @@ export class UserModel extends Model<UserAttributes, UserCreationAttributes> imp
 
   async deletePhones() {
     const phones = await this.getPhones();
-    console.log(phones);
-    await phones[0].destroy();
+    if (Array.isArray(phones) && phones.length > 0) {
+      await phones[0].destroy();
+    }
   }
 
   async saveUser() {

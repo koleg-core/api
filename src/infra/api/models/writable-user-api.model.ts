@@ -70,8 +70,8 @@ export class WritableUserApiModel {
     birthdate: string,
     email: string,
     password: PasswordApiModel,
-    groupIds: string[] = [],
-    phoneNumbers: PhoneNumberApiModel[] = [], // TODO multiple phones numbers
+    groupIds: string[] = null,
+    phoneNumbers: PhoneNumberApiModel[] = null, // TODO multiple phones numbers
     id: string = null,
     username: string = null,
     profilePictureUrl: URL = null,
@@ -92,18 +92,19 @@ export class WritableUserApiModel {
     this.email = email;
     this.password = password;
     this.groupIds = groupIds;
-    if(phoneNumbers.length > 0) {
-      phoneNumbers.forEach(phonNumber => {
-        this.phoneNumbers.push(plainToClass(PhoneNumberApiModel, phonNumber));
+
+    if (Array.isArray(phoneNumbers) && phoneNumbers.length > 0) {
+      phoneNumbers.forEach(phoneNumber => {
+        this.phoneNumbers.push(plainToClass(PhoneNumberApiModel, phoneNumber));
       });
     }
     this.phoneNumbers = phoneNumbers;
     this.username = username;
     this.profilePictureUrl = plainToClass(URL, profilePictureUrl);
-    if(job) {
+    if (job) {
       this.job = plainToClass(JobApiModel, job);
     }
-    if(sshKey) {
+    if (sshKey) {
       this.sshKey = plainToClass(SshKeyApiModel, sshKey);
     }
     this.expirationDate = expirationDate;
@@ -111,7 +112,7 @@ export class WritableUserApiModel {
   }
 
   public static toWritableUserApiModel(user: StatelessUser): WritableUserApiModel {
-    if(!user) {
+    if (!user) {
       throw new Error("Invalid argument parameter user is null or undefined");
     }
     const birthdate: string =
@@ -131,9 +132,9 @@ export class WritableUserApiModel {
         ? user.job
         : null;
     const sshKey: SshKey =
-    user.sshKey && Object.keys(user.sshKey).length !== 0
-      ? user.sshKey
-      : null;
+      user.sshKey && Object.keys(user.sshKey).length !== 0
+        ? user.sshKey
+        : null;
 
     const phoneNumberApiModel: PhoneNumberApiModel[] = [];
     user.phoneNumbers.forEach(
@@ -161,7 +162,7 @@ export class WritableUserApiModel {
   }
 
   public toStatelessUser(id: string = null): StatelessUser {
-    if(this.id && id && id !== this.id) {
+    if (this.id && id && id !== this.id) {
       throw new Error("Invalid argument parameter id can't be different than this.id.");
     }
 
@@ -175,32 +176,48 @@ export class WritableUserApiModel {
       this.password
         ? plainToClass(PasswordApiModel, this.password).toPassword()
         : null;
+
     const birthdate: Date =
       this.birthdate
         ? new Date(this.birthdate)
         : null;
+
     const expirationDate: Date =
       this.expirationDate
         ? new Date(this.expirationDate)
         : null;
+
     const disableDate: Date =
       this.disableDate
         ? new Date(this.disableDate)
         : null;
+
     const job: Job =
       this.job && Object.keys(this.job).length !== 0
         ? plainToClass(JobApiModel, this.job).toJob()
         : null;
+
     const sshKey: SshKey =
       this.sshKey && Object.keys(this.sshKey).length !== 0
         ? plainToClass(SshKeyApiModel, this.sshKey).toSshKey()
         : null;
-    const phoneNumber: PhoneNumber[] = [];
-    this.phoneNumbers.forEach(
-      phoneNumberApi => phoneNumber.push(
+
+    let phoneNumbers: PhoneNumber[] = [];
+    if (Array.isArray(this.phoneNumbers)) {
+      this.phoneNumbers.forEach(phoneNumberApi => phoneNumbers.push(
         plainToClass(PhoneNumberApiModel, phoneNumberApi)
           .toPhoneNumber())
-    );
+      );
+    } else {
+      phoneNumbers = null;
+    }
+
+    let groupIds: string[] = [];
+    if (Array.isArray(this.groupIds)) {
+      groupIds = this.groupIds;
+    } else {
+      groupIds = null;
+    }
 
     return new StatelessUser(
       statelessId,
@@ -210,8 +227,8 @@ export class WritableUserApiModel {
       password,
       birthdate,
       null,
-      phoneNumber,
-      this.groupIds,
+      phoneNumbers,
+      groupIds,
       job,
       disableDate,
       this.profilePictureUrl,
