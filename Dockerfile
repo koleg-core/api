@@ -8,7 +8,7 @@ COPY . /work/
 
 WORKDIR /work
 
-RUN npm install --also=dev \
+RUN npm install \
     && npm run build
 
 FROM node:${NODE_VERSION} as main
