@@ -3,6 +3,7 @@ import { UserIdentity } from "./UserIdentity";
 import { Job } from "./Job";
 import { Password } from "./Password";
 import { SshKey } from "./SshKey";
+import { Right } from "./Right";
 
 export class StatelessUser {
   constructor(
@@ -19,6 +20,7 @@ export class StatelessUser {
     public readonly disableDate?: Date,
     public readonly profilePictureUrl?: URL,
     public readonly sshKey?: SshKey,
-    public readonly expirationDate?: Date
+    public readonly expirationDate?: Date,
+    public readonly rights?: Right[]
   ) {}
 }
