@@ -42,7 +42,7 @@ stages:
     docker build \
       -t $SCW_REGISTRY/$IMAGE_NAME:latest \
       -t $SCW_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA \
-      --cache-from $SCW_REGISTRY/$IMAGE_NAME:latest
+      --cache-from $SCW_REGISTRY/$IMAGE_NAME:latest \
       .
     echo "Push image to registry"
     docker push \

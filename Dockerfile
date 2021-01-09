@@ -1,8 +1,11 @@
 ARG NODE_VERSION=14.2.0
 FROM node:${NODE_VERSION} as build
 
-ENV NODE_ENV=production \
-    NODE_VERSION=${NODE_VERSION}
+# TODO: fix warning to allow production run
+# ENV NODE_ENV=production \
+#     NODE_VERSION=${NODE_VERSION}
+
+ENV NODE_VERSION=${NODE_VERSION}
 
 COPY . /work/
 
