@@ -35,16 +35,17 @@ export class SqlService {
       return this.database;
     }
 
-  /*async testUser(){
+  async testUser(){
         const userModel = await this.database.getUser('a70e5a16-5ad1-41be-851f-0fe9a100ddb6');
         const userSerialize = await UserSerializer.prototype.deserialize(userModel);
 
-        let userInsert = new StatelessUser('testCreation3',userSerialize.creationDate,userSerialize.updateDate,
+        /*let userInsert = new StatelessUser('testCreation3',userSerialize.creationDate,userSerialize.updateDate,
         new UserIdentity('test3','test3'),userSerialize.password,userSerialize.birthdate,null,userSerialize.phoneNumbers,
         userSerialize.groupsIds,userSerialize.job);
         const user2 = await UserSerializer.prototype.serialize(userInsert);
-        await user2.saveUser();
-    }*/
+        await user2.saveUser();*/
+        console.log(userSerialize);
+    }
 
     /*async testGroup(){
         const groupModel = await GroupsModel.findOne({ where: { id: 10 } });
@@ -67,7 +68,7 @@ export class SqlService {
 }
 
 const test = new SqlService();
-test.getDatabase().updatePassword('82ef7178-a48c-408c-93e5-361a461643ce','e<gfshpZUGHpzu');
+test.testUser();
 
 
 
