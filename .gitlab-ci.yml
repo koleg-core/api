@@ -57,20 +57,21 @@ stages:
     - master
     - develop
   script: |
+    echo "Deploy on branch: ${CI_COMMIT_BRANCH}"
     kubectl \
-      set image deployment.v1.apps/$IMAGE_NAME \
+      set image deployment/$IMAGE_NAME \
       ${IMAGE_NAME}=${SCW_REGISTRY}/${IMAGE_NAME}:${CI_COMMIT_SHA} \
-      --namespace "${CI_BRANCH}" \
+      --namespace "${CI_COMMIT_BRANCH}" \
       --kubeconfig "$SCW_KUBECONFIG" \
       --record
     kubectl \
-      rollout status deployment.v1.apps/$IMAGE_NAME \
+      rollout status deployment/$IMAGE_NAME \
       --timeout=5m \
-      --namespace "${CI_BRANCH}" \
+      --namespace "${CI_COMMIT_BRANCH}" \
       --kubeconfig $SCW_KUBECONFIG \
     || ( kubectl \
-      --namespace "${CI_BRANCH}" \
-      --kubeconfig $SCW_KUBECONFIG \
-      rollout undo deployment.v1.apps/$IMAGE_NAME \
-      && echo "❌ deployment failed, return to previous deployment" \
-      && exit 1 )
+        --namespace "${CI_COMMIT_BRANCH}" \
+        --kubeconfig $SCW_KUBECONFIG \
+        rollout undo deployment/$IMAGE_NAME \
+        && echo "❌ deployment failed, return to previous deployment" \
+        && exit 1 )
