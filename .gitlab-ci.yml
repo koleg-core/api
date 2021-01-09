@@ -22,7 +22,7 @@ stages:
 
 🛏️tests_coverage:
   stage: 📜tests
-  image: node:12.19.0
+  image: node:14.2.0
   script: |
     yarn
     yarn coverage
