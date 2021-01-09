@@ -117,7 +117,7 @@ export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> 
     if (userModel.sshPrivateKey && userModel.sshPublicKey) {
       sshKey = new SshKey(userModel.sshPrivateKey, userModel.sshPublicKey);
     }
-
+    let test = null;
     return new StatelessUser(
       userModel.uuid,
       userModel.creationDate,
