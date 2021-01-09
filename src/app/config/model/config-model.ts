@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 export const configModel = {
   env: {
     doc: "The application environment.",
@@ -5,38 +7,81 @@ export const configModel = {
     default: "development",
     env: "NODE_ENV",
   },
-  port: {
-    doc: "The port to listen.",
-    format: "port",
-    default: 8080,
-    env: "KOLEG_PORT",
-    arg: "port",
+
+  api: {
+    port: {
+      doc: "The port to listen.",
+      format: "port",
+      default: 8080,
+      env: "KOLEG_API_PORT",
+      arg: "port",
+    },
+    jwt_secret: {
+      doc: "JWT secret used to encrypt api session token.",
+      format: String,
+      env: "KOLEG_API_JWT_SECRET",
+      defaul: "25b041fe8615a8c8755ef5f6d5f447c8"
+    },
+    session_duration: {
+      doc: "Time validity for api session.",
+      format: String,
+      env: "KOLEG_API_SESSION_DURATION",
+      defaul: "10h"
+    },
+    page_size: {
+      doc: "Number of item return per query page.",
+      format: Number,
+      env: "KOLEG_API_PAGE_SIZE",
+      defaul: 20
+    },
   },
   s3: {
     bucket: {
       doc: "URL to object storage service.",
-      format: String,
+      format: "url",
       env: "KOLEG_S3_BUCKET",
+    },
+    endpoint: {
+      doc: "Host of s3 server.",
+      format: String,
+      env: "KOLEG_S3_ENDPOINT",
     },
     port: {
       doc: "TCP/IP port number. This input is optional. Default value set to 80 for HTTP and 443 for HTTPs.",
       format: "port",
       env: "KOLEG_S3_PORT",
     },
-    accessKey: {
+    access_key: {
       doc: "Access key is like user ID that uniquely identifies your account.",
       type: String,
       env: "KOLEG_S3_ACCESSKEY",
     },
-    secretKey: {
+    secret_key: {
       doc: "Secret key is the password to your account.",
       type: String,
       env: "KOLEG_S3_SECRETKEY",
     },
-    useSsl: {
+    use_ssl: {
       doc: "Set this value to 'true' to enable secure (HTTPS) access",
       type: Boolean,
       env: "KOLEG_S3_USESSL",
+    },
+    region: {
+      doc: "S3 region.",
+      type: String,
+      env: "KOLEG_S3_REGION",
+    },
+    path_style: {
+      doc: "Enable S3 path style.",
+      type: Boolean,
+      env: "KOLEG_S3_PATH_STYLE",
+      default: false,
+    },
+    api_version: {
+      doc: "S3 api version",
+      type: String,
+      env: "KOLEG_S3_API_VERSION",
+      default: "v4",
     },
   },
   database: {
@@ -77,3 +122,5 @@ export const configModel = {
     }
   }
 };
+
+/* eslint-enable camelcase */

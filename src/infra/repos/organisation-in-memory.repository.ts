@@ -36,7 +36,7 @@ class OrganisationInMemoryRepository implements OrganisationRepository {
     console.log("user updated");
   }
   updateUserPassword(userId: string, password: string): void {
-    console.log('User password updated');
+    console.log("User password updated");
   }
   deleteUser(userId: string): void {
     console.log("user deleted");

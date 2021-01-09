@@ -1,0 +1,20 @@
+api:
+  jwt_secret:
+  port: 8081
+  session_duration: "10h"
+database:
+  enable: true
+  host: You database host
+  port: 5432
+  user: user
+  password: P@ssw0rd
+  schema: kolegdb
+s3:
+  bucket:
+  port: 443
+  endpoint: s3.api.net
+  access_key: XXXXXXXXXXX
+  secret_key: XXXXXXXXXXX
+  use_ssl: true
+  region: fr-par
+  path_style: false

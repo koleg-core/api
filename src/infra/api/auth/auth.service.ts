@@ -23,7 +23,7 @@ export class AuthService {
     let jwtPayload;
 
     try {
-      jwtPayload = jwt.verify(token, 'coucou-c-le-secret') as { userId: string, username: string };
+      jwtPayload = jwt.verify(token, "coucou-c-le-secret") as { userId: string, username: string };
       res.locals.jwtPayload = jwtPayload;
     } catch (error) {
       res.status(HttpStatusCode.UNAUTHORIZED).send({ response: "You should be logged in to access this url" });
@@ -31,18 +31,18 @@ export class AuthService {
     }
 
     const { userId, username } = jwtPayload;
-    const newToken = jwt.sign({ data: { userId, username } }, 'coucou-c-le-secret', {
+    const newToken = jwt.sign({ data: { userId, username } }, "coucou-c-le-secret", {
       expiresIn: "10h"
     });
-    res.setHeader('Authorization', `Bearer ${newToken}`);
+    res.setHeader("Authorization", `Bearer ${newToken}`);
 
     next();
   }
 
   private static _extractTokenFromHeader = (req: Request) => {
     const authorization = req.headers.authorization;
-    if (authorization && authorization.split(' ')[0] === 'Bearer') {
-      return authorization.split(' ')[1];
+    if (authorization && authorization.split(" ")[0] === "Bearer") {
+      return authorization.split(" ")[1];
     }
   }
 }

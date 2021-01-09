@@ -1,4 +1,5 @@
 import Fuse from "fuse.js";
+
 import { ReturnCodes } from "../../../domain/enums/return-codes.enum";
 import { Job } from "../../../domain/user/Job";
 import { QueryParam, Body, Delete, Get, HttpCode, JsonController, Param, Post, UseBefore } from "routing-controllers";
@@ -24,9 +25,9 @@ export class JobsController {
   @Get("/jobs")
   @UseBefore(AuthService.checkJwt)
   async getAll(
-    @QueryParam('filter') filter?: string,
-    @QueryParam('page') page?: number,
-    @QueryParam('itemsNumber') itemsNumber?: number
+    @QueryParam("filter") filter?: string,
+    @QueryParam("page") page?: number,
+    @QueryParam("itemsNumber") itemsNumber?: number
   ): Promise<ResponseModel | ApiError> {
     return this._organisationService.getJobs()
       .then(jobs => {
@@ -44,7 +45,6 @@ export class JobsController {
 
           const realPage = page || 1;
           const realItemsNumber = itemsNumber || 20;
-
           if (realPage * realItemsNumber <= jobsResponse.length) {
             jobsResponse = jobsResponse.slice((realPage - 1) * realItemsNumber, realPage * realItemsNumber);
           } else {

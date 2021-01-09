@@ -32,7 +32,9 @@ export class Api {
 
   constructor(
     private _organisationService: OrganisationService,
-    private _assetsService: AssetsService
+    private _assetsService: AssetsService,
+    private _sessionDuration: string="1h",
+    private _pageSize: number=10,
   ) {
 
     if (!this._organisationService) {
@@ -55,7 +57,7 @@ export class Api {
     this._routingControllersOptions = {
       classTransformer: true,
       validation: { skipMissingProperties: true },
-      currentUserChecker: async (action: Action) => { return await authService.currentUserChecker(action) },
+      currentUserChecker: async (action: Action) => { return await authService.currentUserChecker(action); },
       controllers: [
         UsersController,
         JobsController,
@@ -67,7 +69,7 @@ export class Api {
     // this._authService = new AuthService(this._repository);
 
     // TODO externalize log lever into config
-    this._app.use(morgan('dev'));
+    this._app.use(morgan("dev"));
   }
 
   public config(
