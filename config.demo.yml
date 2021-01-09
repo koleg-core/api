@@ -1,5 +1,5 @@
 api:
-  jwt_secret:
+  jwt_secret: Don't stop me now
   port: 8081
   session_duration: "10h"
 database:

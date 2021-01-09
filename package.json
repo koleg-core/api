@@ -2,7 +2,7 @@
   "name": "api",
   "version": "1.0.0",
   "engines": {
-    "node": "12.19.0"
+    "node": "14.2.0"
   },
   "engineStrict": true,
   "description": "Typescript API for koleg",
@@ -12,7 +12,7 @@
     "start:prod": "node -r ts-node/register/transpile-only ./dist/main.js",
     "dev": "nodemon src/**/*.ts",
     "lint": "tsc --noEmit && eslint . --ext .ts --fix",
-    "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
+    "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "test": "mocha --color -r tsconfig-paths/register -r ts-node/register tests/**/*.test.ts",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
     "codegen": " npx swagger-typescript-api -p openapi.yml -n KolegApi.ts -o ./auto"
@@ -62,6 +62,7 @@
     "swagger-ui-express": "^4.1.5",
     "ts-node": "^9.0.0",
     "typedi": "^0.8.0",
+    "uglify-js": "^3.12.4",
     "url-join-ts": "^1.0.5",
     "yaml": "^1.10.0"
   },

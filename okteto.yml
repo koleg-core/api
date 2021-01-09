@@ -1,7 +1,8 @@
 name: api-${USER}
 namespace: develop
-image: okteto/node:12
+image: node:14.2.0
 command: bash
+workdir: /usr/src/app
 sync:
   - .:/usr/src/app
 forward:

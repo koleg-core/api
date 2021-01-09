@@ -42,32 +42,13 @@ stages:
     docker build \
       -t $SCW_REGISTRY/$IMAGE_NAME:latest \
       -t $SCW_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA \
-      --cache-from $SCW_REGISTRY/$IMAGE_NAME:latest \
-      --build-arg='PROD=false' \
+      --cache-from $SCW_REGISTRY/$IMAGE_NAME:latest
       .
     echo "Push image to registry"
     docker push \
       $SCW_REGISTRY/$IMAGE_NAME:latest
     docker push \
       $SCW_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA
-
-# 🚑build_debug:
-#   stage: 🏗build
-#   extends: .docker_login
-#   script: |
-#     docker pull \
-#       $SCW_REGISTRY/$IMAGE_NAME:debug || true
-#     docker build \
-#       -t $SCW_REGISTRY/$IMAGE_NAME:debug \
-#       -t $SCW_REGISTRY/$IMAGE_NAME:debug-$CI_COMMIT_SHA \
-#       --cache-from $SCW_REGISTRY/$IMAGE_NAME:debug \
-#       --build-arg='PROD=true' \
-#       .
-#     echo "Push image to registry"
-#     docker push \
-#       $SCW_REGISTRY/$IMAGE_NAME:debug
-#     docker push \
-#       $SCW_REGISTRY/$IMAGE_NAME:debug-$CI_COMMIT_SHA
 
 ☸️production_deploy:
   stage: deploy

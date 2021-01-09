@@ -8,6 +8,7 @@
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": true,
+        "strict": false,
         "rootDir": "./src",
         "outDir": "dist",
         "baseUrl": "./src/",
@@ -23,12 +24,12 @@
         }
     },
     "include": [
-        "src/**/*.ts",
         "src/**/*.ts"
     ],
     "exclude": [
-        "node_modules",
+        "./node_modules",
         "dist",
+        "tests",
         ".vscode"
     ]
 }

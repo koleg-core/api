@@ -8,7 +8,7 @@ COPY . /work/
 
 WORKDIR /work
 
-RUN npm install --also=dev \
+RUN npm install \
     && npm run build
 
 FROM node:${NODE_VERSION} as main
@@ -25,7 +25,6 @@ RUN groupadd -r koleg \
     && useradd --no-log-init -r -g koleg koleg \
     && chown -R koleg:koleg /app \
     && npm i --prod
-
 
 USER koleg:koleg
 

@@ -7,10 +7,10 @@ import {
   RoutingControllersOptions,
   Action
 } from "routing-controllers";
-import { routingControllersToSpec } from "routing-controllers-openapi";
+import { routingControllersToSpec} from "routing-controllers-openapi";
 import * as swaggerUiExpress from "swagger-ui-express";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
-import { OpenAPIObject } from "openapi3-ts";
+// import { OpenAPIObject } from "openapi3-ts";
 import { Container } from "typedi";
 import { Application } from "express";
 
@@ -25,7 +25,9 @@ export class Api {
   private _app: Application;
   private _port = 8080;
   private readonly _routingControllersOptions: RoutingControllersOptions;
-  private _spec: OpenAPIObject;
+  // Not working after openapi3 upgrade
+  // private _spec: OpenAPIObject;
+  private _spec: any ;
   private _swaggerOptions = {
     customCss: ".swagger-ui .topbar { display: none }"
   };
