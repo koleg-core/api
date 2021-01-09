@@ -15,20 +15,21 @@ export class S3 {
 
   // TODO: replace optional arguments by config set into app.
   constructor(
-    private readonly port: number = 443,
-    private readonly useSSL: boolean = true,
-    private readonly accessKey: string = "SCW4WPDT1SRFBY89BT8C",
-    private readonly secretKey: string = "6c1b27f8-f4be-4e25-b3a0-29488ac0e1ae",
-    private readonly region: string = "fr-par",
-    private readonly bucket: string = "koleg-dev",
-    private readonly endpoint: string = `s3.${region}.scw.cloud`,
-    private readonly pathStyle: boolean = false
+    private readonly port: number,
+    private readonly useSSL: boolean,
+    private readonly accessKey: string,
+    private readonly secretKey: string,
+    private readonly region: string,
+    private readonly bucket: string,
+    private readonly endpoint: string,
+    private readonly pathStyle: boolean,
+    private readonly apiVersion: string = "v4"
   ) {
 
     this.config = {
       accessKeyId: this.accessKey,
       secretAccessKey: this.secretKey,
-      apiVersion: "v4",
+      apiVersion: this.apiVersion,
       region: this.region,
       sslEnabled: this.useSSL,
       endpoint: this.endpoint,

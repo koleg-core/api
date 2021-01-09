@@ -101,4 +101,53 @@ On namespace: `master|develop`:
 - `/docs`: display swagger UI
 - `/**/**` Api endpoints
 
+## Configuration
+You can create configs file at these path with `yml` or `yaml` extension:
+- `/etc/default/koleg/config`
+- `/etc/default/koleg/config-${env}`
+- `/etc/koleg/config`
+- `/etc/koleg/config-${env}`
+- `./configs/${env}`
+- `./configs/${env}`
+- `./config`
+- `./config-${env}`
+
+**Note:**
+
+`${env}` is defined with export of `NODE_ENV` variable:
+```bash
+export NODE_ENV=development
+```
+
+Your config file must looks like this.
+```yaml
+api:
+  jwt_secret:
+  port: 8081
+database:
+  enable: true
+  host: You database host
+  port: 5432
+  user: user
+  password: P@ssw0rd
+  schema: kolegdb
+s3:
+  bucket: koleg-bucket
+  port: 443
+  endpoint: s3.api.net
+  access_key: XXXXXXXXXXX
+  secret_key: XXXXXXXXXXX
+  use_ssl: true
+  region: fr-par
+  path_style: false
+```
+
 ---
+
+## Presentation fac
+- Fuzzy search
+- Tests
+- Okteto
+- S3
+- Gravatar
+

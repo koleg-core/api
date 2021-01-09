@@ -4,18 +4,18 @@ import { Api } from "../infra/api/api";
 export class App {
 
   constructor(
-    private _api: Api,
-    private _port: number = 8080
+    private api: Api,
+    private port: number = 8080
   ) {
-    if (!this._api) {
+    if (!this.api) {
       throw new Error("Invalid argument api: Api is not defined.");
     }
 
-    this._api.config(this._port);
+    this.api.config(this.port);
   }
 
   public start(): void {
-    this._api.start();
+    this.api.start();
   }
 
 }

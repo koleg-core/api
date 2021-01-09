@@ -1,4 +1,8 @@
-import { Service, Inject } from "typedi";
+import {
+  Service,
+  Inject
+} from "typedi";
+import Fuse from "fuse.js";
 import {
   JsonController,
   UploadedFile,
@@ -8,6 +12,7 @@ import {
   Post,
   Put,
   Delete,
+  QueryParam,
   Param,
   BodyParam,
   UseBefore,
@@ -26,8 +31,8 @@ import { WritableUserApiModel } from "../models/writable-user-api.model";
 import { ResponseModel } from "../models/response.model";
 import { HttpStatusCode } from "../models/http-status-code.enum";
 import { ReadableUserApiModel } from "../models/readable-user-api.model";
-import { VcardApiModel } from "infra/vcards/models/vcard-api-model";
 import { AuthService } from "../auth/auth.service";
+import { VcardApiModel } from "infra/vcards/models/vcard-api-model";
 import { ReadableUser } from "domain/user/ReadableUser";
 
 @Service("user.controller")
@@ -42,14 +47,49 @@ export class UsersController {
 
   @Inject("assets.service")
   private _assetService: AssetsService;
+  private readonly _fuseOptions: Fuse.IFuseOptions<ReadableUser> = {
+    includeScore: false,
+    keys: [
+      "id",
+      "identity.firstName",
+      "identity.lastName",
+      "identity.username",
+      "identity.email",
+      "birthDate",
+      "groupIds",
+      "job.name",
+      "phoneNumbers.value" // maybe duplication
+    ] // This break private things, but don't care
+  }
 
   @Get("/users")
   @HttpCode(HttpStatusCode.OK)
-  async getAll(): Promise<ResponseModel | ApiError> {
+  async getAll(
+    @QueryParam("filter") filter?: string,
+    @QueryParam("page") page?: number,
+    @QueryParam("itemsNumber") itemsNumber?: number
+  ): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUsers()
       .then(users => {
-        const usersResponse: ReadableUserApiModel[] = [];
+        let usersResponse: ReadableUserApiModel[] = [];
         if (Array.isArray(users) && users.length > 0) {
+
+          if (filter) {
+            const fuse: Fuse<ReadableUser> = new Fuse(users, this._fuseOptions);
+            const fuzeUsers = fuse.search(filter);
+            fuzeUsers.forEach(user => usersResponse.push(ReadableUserApiModel.toReadableUserApiModel(user.item)));
+          } else {
+            users.forEach(user=> usersResponse.push(ReadableUserApiModel.toReadableUserApiModel(user)));
+          }
+
+          const realPage = page || 1;
+          const realItemsNumber = itemsNumber || 20;
+          if (realPage * realItemsNumber <= usersResponse.length) {
+            usersResponse = usersResponse.slice((realPage - 1) * realItemsNumber, realPage * realItemsNumber);
+          } else {
+            usersResponse = usersResponse.slice((realPage - 1) * realItemsNumber, usersResponse.length);
+          }
+
           users.forEach(user => usersResponse.push(ReadableUserApiModel.toReadableUserApiModel(user)));
         }
         return new ResponseModel(HttpStatusCode.OK, "Success", usersResponse);
@@ -123,16 +163,16 @@ export class UsersController {
 
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Put("/users/:id/update-password")
-  async updatePassword(@Param("id") userId: string, @BodyParam('password') password: string): Promise<ResponseModel | ApiError> {
+  async updatePassword(@Param("id") userId: string, @BodyParam("password") password: string): Promise<ResponseModel | ApiError> {
 
     if (!password) {
-      throw new ApiError(HttpStatusCode.BAD_REQUEST, HttpStatusCode.BAD_REQUEST, 'The password must not be null or empty');
+      throw new ApiError(HttpStatusCode.BAD_REQUEST, HttpStatusCode.BAD_REQUEST, "The password must not be null or empty");
     }
 
     const readableUser = await this._organisationService.getUserById(userId);
 
     if (!readableUser) {
-      throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, 'User not found');
+      throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, "User not found");
     }
 
     return hash(password, this._saltRoudsPassword)
@@ -140,7 +180,7 @@ export class UsersController {
         try {
           const returnCode = await this._organisationService.updateUserPassword(userId, hashedPassword);
           if (returnCode !== ReturnCodes.UPDATED) {
-            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, 'User password cannot be changed.');
+            throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, "User password cannot be changed.");
           }
           return new ResponseModel(HttpStatusCode.ACCEPTED, `Your password changment for user: ${userId} was aknoleged.`);
         } catch (error) {

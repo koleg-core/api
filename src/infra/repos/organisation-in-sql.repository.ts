@@ -11,10 +11,33 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
 
   private _orm: Sequelize;
   private _database: Database;
+  private _uriPrefix = "postgres://";
 
   constructor(
-    private uri: string
+    private user?: string,
+    private password?: string,
+    private host?: string,
+    private port?: number,
+    private schema?: string,
+    private uri?: string
   ) {
+    const constructorParamError = "Invalid argument parameter: specify uri or all other param.";
+
+    if(this.uri) {
+      if(this.user || this.password || this.port || this.schema) {
+        throw new Error(constructorParamError);
+      }
+    } else if(this.user && this.password && this.port && this.schema) {
+      if(this.uri) {
+        throw new Error(constructorParamError);
+      }
+      this.uri = this._uriPrefix + this.user
+        + ":" + this.password + "@"
+        + this.host + ":" + this.port
+        + "/" + this.schema;
+    } else {
+      throw new Error(constructorParamError);
+    }
     this._orm = new Sequelize(this.uri);
     this._database = new Database(this._orm);
   }
@@ -32,7 +55,7 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
 
     const remoteJobs = await this._database.getJobs();
     if (Array.isArray(remoteJobs) && remoteJobs.length > 0) {
-      for await (let remoteJob of remoteJobs) {
+      for await (const remoteJob of remoteJobs) {
         organisation.addJob(await JobSerializer.prototype.deserialize(remoteJob));
       }
     }
@@ -46,7 +69,7 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
 
     const remoteUsers = await this._database.getUsers();
     if (Array.isArray(remoteUsers) && remoteUsers.length > 0) {
-      for await (let remoteUser of remoteUsers) {
+      for await (const remoteUser of remoteUsers) {
         organisation.addUser(await UserSerializer.prototype.deserialize(remoteUser));
       }
     }

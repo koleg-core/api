@@ -36,11 +36,9 @@ export class VcardApiModel {
         }
       );
     }
-    console.log(this.vcard.toString());
   }
 
   public serializeAsBuffer(): Buffer {
-    console.log(this.vcard.toString());
     return Buffer.from(this.vcard.toString(), "utf8");
   }
 }
