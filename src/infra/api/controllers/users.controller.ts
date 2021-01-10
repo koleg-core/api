@@ -289,8 +289,12 @@ export class UsersController {
 
   private async uploadVcard(statelessUser: StatelessUser, userId?: string): Promise<void> {
     this._organisationService.getName()
-      .then(organisationName => {
-        const vcard = new VcardApiModel(statelessUser, organisationName);
+      .then(async organisationName => {
+        let userJob = null;
+        if (statelessUser.jobId) {
+          userJob = await this._organisationService.getJob(statelessUser.jobId);
+        }
+        const vcard = new VcardApiModel(statelessUser, organisationName, userJob);
         this._assetService.uploadVcard(statelessUser.id || userId, vcard.serializeAsBuffer());
       }).catch(error => {
         console.log(error);

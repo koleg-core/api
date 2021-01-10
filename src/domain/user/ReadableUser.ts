@@ -8,7 +8,7 @@ export class ReadableUser {
   constructor(
     private id: string,
     private identity: UserIdentity,
-    private job: Job,
+    private jobId: string,
     private groupsIds: string[],
     private profilePictureUrl: URL,
     private sshPublicKey: string,
@@ -36,8 +36,8 @@ export class ReadableUser {
     return this.identity;
   }
 
-  public getJob(): Job {
-    return this.job;
+  public getJobId(): string {
+    return this.jobId;
   }
 
   public getGroupIds(): string[] {

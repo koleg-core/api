@@ -7,9 +7,6 @@ export class Password {
         private value: string,
         private dateLimit: Date = null
     ) {
-      if (!value) {
-        throw new Error("Invalid argument value: string");
-      }
 
       /*if (this._dateLimit) {
             if (this.isExpired()) {

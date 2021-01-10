@@ -1,6 +1,5 @@
 import { PhoneNumber } from "./PhoneNumber";
 import { UserIdentity } from "./UserIdentity";
-import { Job } from "./Job";
 import { Password } from "./Password";
 import { SshKey } from "./SshKey";
 
@@ -15,7 +14,7 @@ export class StatelessUser {
     public readonly passwordHistory?: Password[],
     public readonly phoneNumbers?: PhoneNumber[],
     public readonly groupsIds?: string[],
-    public readonly job?: Job,
+    public readonly jobId?: string,
     public readonly disableDate?: Date,
     public readonly profilePictureUrl?: URL,
     public readonly sshKey?: SshKey,

@@ -1,5 +1,5 @@
 import { Job } from "../../domain/user/Job";
-import { Organisation } from "../../domain/organisation";
+import { Organisation } from "../organisation";
 import { StatelessUser } from "../../domain/user/StatelessUser";
 
 export interface OrganisationRepository {
@@ -14,6 +14,7 @@ export interface OrganisationRepository {
     // Jobs
     createJob(job: Job): void;
     deleteJob(name: string): void;
+    updateJob(job: Job): void;
 
     // User
     createUser(user: StatelessUser): void;

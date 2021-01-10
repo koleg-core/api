@@ -1,4 +1,4 @@
-import { Organisation } from "../domain/organisation";
+import { Organisation } from "domain/organisation";
 import { OrganisationRepository } from "../domain/repos/organisation.repository";
 import { Job } from "../domain/user/Job";
 import { ReturnCodes } from "../domain/enums/return-codes.enum";
@@ -30,11 +30,20 @@ export class OrganisationService {
     return this._organisation.getJob(name);
   }
 
-  public async createJob(job: Job): Promise<ReturnCodes> {
+  public async createJob(job: Job): Promise<string> {
     await this._updateOrganisation();
-    const returnCode = this._organisation.addJob(job);
-    if (returnCode === ReturnCodes.CREATED) {
+    const jobId = this._organisation.addJob(job);
+    if (jobId) {
       this.repository.createJob(job);
+    }
+    return jobId;
+  }
+
+  public async updateJob(job: Job): Promise<ReturnCodes> {
+    await this._updateOrganisation();
+    const returnCode = this._organisation.updateJob(job);
+    if (returnCode === ReturnCodes.UPDATED) {
+      this.repository.updateJob(job);
     }
     return returnCode;
   }
@@ -46,6 +55,11 @@ export class OrganisationService {
       this.repository.deleteJob(name);
     }
     return returnCode;
+  }
+
+  public async getUsersNumberByJob(id: string): Promise<string> {
+    await this._updateOrganisation();
+    return this._organisation.getUsersNumberByJob(id)
   }
 
   // USERS

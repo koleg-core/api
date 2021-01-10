@@ -20,7 +20,7 @@ export class User {
   private _passwordHistory: Password[] = [];
   private _phoneNumbers: PhoneNumber[] = [];
   private _groupsIds: string[] = [];
-  private _job: Job = null;
+  private _jobId: string = null;
   private _disableDate: Date = null;
   private _profilePictureUrl: URL = null;
   private _sshKey: SshKey = null;
@@ -31,15 +31,15 @@ export class User {
     if (!statelessUser) {
       throw new Error("Invalid argument parameter, statelessUser.");
     }
+
     if (!statelessUser.identity) {
       throw new Error("Invalid argument parameter, statelessUser.identity.");
     }
-    if (!statelessUser.password) {
-      throw new Error("Invalid argument parameter, statelessUser.password.");
-    }
+
     if (!statelessUser.birthdate) {
       throw new Error("Invalid argument parameter, statelessUser.birthdate");
     }
+
     if (statelessUser.birthdate > new Date()) {
       throw new Error("Negative age, birthdate is into the future");
     }
@@ -60,7 +60,7 @@ export class User {
     if (Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0) {
       this._groupsIds = statelessUser.groupsIds;
     }
-    this._job = statelessUser.job;
+    this._jobId = statelessUser.jobId;
     this._disableDate = statelessUser.disableDate;
     this._profilePictureUrl = statelessUser.profilePictureUrl;
     this._sshKey = statelessUser.sshKey;
@@ -255,20 +255,17 @@ export class User {
   }
 
   // Jobs =======
-  public getJob(): Job {
-    return this._job;
+  public getJobId(): string {
+    return this._jobId;
   }
 
-  public updateJob(job: Job): ReturnCodes {
-    if (!job) {
-      throw new Error("Invalid argument job: Job");
-    }
+  public updateJobId(jobId: string): ReturnCodes {
 
     if (!this._isEditable()) {
       return ReturnCodes.NOT_EDITABLE;
     }
 
-    this._job = job;
+    this._jobId = jobId;
     this._update();
     return ReturnCodes.UPDATED;
   }
@@ -379,7 +376,7 @@ export class User {
     return new ReadableUser(
       this._id,
       this._identity,
-      this._job,
+      this._jobId,
       this._groupsIds,
       this._profilePictureUrl,
       publicKey,
@@ -402,7 +399,7 @@ export class User {
       this._passwordHistory,
       this._phoneNumbers,
       this._groupsIds,
-      this._job,
+      this._jobId,
       this._disableDate,
       this._profilePictureUrl,
       this._sshKey,

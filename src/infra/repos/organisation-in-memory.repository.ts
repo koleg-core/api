@@ -26,6 +26,11 @@ class OrganisationInMemoryRepository implements OrganisationRepository {
   createJob(job: Job): void {
     console.log("job added");
   }
+
+  updateJob(job: Job): void {
+
+  }
+
   deleteJob(name: string): void {
     console.log("job deleted");
   }

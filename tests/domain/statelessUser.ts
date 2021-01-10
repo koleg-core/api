@@ -20,7 +20,7 @@ export const genStatelessUser = (
   const identity:UserIdentity = genUserIdentity();
   const phoneNumber: PhoneNumber = genPhoneNumber();
   const passwordWithExpiration:Password = genPassword();
-  const job:Job = genJob();
+  const job:Job = organisation.getJobs()[0];
   const sshKey:SshKey = genSshKey();
   const groupId = genGroupId(organisation);
 
@@ -41,7 +41,7 @@ export const genStatelessUser = (
     null,
     phoneNumbers,
     groupsId,
-    job,
+    job.getId(),
     null,
     null,
     sshKey,
