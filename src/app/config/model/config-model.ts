@@ -12,7 +12,7 @@ export const configModel = {
       doc: "The port that api listen",
       format: "port",
       default: 8080,
-      env: "KOLEG_API_JWT_PORT",
+      env: "KOLEG_API_PORT",
     },
     jwt_secret: {
       doc: "JWT secret used to encrypt api session token.",

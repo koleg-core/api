@@ -1,0 +1,13 @@
+---
+version: "3.8"
+
+services:
+  api:
+    build: .
+    hostname: api
+    environment:
+      - "KOLEG_API_PORT=8888"
+    ports:
+      - "127.0.0.1:8888:8888"
+    volumes:
+      - "./config-development.yml:/etc/koleg/config.yml:ro"
