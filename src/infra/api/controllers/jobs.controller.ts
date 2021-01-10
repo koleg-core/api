@@ -26,7 +26,7 @@ import { ResponseModel } from "../models/response.model";
 import HttpStatusCode from "../models/http-status-code.enum";
 import { JobApiModel } from "../models/job-api.model";
 import { OrganisationService } from "../../../app/organisation.service";
-import { AuthService } from "../auth/auth.service";
+import { CheckJwtMiddleware } from "../auth/check-jwt-middleware";
 
 @Service('job.controller')
 @JsonController()
@@ -52,7 +52,7 @@ export class JobsController {
     isArray: true,
     statusCode: "200"})
   @Get("/jobs")
-  @UseBefore(AuthService.checkJwt)
+  @UseBefore(CheckJwtMiddleware)
   async getAll(
     @QueryParam("filter") filter?: string,
     @QueryParam("page") page?: number,
@@ -96,7 +96,7 @@ export class JobsController {
     description: "Response model with job id",
     statusCode: "200"})
   @Post("/jobs")
-  @UseBefore(AuthService.checkJwt)
+  @UseBefore(CheckJwtMiddleware)
   async post(@Body() job: JobApiModel): Promise<ResponseModel | ApiError> {
     return this._organisationService.createJob(job.toJob())
       .then(jobId => {
@@ -122,7 +122,7 @@ export class JobsController {
   })
   @HttpCode(HttpStatusCode.OK)
   @Get('/jobs/:id')
-  @UseBefore(AuthService.checkJwt)
+  @UseBefore(CheckJwtMiddleware)
   async get(@Param('id') jobId: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getJob(jobId)
       .then(job => {
@@ -148,7 +148,7 @@ export class JobsController {
   })
   @HttpCode(HttpStatusCode.OK)
   @Put('/jobs/:id')
-  @UseBefore(AuthService.checkJwt)
+  @UseBefore(CheckJwtMiddleware)
   async update(@Param('id') jobId: string, @Body() job: JobApiModel): Promise<ResponseModel | ApiError> {
     return this._organisationService.updateJob(job.toJob(jobId))
       .then(returnCode => {
@@ -166,7 +166,7 @@ export class JobsController {
 
   @HttpCode(HttpStatusCode.OK)
   @Delete('/jobs/:id')
-  @UseBefore(AuthService.checkJwt)
+  @UseBefore(CheckJwtMiddleware)
   async delete(@Param('id') jobId: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.deleteJob(jobId)
       .then(returnCode => {
@@ -182,7 +182,7 @@ export class JobsController {
 
   @HttpCode(HttpStatusCode.OK)
   @Get('/jobs/:id/users/number')
-  @UseBefore(AuthService.checkJwt)
+  @UseBefore(CheckJwtMiddleware)
   async getUsersNumberByJob(@Param('id') jobId: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUsersNumberByJob(jobId)
       .then(usersNumber => {

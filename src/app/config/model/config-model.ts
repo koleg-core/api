@@ -18,19 +18,19 @@ export const configModel = {
       doc: "JWT secret used to encrypt api session token.",
       format: String,
       env: "KOLEG_API_JWT_SECRET",
-      defaul: "25b041fe8615a8c8755ef5f6d5f447c8"
+      default: "25b041fe8615a8c8755ef5f6d5f447c8"
     },
     session_duration: {
       doc: "Time validity for api session.",
       format: String,
       env: "KOLEG_API_SESSION_DURATION",
-      defaul: "10h"
+      default: "10h"
     },
     page_size: {
       doc: "Number of item return per query page.",
       format: Number,
       env: "KOLEG_API_PAGE_SIZE",
-      defaul: 20
+      default: 20
     },
   },
   s3: {
