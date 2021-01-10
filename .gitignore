@@ -18,5 +18,6 @@ build
 dist/
 package-lock.json
 .nyc_output/
-config-development.yaml
-config-development.yml
+config-*.yaml
+config-*.yml
+
