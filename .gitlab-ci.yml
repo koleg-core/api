@@ -53,9 +53,10 @@ stages:
 ☸️production_deploy:
   stage: deploy
   image: google/cloud-sdk
-  only:
-    - master
-    - develop
+  # TODO: remove it when pipeline is validated
+  # only:
+  #   - master
+  #   - develop
   script: |
     echo "Deploy on branch: ${CI_COMMIT_BRANCH}"
     kubectl \
