@@ -43,15 +43,23 @@ shell: ## Cloud shell with okteto
 	@echo "+ $@"
 	@okteto exec bash
 
-docker-build: ## Build container docker
+docker-build: ## 🐳 Build container docker
 	@echo "+ $@"
-	@docker build . -t koleg-api
+	@docker-compose build
 
-docker-run: ## Run container locally
+docker-run: ## 🐳 Run container locally
 	@echo "+ $@"
-	@docker run -p 8080:8080 koleg-api
+	@docker-compose up
 
-deploy: ## Apply kubernetes configs on all production namespace
+docker-logs: ##📝 See docker logs
+	@echo "+ $@"
+	@docker-compose logs --tail=200 -f
+
+docker-shell: ## 💬 Get shell into container
+	@echo "+ $@"
+	@docker-compose exec client sh
+
+deploy: ## ☸️ Apply kubernetes configs on all production namespace
 	@echo "+ $@"
 	@kubectl apply \
 		--namespace develop \
