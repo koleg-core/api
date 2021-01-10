@@ -15,7 +15,7 @@
     "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist",
     "clean": "rm -rf dist/*; rm -f tsconfig.tsbuildinfo ",
     "test": "mocha --color -r tsconfig-paths/register -r ts-node/register tests/**/*.test.ts",
-    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
+    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test && rm -rf public && cp -r coverage/lcov-report/ public ",
     "codegen": " npx swagger-typescript-api -p openapi.yml -n KolegApi.ts -o ./auto"
   },
   "repository": {
