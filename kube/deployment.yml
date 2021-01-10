@@ -21,5 +21,13 @@ spec:
           # Don't activate if you are not in dev mode
           # https://medium.com/@mccode/the-misunderstood-docker-tag-latest-af3babfd6375
           imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: "/etc/koleg/"
+              name: koleg-api-config
+              readOnly: true
       imagePullSecrets:
         - name: registry-koleg
+      volumes:
+        - name: koleg-api-config
+          secret:
+            secretName: koleg-api-config
