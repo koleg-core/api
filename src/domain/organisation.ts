@@ -15,7 +15,7 @@ export class Organisation {
   private readonly _id: string
   private _groups: Map<string, Group> = new Map();
   private _users: Map<string, User> = new Map();
-  private _jobs: Job[] = [];
+  private _jobs: Map<string, Job> = new Map();
 
   constructor(
     private _name?: string,
@@ -155,8 +155,10 @@ export class Organisation {
       throw new Error("Invalid argument statelessUser.birthdate: Date");
     }
 
-    if (!statelessUser.password) {
-      throw new Error("Invalid argument statelessUser.password: Password");
+    if (statelessUser.jobId) {
+      if (!this.getJob(statelessUser.jobId)) {
+        throw new Error("Invalid argument statelessUser.job: Job");
+      }
     }
 
     if (Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0) {
@@ -216,8 +218,6 @@ export class Organisation {
         foundUser = user;
       }
     });
-    console.log(password);
-    console.log(foundUser.getPassword().getValue());
     if (foundUser) {
       return password === foundUser.getPassword().getValue();
     }
@@ -262,13 +262,11 @@ export class Organisation {
       returnCode = ReturnCodes.UPDATED;
     }
 
-    if (statelessUser.job) {
-      try {
-        const job = this.getJob(statelessUser.job.getName());
-        user.updateJob(job);
-      } catch (error) {
-        throw new Error('Given job does not exist');
+    if (statelessUser.jobId) {
+      if (!this.getJob(statelessUser.jobId)) {
+        throw new Error("Invalid argument statelessUser.job: Job");
       }
+      user.updateJobId(statelessUser.jobId);
     }
 
     if (statelessUser.birthdate
@@ -348,30 +346,12 @@ export class Organisation {
   // ####### JOBS #######
   // ####################
 
-  public getJobs(filter?: string): Job[] {
-    return this._jobs;
+  public getJobs(): Job[] {
+    return Array.from(this._jobs.values());
   }
 
-  public containsJob(givenJob: Job): boolean {
-    if (this._jobs.some(job => job.hasSameName(givenJob))) {
-      return true;
-    }
-
-    return false;
-  }
-
-  public addJob(newJob: Job): ReturnCodes {
-    if (this.containsJob(newJob)) {
-      return ReturnCodes.CONFLICTING;
-    }
-
-    this._jobs.push(newJob);
-    return ReturnCodes.CREATED;
-  }
-
-  public getJob(name: string): Job {
-    const queryJob = new Job(name);
-    const requestedJob = this._jobs.find(job => job.hasSameName(queryJob));
+  public getJob(jobId: string): Job {
+    const requestedJob = this._jobs.get(jobId);
 
     if (!requestedJob) {
       throw new Error("Job not found");
@@ -380,25 +360,61 @@ export class Organisation {
     return requestedJob;
   }
 
-  public deleteJob(jobName: string): ReturnCodes {
-    const requestedJobIndex = this._jobs.findIndex(job => jobName === job.getName());
+  public addJob(newJob: Job): string {
+    const jobs: Job[] = Array.from(this._jobs.values());
 
-    if (requestedJobIndex < 0) {
+    if (jobs.some(job => newJob.hasSameName(job))) {
+      throw new Error('Job already exists.');
+    }
+
+    this._jobs.set(newJob.getId(), newJob);
+    return newJob.getId();
+  }
+
+  public updateJob(updatedJob: Job): ReturnCodes {
+
+    const jobToUpdate = this._jobs.get(updatedJob.getId());
+
+    if (jobToUpdate) {
+      const newUpdatedJob: Job = new Job(
+        jobToUpdate.getId(),
+        updatedJob.getName(),
+        updatedJob.getDescription(),
+        updatedJob.getIconUrl()
+      );
+
+      this._jobs.set(jobToUpdate.getId(), newUpdatedJob);
+      return ReturnCodes.UPDATED;
+    } else {
       return ReturnCodes.NOT_FOUND;
     }
+  }
 
-    const deleteJobs = this._jobs.splice(requestedJobIndex, 1);
-    // Wipe users jobs
-    this._users.forEach(user => {
-      if (this._jobs[requestedJobIndex].hasSameName(user.getJob())) {
-        user.updateJob(null);
-      }
-    });
+  public deleteJob(jobId: string): ReturnCodes {
+    const isJobDeleted = this._jobs.delete(jobId);
 
-    if (deleteJobs[0].getName() === jobName) {
-      return ReturnCodes.REMOVED;
+    if (!isJobDeleted) {
+      return ReturnCodes.NOT_FOUND;
     } else {
-      throw new Error("Failure to delete the user");
+      const users: User[] = Array.from(this._users.values());
+
+      // Wipe users jobs
+      users.forEach(user => {
+        if (jobId === user.getJobId()) {
+          user.updateJobId(null);
+        }
+      });
+
+      return ReturnCodes.REMOVED;
     }
+  }
+
+  public getUsersNumberByJob(jobId: string): string {
+    const users: User[] = Array.from(this._users.values());
+
+    return users
+      .filter(user => jobId === user.getJobId())
+      .length
+      .toString();
   }
 }

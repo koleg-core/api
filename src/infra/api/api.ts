@@ -7,7 +7,7 @@ import {
   RoutingControllersOptions,
   Action
 } from "routing-controllers";
-import { routingControllersToSpec} from "routing-controllers-openapi";
+import { routingControllersToSpec } from "routing-controllers-openapi";
 import { defaultMetadataStorage } from "class-transformer/storage";
 import * as swaggerUiExpress from "swagger-ui-express";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
@@ -27,7 +27,7 @@ export class Api {
   private readonly _routingControllersOptions: RoutingControllersOptions;
   // Not working after openapi3 upgrade
   // private _spec: OpenAPIObject;
-  private _spec: any ;
+  private _spec: any;
   private _swaggerOptions = {
     customCss: ".swagger-ui .topbar { display: none }"
   };
@@ -37,7 +37,7 @@ export class Api {
     private _assetsService: AssetsService,
     private _sessionDuration: string = "1h",
     private _pageSize: number = 5,
-    private _jwtSecret: string  = "Secret"
+    private _jwtSecret: string = "Secret"
   ) {
 
     if (!this._organisationService) {
@@ -52,7 +52,6 @@ export class Api {
     Container.set("saltRounds.security.config", 10);
     Container.set("jwtSecret.security.config", this._jwtSecret);
 
-    Container.set("organisation.service", this._organisationService);
     Container.set("organisation.service", this._organisationService);
     Container.set("assets.service", this._assetsService);
 

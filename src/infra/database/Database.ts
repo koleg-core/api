@@ -3,16 +3,16 @@ import { User } from 'domain/user/User';
 import { Sequelize, DataTypes } from 'sequelize';
 import { GroupsModel } from './models/GroupsModel';
 import { JobModel } from "./models/JobModel";
-import {PhoneTypeModel} from "./models/PhoneTypeModel";
+import { PhoneTypeModel } from "./models/PhoneTypeModel";
 import { RightModel } from './models/RightModel';
-import {UserModel} from "./models/UserModel";
+import { UserModel } from "./models/UserModel";
 import { UserPhone } from './models/UserPhone';
 import { UserPwdHistory } from './models/UserPwdHistory';
 import { UserRightModel } from './models/UserRightModel';
 
 export class Database {
   constructor(
-        private orm: Sequelize
+    private orm: Sequelize
   ) {
     JobModel.init(
       {
@@ -21,9 +21,20 @@ export class Database {
           primaryKey: true,
           autoIncrement: true
         },
+        uuid: {
+          type: DataTypes.STRING
+        },
         name: {
           type: DataTypes.STRING
           // allowNull defaults to true
+        },
+        description: {
+          type: DataTypes.STRING
+          // allowNull defaults to true
+        },
+        iconUrl: {
+          type: DataTypes.STRING,
+          field: 'url_icon'
         }
       },
       {
@@ -61,53 +72,53 @@ export class Database {
           type: DataTypes.STRING
           // allowNull defaults to true
         },
-        uuid:{
+        uuid: {
           type: DataTypes.STRING
         },
-        firstname:{
+        firstname: {
           type: DataTypes.STRING
         },
-        lastname:{
+        lastname: {
           type: DataTypes.STRING
         },
-        password:{
+        password: {
           type: DataTypes.STRING
         },
-        passwordDateLimit:{
+        passwordDateLimit: {
           type: DataTypes.DATE,
           field: 'password_datelimit'
         },
-        birthdate:{
+        birthdate: {
           type: DataTypes.DATE
         },
-        email:{
+        email: {
           type: DataTypes.STRING
         },
-        imgUrl:{
+        imgUrl: {
           type: DataTypes.STRING,
           field: 'img_url'
         },
-        sshPublicKey:{
+        sshPublicKey: {
           type: DataTypes.STRING,
           field: 'ssh_publickey'
         },
-        sshPrivateKey:{
+        sshPrivateKey: {
           type: DataTypes.STRING,
           field: 'ssh_privatekey'
         },
-        creationDate:{
+        creationDate: {
           type: DataTypes.DATE,
           field: 'creation_date'
         },
-        updateDate:{
+        updateDate: {
           type: DataTypes.DATE,
           field: 'update_date'
         },
-        expirationDate:{
+        expirationDate: {
           type: DataTypes.DATE,
           field: 'expiration_date'
         },
-        disableDate:{
+        disableDate: {
           type: DataTypes.DATE,
           field: 'disable_date'
         }
@@ -120,19 +131,19 @@ export class Database {
 
     UserPhone.init(
       {
-        value:{
+        value: {
           type: DataTypes.STRING
         },
-        idUser:{
+        idUser: {
           type: DataTypes.INTEGER,
           field: 'id_user'
         },
-        idPhoneType:{
+        idPhoneType: {
           type: DataTypes.INTEGER,
           field: 'id_phonetype'
         }
       },
-                
+
       {
         sequelize: this.orm,
         tableName: "user_phones",
@@ -156,7 +167,7 @@ export class Database {
                     }*/
           // allowNull defaults to true
         },
-        password:{
+        password: {
           type: DataTypes.STRING
         }
       },
@@ -173,7 +184,7 @@ export class Database {
           primaryKey: true,
           autoIncrement: true
         },
-        uuid:{
+        uuid: {
           type: DataTypes.STRING
         },
         name: {
@@ -217,7 +228,7 @@ export class Database {
         tableName: "rights",
         timestamps: false,
       });
-            
+
     UserRightModel.init(
       {
         id: {
@@ -225,45 +236,45 @@ export class Database {
           primaryKey: true,
           autoIncrement: true
         },
-        idUser:{
+        idUser: {
           type: DataTypes.INTEGER,
           field: 'id_user'
         },
-        idRight:{
+        idRight: {
           type: DataTypes.INTEGER,
           field: 'id_right'
         },
-        idImpactedGroup:{
+        idImpactedGroup: {
           type: DataTypes.INTEGER,
           field: 'id_impacted_group'
         },
-        idImpactedUser:{
+        idImpactedUser: {
           type: DataTypes.INTEGER,
           field: 'id_impacted_user'
         }
       },
-                
+
       {
         sequelize: this.orm,
         tableName: "user_rights",
         timestamps: false,
       });
 
-    JobModel.hasMany(UserModel, {as:'users', foreignKey: 'id_job' });
-    UserModel.belongsTo(JobModel,{as:'job',foreignKey: 'id_job'});
+    JobModel.hasMany(UserModel, { as: 'users', foreignKey: 'id_job' });
+    UserModel.belongsTo(JobModel, { as: 'job', foreignKey: 'id_job' });
     UserModel.removeAttribute('JobModelId');
 
-    UserModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_user'});
-    UserPhone.belongsTo(UserModel,{as:'user',foreignKey:'id_user'});
-    PhoneTypeModel.hasMany(UserPhone,{as:'phones',foreignKey:'id_phonetype'});
-    UserPhone.belongsTo(PhoneTypeModel,{as:'type',foreignKey:'id_phonetype'});
+    UserModel.hasMany(UserPhone, { as: 'phones', foreignKey: 'id_user' });
+    UserPhone.belongsTo(UserModel, { as: 'user', foreignKey: 'id_user' });
+    PhoneTypeModel.hasMany(UserPhone, { as: 'phones', foreignKey: 'id_phonetype' });
+    UserPhone.belongsTo(PhoneTypeModel, { as: 'type', foreignKey: 'id_phonetype' });
 
-    UserModel.hasMany(UserPwdHistory,{as:'passwords', foreignKey: 'id_user'});
-    UserPwdHistory.belongsTo(UserModel,{as:'user',foreignKey: 'id_user'});
+    UserModel.hasMany(UserPwdHistory, { as: 'passwords', foreignKey: 'id_user' });
+    UserPwdHistory.belongsTo(UserModel, { as: 'user', foreignKey: 'id_user' });
     UserPwdHistory.removeAttribute('UserModelId');
 
-    GroupsModel.hasMany(GroupsModel, {as:'groups', foreignKey: 'id_parentgroup'});
-    GroupsModel.belongsTo(GroupsModel, {as : 'parentGroup', foreignKey: 'id_parentgroup'});
+    GroupsModel.hasMany(GroupsModel, { as: 'groups', foreignKey: 'id_parentgroup' });
+    GroupsModel.belongsTo(GroupsModel, { as: 'parentGroup', foreignKey: 'id_parentgroup' });
     GroupsModel.removeAttribute('GroupsModelId');
 
     UserModel.belongsToMany(GroupsModel, {
@@ -279,13 +290,13 @@ export class Database {
       timestamps: false
     });
 
-    RightModel.belongsToMany(UserModel,{
+    RightModel.belongsToMany(UserModel, {
       through: 'user_rights',
       as: ''
     })
   }
 
-  async updatePassword(uuid: string, password: string){
+  async updatePassword(uuid: string, password: string) {
     await UserModel.update({ password: password }, {
       where: {
         uuid: uuid
@@ -294,32 +305,36 @@ export class Database {
   }
 
   // JobModel
-  getJob(name: string): Promise<JobModel>{
-    return JobModel.findOne({where: {name}});
+  getJob(jobId: string): Promise<JobModel> {
+    return JobModel.findOne({ where: { uuid: jobId } });
   }
 
-  deleteJob(name: string){
+  deleteJob(jobId: string) {
     JobModel.destroy({
       where: {
-        name
+        uuid: jobId
       }
     });
   }
 
-  createJob(job: JobModel){
+  createJob(job: JobModel) {
+    job.save();
+  }
+
+  updateJob(job: JobModel) {
     job.save();
   }
 
   // UserModel
-  createUser(user: UserModel){
+  createUser(user: UserModel) {
     user.save();
   }
 
-  getUsers(): Promise<UserModel[]>{
+  getUsers(): Promise<UserModel[]> {
     return UserModel.findAll();
   }
 
-  getUser(uuid: string): Promise<UserModel>{
+  getUser(uuid: string): Promise<UserModel> {
     return UserModel.findOne({ where: { uuid } });
   }
 
@@ -346,32 +361,32 @@ export class Database {
 
     updateUserPhone(uuid:string,)*/
 
-  getPhoneType(name:string):Promise<PhoneTypeModel>{
+  getPhoneType(name: string): Promise<PhoneTypeModel> {
     return PhoneTypeModel.findOne({ where: { name } });
-  } 
+  }
 
-  getJobUser(user: UserModel): Promise<JobModel>{
+  getJobUser(user: UserModel): Promise<JobModel> {
     return user.getJob();
   }
 
-  setJobUser(user: UserModel, job: JobModel){
-    user.setJob(job).then((res:any)=>console.log(res));
+  setJobUser(user: UserModel, job: JobModel) {
+    user.setJob(job).then((res: any) => console.log(res));
   }
 
   /*createUserPhone(userPhone: UserPhone){
         userPhone.save();
     }*/
 
-  createPhoneType(phoneType: PhoneTypeModel){
+  createPhoneType(phoneType: PhoneTypeModel) {
     phoneType.save();
   }
 
-  getPhoneTypes(): Promise<PhoneTypeModel[]>{
-    return PhoneTypeModel.findAll().then((response : any) => response.map((phoneTypeJson : any)=> phoneTypeJson.dataValues));
+  getPhoneTypes(): Promise<PhoneTypeModel[]> {
+    return PhoneTypeModel.findAll().then((response: any) => response.map((phoneTypeJson: any) => phoneTypeJson.dataValues));
   }
 
-  getUserPhones(): Promise<UserPhone[]>{
-    return UserPhone.findAll().then((response : any) => response.map((userPhoneJson : any)=> userPhoneJson.dataValues));
+  getUserPhones(): Promise<UserPhone[]> {
+    return UserPhone.findAll().then((response: any) => response.map((userPhoneJson: any) => userPhoneJson.dataValues));
   }
 
 
@@ -384,12 +399,12 @@ export class Database {
 
 
 
-  getJobs(): Promise<JobModel[]>{
+  getJobs(): Promise<JobModel[]> {
     return JobModel.findAll()
-      .then((response : any) => response.map((jobJson : any)=> jobJson.dataValues));
+      .then((response: any) => response.map((jobJson: any) => jobJson.dataValues));
   }
 
-  getJobUsers(job: JobModel): Promise<UserModel[]>{
+  getJobUsers(job: JobModel): Promise<UserModel[]> {
     return job.getUsers();
   }
 }

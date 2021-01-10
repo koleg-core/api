@@ -21,34 +21,48 @@ export class ReadableUserApiModel {
 
   @IsUUID()
   public readonly id: string;
+
   @IsString()
   public readonly firstName: string;
+
   @IsString()
   public readonly lastName: string;
+
   @IsString()
   public readonly username: string;
+
   @IsDate()
   public readonly birthdate: string;
+
   @IsEmail()
   public readonly email: string;
   public readonly groupIds: string[];
+
   @IsUrl()
   public readonly profilePictureUrl: string;
-  @Type(() => JobApiModel)
-  public readonly job: JobApiModel;
+
+  @IsUUID()
+  public readonly jobId: string;
+
   @ValidateNested({ each: true })
   @Type(() => PhoneNumberApiModel)
   public readonly phones: PhoneNumberApiModel[]; // TODO multiple phones numbers
+
   @IsString()
   public readonly sshPublicKey: string;
+
   @IsDate()
   public readonly expirationDate: string;
+
   @IsDate()
   public readonly disableDate: string;
+
   @IsDate()
   public readonly updateDate: string;
+
   @IsDate()
   public readonly creationDate: string;
+
   constructor(
     id: string,
     firstName: string,
@@ -58,7 +72,7 @@ export class ReadableUserApiModel {
     email: string,
     groupIds: string[],
     profilePictureUrl: string,
-    job: JobApiModel,
+    jobId: string,
     phones: PhoneNumberApiModel[], // TODO multiple phones numbers
     sshPublicKey: string,
     expirationDate: string,
@@ -80,7 +94,7 @@ export class ReadableUserApiModel {
     this.email = email;
     this.groupIds = groupIds;
     this.profilePictureUrl = profilePictureUrl;
-    this.job = job;
+    this.jobId = jobId;
     this.phones = phones;
     this.sshPublicKey = sshPublicKey;
     this.expirationDate = expirationDate;
@@ -92,18 +106,17 @@ export class ReadableUserApiModel {
   public static toReadableUserApiModel(user: ReadableUser): ReadableUserApiModel {
 
     const identity = user.getIdentity();
+
     const expirationDate: string =
       user.getExpirationDate()
         ? user.getExpirationDate().toISOString()
         : null;
+
     const disableDate: string =
       user.getDisableDate()
         ? user.getDisableDate().toISOString()
         : null;
-    const job: JobApiModel =
-      user.getJob() && Object.keys(user.getJob()).length !== 0
-        ? JobApiModel.toJobModel(user.getJob())
-        : null;
+
     const phoneNumbersApiModel: PhoneNumberApiModel[] = [];
     user.getPhoneNumbers().forEach(
       phoneNumber => {
@@ -112,10 +125,12 @@ export class ReadableUserApiModel {
         );
       }
     );
+
     const profilePictureUrl: string =
       user.getProfilePictureUrl()
         ? user.getProfilePictureUrl().toString()
         : null;
+
     const sshPublicKey: string =
       user.getSshPublicKey()
         ? user.getSshPublicKey()
@@ -130,7 +145,7 @@ export class ReadableUserApiModel {
       identity.email,
       user.getGroupIds(),
       profilePictureUrl,
-      job,
+      user.getJobId(),
       phoneNumbersApiModel,
       sshPublicKey,
       expirationDate,
@@ -158,10 +173,6 @@ export class ReadableUserApiModel {
         );
       }
     );
-    const job: Job =
-      this.job && Object.keys(this.job).length !== 0
-        ? this.job.toJob()
-        : null;
 
     return new StatelessUser(
       this.id,
@@ -173,7 +184,7 @@ export class ReadableUserApiModel {
       null,
       phoneNumbers,
       this.groupIds,
-      job,
+      this.jobId,
       disableDate,
       new URL(this.profilePictureUrl),
       null, // In convertion we lost information of private key

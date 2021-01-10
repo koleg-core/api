@@ -1,22 +1,46 @@
 import { default as slugify } from "slugify";
+import { v4 as uuid } from "uuid";
 
-// while this class don't have any methods,
-// It's will be useless
 export class Job {
 
+  private readonly descriptionMaxLength = 255;
+
   constructor(
-        private name: string
+    private id: string,
+    private name: string,
+    private description: string,
+    private iconUrl: URL
   ) {
     if (!this.name) {
       throw new Error("Invalid argument name: string");
     }
+
+    if (!this.id) {
+      this.id = uuid();
+    }
+
+    if (description && description.length > this.descriptionMaxLength) {
+      throw new Error("Description max length is: " + this.descriptionMaxLength);
+    }
+  }
+
+  public getId(): string {
+    return this.id;
   }
 
   public getName(): string {
     return this.name;
   }
 
-  public getSlugifyName(): string  {
+  public getDescription(): string {
+    return this.description;
+  }
+
+  public getIconUrl(): URL {
+    return this.iconUrl;
+  }
+
+  public getSlugifyName(): string {
     return slugify(
       this.getName(),
       {
@@ -30,7 +54,7 @@ export class Job {
 
   public hasSameName(job: Job): boolean {
 
-    if(this.getSlugifyName() === job.getSlugifyName()) {
+    if (this.getSlugifyName() === job.getSlugifyName()) {
       return true;
     }
     return false;

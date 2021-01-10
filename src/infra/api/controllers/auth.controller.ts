@@ -12,8 +12,6 @@ import {
   Service,
 } from "typedi";
 
-import { ReadableUser } from "domain/user/ReadableUser";
-
 import { compareSync } from "bcrypt";
 import { ApiError } from "../errors/api-error";
 import { HttpStatusCode } from "../models/http-status-code.enum";
@@ -21,16 +19,14 @@ import { StatelessUser } from "domain/user/StatelessUser";
 import { OrganisationService } from "app/organisation.service";
 import { ResponseModel } from "../models/response.model";
 import jwt from "jsonwebtoken";
+import { AuthService } from "../auth/auth.service";
 
 @Service("auth.controller")
 @JsonController("/auth")
 export class AuthController {
 
-  @Inject("sessionDuration.api.config")
-  private _sessionDuration: string;
-  @Inject("jwtSecret.security.config")
-  private _jwtSecret: string;
-
+  @Inject("auth.service")
+  public authService: AuthService;
 
   @Inject("organisation.service")
   private _organisationService: OrganisationService;
@@ -60,6 +56,10 @@ export class AuthController {
 
     const statelessUser: StatelessUser = await this._organisationService.getUserByIdWithPassword(userId);
 
+    if (!statelessUser.password || (statelessUser.password && !statelessUser.password.getValue())) {
+      throw new ApiError(HttpStatusCode.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED, 'Invalid argument username or/and password');
+    }
+
     const isPasswordValid = compareSync(credentials.password, statelessUser.password.getValue());
 
     if (!isPasswordValid) {
@@ -72,11 +72,11 @@ export class AuthController {
       throw new ApiError(HttpStatusCode.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED, "Invalid argument username or/and password");
     }
 
-    return new ResponseModel(HttpStatusCode.OK, "Success", { user: readableUser, token: this._generateJwt(readableUser) });
-  }
-
-  private _generateJwt(user: ReadableUser) {
-    return jwt.sign({ data: { userId: user.getId(), username: user.getIdentity().username } },
-      this._jwtSecret, { expiresIn: this._sessionDuration });
+    return new ResponseModel(HttpStatusCode.OK, "Success",
+      {
+        user: readableUser,
+        token: this.authService.generateJwt(readableUser.getId(), readableUser.getIdentity().username)
+      }
+    );
   }
 }

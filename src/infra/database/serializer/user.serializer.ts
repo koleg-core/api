@@ -11,6 +11,7 @@ import { UserPhone } from "../models/UserPhone";
 import { PhoneTypeSerializer } from "./phone-type.serializer";
 import { GroupsModel } from "../models/GroupsModel";
 import { Job } from "domain/user/Job";
+import { JobModel } from "../models/JobModel";
 
 export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> {
 
@@ -42,8 +43,8 @@ export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> 
     }
 
     let job = null;
-    if (user.job) {
-      job = await JobSerializer.prototype.serialize(user.job);
+    if (user.jobId) {
+      job = await JobModel.findOne({ where: { uuid: user.jobId } });
     }
     userModel.job = job;
 
@@ -70,7 +71,6 @@ export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> 
   }
 
   public async deserialize(userModel: UserModel): Promise<StatelessUser> {
-    console.log(userModel);
 
     const jobModel = await userModel.getJob();
     let job: Job = null;
@@ -128,7 +128,7 @@ export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> 
       passwordHistory,
       phones,
       groupsIDs,
-      job,
+      job.getId(),
       userModel.disableDate,
       imageURL,
       sshKey,

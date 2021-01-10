@@ -13,7 +13,6 @@ import { Type } from "class-transformer";
 import { SshKey } from "domain/user/SshKey";
 import { UserIdentity } from "domain/user/UserIdentity";
 import { Job } from "domain/user/Job";
-import { Password } from "domain/user/Password";
 import { PhoneNumber } from "domain/user/PhoneNumber";
 import { StatelessUser } from "domain/user/StatelessUser";
 
@@ -26,47 +25,59 @@ export class WritableUserApiModel {
   @IsUUID()
   @IsOptional()
   public readonly id: string;
+
   @IsString()
   @IsOptional()
   public readonly firstName: string;
+
   @IsString()
   @IsOptional()
   public readonly lastName: string;
+  
   @IsDate()
   @IsOptional()
   public readonly birthdate: string;
+
   @IsEmail()
   @IsOptional()
   public readonly email: string;
+
   @ValidateNested()
   @IsOptional()
   @Type(() => PasswordApiModel)
   public readonly password: PasswordApiModel = null;
+
   @ValidateNested({ each: true })
   @IsOptional()
   @IsUUID()
   public readonly groupIds: string[];
+
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => PhoneNumberApiModel)
   public readonly phoneNumbers: PhoneNumberApiModel[] = [];
+
   @IsString()
   @IsOptional()
   public readonly username: string;
+
   @IsUrl()
   @IsOptional()
   public readonly profilePictureUrl: URL;
-  @ValidateNested()
+
+  @IsUUID()
   @IsOptional()
-  @Type(() => JobApiModel)
-  public readonly job: JobApiModel = null;
+  public readonly jobId: string = null;
+
   @IsOptional()
   @ValidateNested()
   @Type(() => SshKeyApiModel)
   public readonly sshKey: SshKeyApiModel = null;
+
   @IsDate()
   @IsOptional()
   public readonly expirationDate: string;
+  
   @IsDate()
   @IsOptional()
   public readonly disableDate: string;
@@ -82,7 +93,7 @@ export class WritableUserApiModel {
     id: string = null,
     username: string = null,
     profilePictureUrl: URL = null,
-    job: JobApiModel = null,
+    jobId: string = null,
     sshKey: SshKeyApiModel = null,
     expirationDate: string = null,
     disableDate: string = null
@@ -97,25 +108,23 @@ export class WritableUserApiModel {
     this.lastName = lastName;
     this.birthdate = birthdate;
     this.email = email;
+    this.username = username;
     this.password = password;
     this.groupIds = groupIds;
+    this.profilePictureUrl = plainToClass(URL, profilePictureUrl);
+    this.expirationDate = expirationDate;
+    this.disableDate = disableDate;
+    this.jobId = jobId;
 
     if (Array.isArray(phoneNumbers) && phoneNumbers.length > 0) {
       phoneNumbers.forEach(phoneNumber => {
         this.phoneNumbers.push(plainToClass(PhoneNumberApiModel, phoneNumber));
       });
     }
-    this.phoneNumbers = phoneNumbers;
-    this.username = username;
-    this.profilePictureUrl = plainToClass(URL, profilePictureUrl);
-    if (job) {
-      this.job = plainToClass(JobApiModel, job);
-    }
+
     if (sshKey) {
       this.sshKey = plainToClass(SshKeyApiModel, sshKey);
     }
-    this.expirationDate = expirationDate;
-    this.disableDate = disableDate;
   }
 
   public static toWritableUserApiModel(user: StatelessUser): WritableUserApiModel {
@@ -126,18 +135,17 @@ export class WritableUserApiModel {
       user.birthdate
         ? user.birthdate.toISOString()
         : null;
+
     const expirationDate: string =
       user.expirationDate
         ? user.expirationDate.toISOString()
         : null;
+
     const disableDate: string =
       user.disableDate
         ? user.disableDate.toISOString()
         : null;
-    const job: Job =
-      user.job && Object.keys(user.job).length !== 0
-        ? user.job
-        : null;
+
     const sshKey: SshKey =
       user.sshKey && Object.keys(user.sshKey).length !== 0
         ? user.sshKey
@@ -161,7 +169,7 @@ export class WritableUserApiModel {
       user.identity.username,
       user.id,
       user.profilePictureUrl,
-      JobApiModel.toJobModel(job),
+      user.jobId,
       SshKeyApiModel.toSshKeyModel(sshKey),
       expirationDate,
       disableDate
@@ -176,14 +184,6 @@ export class WritableUserApiModel {
     // Implicity: this.id can be null
     const statelessId: string = id ? id : this.id;
 
-    // IMPORTANT: in fault of class validation, we can type object properties
-    // as PasswordApiModel, PhoneNumberApiModel into constructor.
-    // Then we type it into exporter.
-    const password: Password =
-      this.password
-        ? plainToClass(PasswordApiModel, this.password).toPassword()
-        : null;
-
     const birthdate: Date =
       this.birthdate
         ? new Date(this.birthdate)
@@ -197,11 +197,6 @@ export class WritableUserApiModel {
     const disableDate: Date =
       this.disableDate
         ? new Date(this.disableDate)
-        : null;
-
-    const job: Job =
-      this.job && Object.keys(this.job).length !== 0
-        ? plainToClass(JobApiModel, this.job).toJob()
         : null;
 
     const sshKey: SshKey =
@@ -231,12 +226,12 @@ export class WritableUserApiModel {
       null,
       null,
       new UserIdentity(this.firstName, this.lastName, this.username, this.email),
-      password,
+      null,
       birthdate,
       null,
       phoneNumbers,
       groupIds,
-      job,
+      this.jobId,
       disableDate,
       this.profilePictureUrl,
       sshKey,

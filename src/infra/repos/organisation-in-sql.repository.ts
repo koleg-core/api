@@ -78,7 +78,11 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
   }
 
   async createJob(job: Job): Promise<void> {
-    this._database.createJob(await JobSerializer.prototype.serialize(job));
+    (await JobSerializer.prototype.serialize(job)).saveJob();
+  }
+
+  async updateJob(job: Job): Promise<void> {
+    (await JobSerializer.prototype.serialize(job)).saveJob();
   }
 
   deleteJob(name: string): void {
@@ -92,7 +96,6 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
 
   async updateUser(user: StatelessUser): Promise<void> {
     const userModel = await UserSerializer.prototype.serialize(user);
-    console.log(userModel);
     userModel.saveUser();
   }
 

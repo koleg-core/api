@@ -14,7 +14,7 @@ import { genUserIdentity } from "./userIdentity";
 import { genPassword } from "./password";
 import { genPhoneNumber } from "./phoneNumber";
 import { genSshKey } from "./sshKey";
-import { genJob } from "./job";
+import { genJob, genJobId } from "./job";
 import { genGroupId } from "./group";
 import { genUserId } from "./user";
 // import { strict } from 'assert';
@@ -66,7 +66,7 @@ describe("Job", () => {
   describe("#init()", () => {
     it("should be created without error", (done) => {
       try {
-        const job:Job = genJob();
+        const job: Job = genJob();
       } catch (err) {
         done(err);
       }
@@ -151,6 +151,8 @@ describe("StatelessUser", () => {
     it("should be created without error", (done) => {
       const organisation:Organisation = genOrganisation();
 
+      genJobId(organisation);
+
       const statelessUser: StatelessUser = genStatelessUser(organisation);
       if(!statelessUser) {
         const err = "statelessUser is undefined";
@@ -167,8 +169,10 @@ describe("Organisation", () => {
   describe("#User()", () => {
     const organisation:Organisation = genOrganisation();
     let userId: string;
+    let jobId: string;
     it("user should be added without error", (done) => {
       try {
+        jobId = genJobId(organisation);
         userId = genUserId(organisation);
         if(!organisation.getReadableUserById(userId)) {
           const err = "There is no user into organisation.";
@@ -200,8 +204,7 @@ describe("Organisation", () => {
         const password = new Password("My secret password");
         const birthdate = new Date();
         const profilePictureUrl = new URL("http://url.com");
-        const job = new Job("Tester job");
-        organisation.addJob(job);
+        const job = organisation.getJob(jobId);
         const sshKey = new SshKey("publicKey", "privateKey");
         const phoneNumbers: PhoneNumber = new PhoneNumber(PhoneType.PHONE_CELL_HOME, "+33511931123");
 
@@ -215,7 +218,7 @@ describe("Organisation", () => {
           null,
           [phoneNumbers],
           null,
-          job,
+          job.getId(),
           null,
           profilePictureUrl,
           sshKey,

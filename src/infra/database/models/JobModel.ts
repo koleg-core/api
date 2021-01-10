@@ -1,28 +1,30 @@
 import {
-  Sequelize,
   Model,
-  ModelDefined,
-  DataTypes,
   HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyHasAssociationMixin,
-  Association,
-  HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin,
   Optional,
 } from "sequelize";
 import { UserModel } from "./UserModel";
 
-interface JobAttributes{
+interface JobAttributes {
   id: number;
+  uuid: string;
   name: string;
+  description: string;
+  iconUrl: string;
   users?: UserModel[] | UserModel["id"][];
 }
 
 type JobCreationAttributes = Optional<JobAttributes, "id">
 
-export class JobModel extends Model<JobAttributes, JobCreationAttributes> implements JobAttributes{
+export class JobModel extends Model<JobAttributes, JobCreationAttributes> implements JobAttributes {
   public id!: number;
-  public name!:string;
+  public uuid!: string;
+  public name!: string;
+  public description!: string;
+  public iconUrl!: string;
   getUsers: HasManyGetAssociationsMixin<UserModel>;
+
+  saveJob() {
+    this.save();
+  }
 }
