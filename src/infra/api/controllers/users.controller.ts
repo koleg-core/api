@@ -14,10 +14,11 @@ import {
   Delete,
   QueryParam,
   Param,
-  BodyParam,
-  UseBefore,
-  CurrentUser
+  BodyParam
 } from "routing-controllers";
+
+import { ResponseSchema } from "routing-controllers-openapi";
+
 import { hash } from "bcrypt";
 
 import { ReturnCodes } from "domain/enums/return-codes.enum";
@@ -42,6 +43,9 @@ export class UsersController {
   @Inject("saltRounds.security.config")
   private _saltRoudsPassword: number;
 
+  @Inject("pageSize.api.config")
+  private _pageSize: number;
+
   @Inject("organisation.service")
   private _organisationService: OrganisationService;
 
@@ -62,6 +66,11 @@ export class UsersController {
     ] // This break private things, but don't care
   }
 
+  @ResponseSchema(ReadableUserApiModel, {
+    contentType: "application/json",
+    description: "A list of users",
+    isArray: true,
+    statusCode: "200"})
   @Get("/users")
   @HttpCode(HttpStatusCode.OK)
   async getAll(
@@ -83,7 +92,7 @@ export class UsersController {
           }
 
           const realPage = page || 1;
-          const realItemsNumber = itemsNumber || 20;
+          const realItemsNumber = itemsNumber || this._pageSize;
           if (realPage * realItemsNumber <= usersResponse.length) {
             usersResponse = usersResponse.slice((realPage - 1) * realItemsNumber, realPage * realItemsNumber);
           } else {
@@ -99,6 +108,10 @@ export class UsersController {
       });
   }
 
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response model with user id",
+    statusCode: "200"})
   @Post("/users")
   @HttpCode(HttpStatusCode.CREATED)
   async post(@Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
@@ -117,6 +130,10 @@ export class UsersController {
       });
   }
 
+  @ResponseSchema(ReadableUserApiModel, {
+    contentType: "application/json",
+    description: "Requested user",
+    statusCode: "200"})
   @Get("/users/:id")
   async get(@Param("id") id: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUserById(id)
@@ -131,6 +148,10 @@ export class UsersController {
       });
   }
 
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"})
   @Put("/users/:id")
   @HttpCode(HttpStatusCode.OK)
   async put(@Param("id") id: string, @Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
@@ -148,6 +169,10 @@ export class UsersController {
       });
   }
 
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"})
   @Delete("/users/:id")
   async remove(@Param("id") id: string): Promise<ResponseModel | ApiError> {
 
@@ -161,6 +186,10 @@ export class UsersController {
       });
   }
 
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"})
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Put("/users/:id/update-password")
   async updatePassword(@Param("id") userId: string, @BodyParam("password") password: string): Promise<ResponseModel | ApiError> {
@@ -192,6 +221,10 @@ export class UsersController {
       });
   }
 
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"})
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Post("/users/:id/upload_image")
   async uploadImage(@Param("id") id: string, @UploadedFile("profilePicture") profilePicture: Express.Multer.File): Promise<ResponseModel | ApiError> {
@@ -206,6 +239,10 @@ export class UsersController {
     return new ResponseModel(HttpStatusCode.ACCEPTED, "User profile picture will be updated", newProfilePictureUrl.href);
   }
 
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"})
   @HttpCode(HttpStatusCode.OK)
   @Get("/users/:id/vcard")
   async getVcardTemporaryUrl(@Param("id") id: string): Promise<ResponseModel | ApiError> {

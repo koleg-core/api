@@ -35,8 +35,9 @@ export class Api {
   constructor(
     private _organisationService: OrganisationService,
     private _assetsService: AssetsService,
-    private _sessionDuration: string="1h",
-    private _pageSize: number=10,
+    private _sessionDuration: string = "1h",
+    private _pageSize: number = 5,
+    private _jwtSecret: string  = "Secret"
   ) {
 
     if (!this._organisationService) {
@@ -46,8 +47,12 @@ export class Api {
       throw new Error("Invalid argument _assetsService: AssetsService is not defined");
     }
 
-    // TODO externalize it into config
+    Container.set("pageSize.api.config", this._pageSize);
+    Container.set("sessionDuration.api.config", this._sessionDuration);
     Container.set("saltRounds.security.config", 10);
+    Container.set("jwtSecret.security.config", this._jwtSecret);
+
+    Container.set("organisation.service", this._organisationService);
     Container.set("organisation.service", this._organisationService);
     Container.set("assets.service", this._assetsService);
 

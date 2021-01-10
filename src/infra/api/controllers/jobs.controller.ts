@@ -15,6 +15,9 @@ import { AuthService } from "../auth/auth.service";
 @JsonController()
 export class JobsController {
 
+  @Inject("pageSize.api.config")
+  private _pageSize: number;
+
   @Inject("organisation.service")
   private readonly _organisationService: OrganisationService;
   private readonly _fuseOptions: Fuse.IFuseOptions<Job> = {
@@ -44,7 +47,7 @@ export class JobsController {
           }
 
           const realPage = page || 1;
-          const realItemsNumber = itemsNumber || 20;
+          const realItemsNumber = itemsNumber || this._pageSize;
           if (realPage * realItemsNumber <= jobsResponse.length) {
             jobsResponse = jobsResponse.slice((realPage - 1) * realItemsNumber, realPage * realItemsNumber);
           } else {
