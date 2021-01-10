@@ -77,6 +77,68 @@ npm run coverage
 
 And open coverage report in your browser `./coverage/lcov-report/index.html` file.
 
+#### Benchmark
+To benchmark api, you can install `autocannon`:
+```bash
+npm i -g autocannon
+```
+
+And run:
+```bash
+autocannon http://api.dev.koleg.tk/users
+```
+
+##### Results
+On `/users` endpoint:
+```bash
+autocannon http://api.dev.koleg.tk/users
+
+Running 10s test @ http://api.dev.koleg.tk/users
+10 connections
+
+┌─────────┬───────┬───────┬───────┬───────┬──────────┬─────────┬────────┐
+│ Stat    │ 2.5%  │ 50%   │ 97.5% │ 99%   │ Avg      │ Stdev   │ Max    │
+├─────────┼───────┼───────┼───────┼───────┼──────────┼─────────┼────────┤
+│ Latency │ 20 ms │ 24 ms │ 39 ms │ 71 ms │ 26.29 ms │ 9.76 ms │ 186 ms │
+└─────────┴───────┴───────┴───────┴───────┴──────────┴─────────┴────────┘
+┌───────────┬────────┬────────┬────────┬─────────┬────────┬─────────┬────────┐
+│ Stat      │ 1%     │ 2.5%   │ 50%    │ 97.5%   │ Avg    │ Stdev   │ Min    │
+├───────────┼────────┼────────┼────────┼─────────┼────────┼─────────┼────────┤
+│ Req/Sec   │ 340    │ 340    │ 355    │ 407     │ 372    │ 25.63   │ 340    │
+├───────────┼────────┼────────┼────────┼─────────┼────────┼─────────┼────────┤
+│ Bytes/Sec │ 867 kB │ 867 kB │ 905 kB │ 1.04 MB │ 949 kB │ 65.4 kB │ 867 kB │
+└───────────┴────────┴────────┴────────┴─────────┴────────┴─────────┴────────┘
+
+Req/Bytes counts sampled once per second.
+
+4k requests in 10.02s, 9.49 MB read
+```
+
+On `/users` endpoint with fuzzy finding filter:
+```bash
+autocannon 'http://api.dev.koleg.tk/users?filer=lo'
+
+Running 10s test @ http://api.dev.koleg.tk/users?filer=lo
+10 connections
+
+┌─────────┬───────┬───────┬───────┬───────┬──────────┬──────────┬────────┐
+│ Stat    │ 2.5%  │ 50%   │ 97.5% │ 99%   │ Avg      │ Stdev    │ Max    │
+├─────────┼───────┼───────┼───────┼───────┼──────────┼──────────┼────────┤
+│ Latency │ 21 ms │ 27 ms │ 56 ms │ 78 ms │ 29.86 ms │ 11.42 ms │ 188 ms │
+└─────────┴───────┴───────┴───────┴───────┴──────────┴──────────┴────────┘
+┌───────────┬────────┬────────┬────────┬────────┬────────┬─────────┬────────┐
+│ Stat      │ 1%     │ 2.5%   │ 50%    │ 97.5%  │ Avg    │ Stdev   │ Min    │
+├───────────┼────────┼────────┼────────┼────────┼────────┼─────────┼────────┤
+│ Req/Sec   │ 298    │ 298    │ 322    │ 374    │ 328.5  │ 21.77   │ 298    │
+├───────────┼────────┼────────┼────────┼────────┼────────┼─────────┼────────┤
+│ Bytes/Sec │ 760 kB │ 760 kB │ 821 kB │ 954 kB │ 838 kB │ 55.5 kB │ 760 kB │
+└───────────┴────────┴────────┴────────┴────────┴────────┴─────────┴────────┘
+
+Req/Bytes counts sampled once per second.
+
+3k requests in 10.03s, 8.38 MB read
+```
+
 #### API
 Before all run `npm start`, then:
 
