@@ -5,8 +5,10 @@ import {
   IsUUID,
   IsEmail,
   IsString,
-  IsUrl
+  IsDate,
+  IsUrl,
 } from "class-validator";
+import { Type } from "class-transformer";
 
 import { SshKey } from "domain/user/SshKey";
 import { UserIdentity } from "domain/user/UserIdentity";
@@ -30,7 +32,7 @@ export class WritableUserApiModel {
   @IsString()
   @IsOptional()
   public readonly lastName: string;
-  @IsString()
+  @IsDate()
   @IsOptional()
   public readonly birthdate: string;
   @IsEmail()
@@ -38,12 +40,15 @@ export class WritableUserApiModel {
   public readonly email: string;
   @ValidateNested()
   @IsOptional()
+  @Type(() => PasswordApiModel)
   public readonly password: PasswordApiModel = null;
   @ValidateNested({ each: true })
   @IsOptional()
+  @IsUUID()
   public readonly groupIds: string[];
   @ValidateNested({ each: true })
   @IsOptional()
+  @Type(() => PhoneNumberApiModel)
   public readonly phoneNumbers: PhoneNumberApiModel[] = [];
   @IsString()
   @IsOptional()
@@ -53,14 +58,16 @@ export class WritableUserApiModel {
   public readonly profilePictureUrl: URL;
   @ValidateNested()
   @IsOptional()
+  @Type(() => JobApiModel)
   public readonly job: JobApiModel = null;
   @IsOptional()
   @ValidateNested()
+  @Type(() => SshKeyApiModel)
   public readonly sshKey: SshKeyApiModel = null;
-  @IsString()
+  @IsDate()
   @IsOptional()
   public readonly expirationDate: string;
-  @IsString()
+  @IsDate()
   @IsOptional()
   public readonly disableDate: string;
 

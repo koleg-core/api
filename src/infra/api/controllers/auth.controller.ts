@@ -1,5 +1,19 @@
-import { Body, JsonController, Post } from "routing-controllers";
-import { Inject, Service } from "typedi";
+import {
+  Body,
+  JsonController,
+  Post,
+} from "routing-controllers";
+import {
+  ResponseSchema,
+  OpenAPI,
+} from "routing-controllers-openapi";
+import {
+  Inject,
+  Service,
+} from "typedi";
+
+import { ReadableUser } from "domain/user/ReadableUser";
+
 import { compareSync } from "bcrypt";
 import { ApiError } from "../errors/api-error";
 import { HttpStatusCode } from "../models/http-status-code.enum";
@@ -7,7 +21,6 @@ import { StatelessUser } from "domain/user/StatelessUser";
 import { OrganisationService } from "app/organisation.service";
 import { ResponseModel } from "../models/response.model";
 import jwt from "jsonwebtoken";
-import { ReadableUser } from "domain/user/ReadableUser";
 
 @Service("auth.controller")
 @JsonController("/auth")
@@ -22,6 +35,14 @@ export class AuthController {
   @Inject("organisation.service")
   private _organisationService: OrganisationService;
 
+  @OpenAPI({
+    description: "Try to login by requesting JWT"
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response model with JWT.",
+    statusCode: "200"
+  })
   @Post("/login")
   async login(@Body() credentials: { identifier: string, password: string }): Promise<ResponseModel | ApiError> {
     if (!credentials.identifier) {

@@ -7,6 +7,8 @@ import {
   IsUrl
 } from "class-validator";
 
+import { Type } from "class-transformer";
+
 import { Job } from "domain/user/Job";
 import { PhoneNumber } from "domain/user/PhoneNumber";
 import { UserIdentity } from "domain/user/UserIdentity";
@@ -32,9 +34,10 @@ export class ReadableUserApiModel {
   public readonly groupIds: string[];
   @IsUrl()
   public readonly profilePictureUrl: string;
-  @ValidateNested()
+  @Type(() => JobApiModel)
   public readonly job: JobApiModel;
   @ValidateNested({ each: true })
+  @Type(() => PhoneNumberApiModel)
   public readonly phones: PhoneNumberApiModel[]; // TODO multiple phones numbers
   @IsString()
   public readonly sshPublicKey: string;

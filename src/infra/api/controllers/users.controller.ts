@@ -14,10 +14,12 @@ import {
   Delete,
   QueryParam,
   Param,
-  BodyParam
+  BodyParam,
 } from "routing-controllers";
-
-import { ResponseSchema } from "routing-controllers-openapi";
+import {
+  ResponseSchema,
+  OpenAPI,
+} from "routing-controllers-openapi";
 
 import { hash } from "bcrypt";
 
@@ -66,6 +68,10 @@ export class UsersController {
     ] // This break private things, but don't care
   }
 
+  @OpenAPI({
+    description: "Query all users using filter or not.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
   @ResponseSchema(ReadableUserApiModel, {
     contentType: "application/json",
     description: "A list of users",
@@ -108,6 +114,9 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Create new user."
+  })
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response model with user id",
@@ -130,7 +139,11 @@ export class UsersController {
       });
   }
 
-  @ResponseSchema(ReadableUserApiModel, {
+  @OpenAPI({
+    description: "Query user data using his id.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Requested user",
     statusCode: "200"})
@@ -148,6 +161,10 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Update user using his id.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response ",
@@ -169,6 +186,10 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Remove user using his id.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response ",
@@ -186,6 +207,10 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Update user password.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response ",
@@ -221,6 +246,10 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Upload new profile picture on s3.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response ",
@@ -239,6 +268,10 @@ export class UsersController {
     return new ResponseModel(HttpStatusCode.ACCEPTED, "User profile picture will be updated", newProfilePictureUrl.href);
   }
 
+  @OpenAPI({
+    description: "Query temporary url from s3 that return user vcard.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response ",
