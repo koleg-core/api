@@ -15,9 +15,12 @@ import {
   QueryParam,
   Param,
   BodyParam,
-  UseBefore,
-  CurrentUser
 } from "routing-controllers";
+import {
+  ResponseSchema,
+  OpenAPI,
+} from "routing-controllers-openapi";
+
 import { hash } from "bcrypt";
 
 import { ReturnCodes } from "domain/enums/return-codes.enum";
@@ -42,6 +45,9 @@ export class UsersController {
   @Inject("saltRounds.security.config")
   private _saltRoudsPassword: number;
 
+  @Inject("pageSize.api.config")
+  private _pageSize: number;
+
   @Inject("organisation.service")
   private _organisationService: OrganisationService;
 
@@ -62,6 +68,15 @@ export class UsersController {
     ] // This break private things, but don't care
   }
 
+  @OpenAPI({
+    description: "Query all users using filter or not.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ReadableUserApiModel, {
+    contentType: "application/json",
+    description: "A list of users",
+    isArray: true,
+    statusCode: "200"})
   @Get("/users")
   @HttpCode(HttpStatusCode.OK)
   async getAll(
@@ -83,14 +98,14 @@ export class UsersController {
           }
 
           const realPage = page || 1;
-          const realItemsNumber = itemsNumber || 20;
+          const realItemsNumber = itemsNumber || this._pageSize;
+
           if (realPage * realItemsNumber <= usersResponse.length) {
             usersResponse = usersResponse.slice((realPage - 1) * realItemsNumber, realPage * realItemsNumber);
           } else {
             usersResponse = usersResponse.slice((realPage - 1) * realItemsNumber, usersResponse.length);
           }
 
-          users.forEach(user => usersResponse.push(ReadableUserApiModel.toReadableUserApiModel(user)));
         }
         return new ResponseModel(HttpStatusCode.OK, "Success", usersResponse);
       })
@@ -99,6 +114,13 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Create new user."
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response model with user id",
+    statusCode: "200"})
   @Post("/users")
   @HttpCode(HttpStatusCode.CREATED)
   async post(@Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
@@ -117,6 +139,14 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Query user data using his id.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Requested user",
+    statusCode: "200"})
   @Get("/users/:id")
   async get(@Param("id") id: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUserById(id)
@@ -131,6 +161,14 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Update user using his id.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"})
   @Put("/users/:id")
   @HttpCode(HttpStatusCode.OK)
   async put(@Param("id") id: string, @Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
@@ -148,6 +186,14 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Remove user using his id.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"})
   @Delete("/users/:id")
   async remove(@Param("id") id: string): Promise<ResponseModel | ApiError> {
 
@@ -161,6 +207,14 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Update user password.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"})
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Put("/users/:id/update-password")
   async updatePassword(@Param("id") userId: string, @BodyParam("password") password: string): Promise<ResponseModel | ApiError> {
@@ -192,6 +246,14 @@ export class UsersController {
       });
   }
 
+  @OpenAPI({
+    description: "Upload new profile picture on s3.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"})
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Post("/users/:id/upload_image")
   async uploadImage(@Param("id") id: string, @UploadedFile("profilePicture") profilePicture: Express.Multer.File): Promise<ResponseModel | ApiError> {
@@ -206,6 +268,14 @@ export class UsersController {
     return new ResponseModel(HttpStatusCode.ACCEPTED, "User profile picture will be updated", newProfilePictureUrl.href);
   }
 
+  @OpenAPI({
+    description: "Query temporary url from s3 that return user vcard.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"})
   @HttpCode(HttpStatusCode.OK)
   @Get("/users/:id/vcard")
   async getVcardTemporaryUrl(@Param("id") id: string): Promise<ResponseModel | ApiError> {

@@ -1,6 +1,7 @@
 import {
   IsOptional,
-  IsString
+  IsString,
+  IsDate,
 } from "class-validator";
 
 import { Password } from "domain/user/Password";
@@ -10,7 +11,7 @@ export class PasswordApiModel {
   @IsString()
   public readonly value: string;
   @IsOptional()
-  @IsString()
+  @IsDate()
   public readonly dateLimit: string;
   constructor(
     value: string,

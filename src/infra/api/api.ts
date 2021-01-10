@@ -8,9 +8,9 @@ import {
   Action
 } from "routing-controllers";
 import { routingControllersToSpec} from "routing-controllers-openapi";
+import { defaultMetadataStorage } from "class-transformer/storage";
 import * as swaggerUiExpress from "swagger-ui-express";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
-// import { OpenAPIObject } from "openapi3-ts";
 import { Container } from "typedi";
 import { Application } from "express";
 
@@ -35,8 +35,9 @@ export class Api {
   constructor(
     private _organisationService: OrganisationService,
     private _assetsService: AssetsService,
-    private _sessionDuration: string="1h",
-    private _pageSize: number=10,
+    private _sessionDuration: string = "1h",
+    private _pageSize: number = 5,
+    private _jwtSecret: string  = "Secret"
   ) {
 
     if (!this._organisationService) {
@@ -46,8 +47,12 @@ export class Api {
       throw new Error("Invalid argument _assetsService: AssetsService is not defined");
     }
 
-    // TODO externalize it into config
+    Container.set("pageSize.api.config", this._pageSize);
+    Container.set("sessionDuration.api.config", this._sessionDuration);
     Container.set("saltRounds.security.config", 10);
+    Container.set("jwtSecret.security.config", this._jwtSecret);
+
+    Container.set("organisation.service", this._organisationService);
     Container.set("organisation.service", this._organisationService);
     Container.set("assets.service", this._assetsService);
 
@@ -84,7 +89,10 @@ export class Api {
 
     // TODO: schema is not working, fix it
     // Parse class-validator classes into JSON Schema:
-    const schemas = validationMetadatasToSchemas();
+    const schemas = validationMetadatasToSchemas({
+      classTransformerMetadataStorage: defaultMetadataStorage,
+      refPointerPrefix: "#/components/schemas/",
+    });
 
     // Parse routing-controllers classes into OpenAPI spec:
     const storage = getMetadataArgsStorage();
@@ -93,22 +101,28 @@ export class Api {
       this._routingControllersOptions,
       { // TODO: externalize this into template file
         components: {
-          schemas,
+          // From: https://swagger.io/docs/specification/authentication/bearer-authentication/
           securitySchemes: {
-            basicAuth: {
-              scheme: "basic",
+            bearerAuth: { // arbitrary name for the security scheme
               type: "http",
+              scheme: "bearer",
+              bearerFormat: "JWT", // optional, arbitrary value for documentation purposes
             },
           },
+          schemas
         },
         info: {
           description: description || "Koleg rest api",
           title: title || "Koleg 👩‍💼",
+          license: {
+            name: "Apache 2.0",
+            url: "http://www.apache.org/licenses/LICENSE-2.0.html",
+          },
           version: apiVersion || "1.0.0",
         },
         externalDocs: {
           description: "Find out more about Swagger",
-          url: "https://gitlab.com/koleg1/api/-/blob/develop/swagger/swagger.yml"
+          url: "https://gitlab.com/koleg1/api"
         },
         servers: [
           {
@@ -116,15 +130,11 @@ export class Api {
             description: "Local development server"
           },
           {
-            url: "https://api.koleg.nofreedisk.space/",
+            url: "https://api.dev.koleg.tk/",
             description: "Development server"
           },
           {
-            url: "https://api.staging.koleg.com/",
-            description: "Staging server"
-          },
-          {
-            url: "https://api.koleg.com/",
+            url: "https://api.koleg.tk/",
             description: "Production server"
           }
         ]

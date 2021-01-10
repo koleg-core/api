@@ -48,7 +48,10 @@ if(dbConfig.enable) {
 // TODO: move it into app.ts
 const apiService: Api = new Api(
   organisationService,
-  s3Service
+  s3Service,
+  apiConfig.session_duration,
+  apiConfig.page_size,
+  apiConfig.jwt_secret,
 );
 
 const application: App = new App(apiService, apiConfig.port);

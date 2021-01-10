@@ -1,7 +1,7 @@
 import {
   IsDefined,
   IsPhoneNumber,
-  IsString
+  IsEnum,
 } from "class-validator";
 
 import { PhoneNumber } from "domain/user/PhoneNumber";
@@ -9,7 +9,7 @@ import { PhoneType } from "domain/enums/phone-type.enum";
 
 export class PhoneNumberApiModel {
   @IsDefined()
-  @IsString()
+  @IsEnum(PhoneType)
   public readonly type: string;
   @IsDefined()
   @IsPhoneNumber(null)

@@ -1,8 +1,24 @@
 import Fuse from "fuse.js";
 
-import { ReturnCodes } from "../../../domain/enums/return-codes.enum";
-import { Job } from "../../../domain/user/Job";
-import { QueryParam, Body, Delete, Get, HttpCode, JsonController, Param, Post, UseBefore } from "routing-controllers";
+import {
+  QueryParam,
+  Body,
+  Delete,
+  Get,
+  HttpCode,
+  JsonController,
+  Param,
+  Post,
+  UseBefore
+} from "routing-controllers";
+import {
+  ResponseSchema,
+  OpenAPI,
+} from "routing-controllers-openapi";
+
+import { ReturnCodes } from "domain/enums/return-codes.enum";
+import { Job } from "domain/user/Job";
+
 import { Inject, Service } from "typedi";
 import { ApiError } from "../errors/api-error";
 import { ResponseModel } from "../models/response.model";
@@ -15,6 +31,9 @@ import { AuthService } from "../auth/auth.service";
 @JsonController()
 export class JobsController {
 
+  @Inject("pageSize.api.config")
+  private _pageSize: number;
+
   @Inject("organisation.service")
   private readonly _organisationService: OrganisationService;
   private readonly _fuseOptions: Fuse.IFuseOptions<Job> = {
@@ -22,6 +41,15 @@ export class JobsController {
     keys: ["name"] // This break private things, but don't care
   }
 
+  @OpenAPI({
+    description: "Query all jobs using filter or not.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(JobApiModel, {
+    contentType: "application/json",
+    description: "A list of jobs",
+    isArray: true,
+    statusCode: "200"})
   @Get("/jobs")
   @UseBefore(AuthService.checkJwt)
   async getAll(
@@ -44,7 +72,7 @@ export class JobsController {
           }
 
           const realPage = page || 1;
-          const realItemsNumber = itemsNumber || 20;
+          const realItemsNumber = itemsNumber || this._pageSize;
           if (realPage * realItemsNumber <= jobsResponse.length) {
             jobsResponse = jobsResponse.slice((realPage - 1) * realItemsNumber, realPage * realItemsNumber);
           } else {
@@ -58,6 +86,14 @@ export class JobsController {
       });
   }
 
+  @OpenAPI({
+    description: "Create new job.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response model with job id",
+    statusCode: "200"})
   @Post("/jobs")
   @UseBefore(AuthService.checkJwt)
   async post(@Body() job: JobApiModel): Promise<ResponseModel | ApiError> {
@@ -73,6 +109,16 @@ export class JobsController {
       });
   }
 
+  @OpenAPI({
+    // description: "Delete jon using his id.",
+    description: "Request job using his id.",
+    security: [{ bearerAuth: [] }],
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response of job query.",
+    statusCode: "200"
+  })
   @HttpCode(HttpStatusCode.OK)
   @Get("/jobs/:name")
   @UseBefore(AuthService.checkJwt)
@@ -89,6 +135,16 @@ export class JobsController {
       });
   }
 
+  @OpenAPI({
+    // description: "Delete jon using his id.",
+    description: "Delete job using his name.",
+    security: [{ bearerAuth: [] }],
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response of delete job query.",
+    statusCode: "200"
+  })
   @HttpCode(HttpStatusCode.OK)
   @Delete("/jobs/:name")
   @UseBefore(AuthService.checkJwt)
