@@ -93,13 +93,13 @@ export class UsersController {
 
           const realPage = page || 1;
           const realItemsNumber = itemsNumber || this._pageSize;
+
           if (realPage * realItemsNumber <= usersResponse.length) {
             usersResponse = usersResponse.slice((realPage - 1) * realItemsNumber, realPage * realItemsNumber);
           } else {
             usersResponse = usersResponse.slice((realPage - 1) * realItemsNumber, usersResponse.length);
           }
 
-          users.forEach(user => usersResponse.push(ReadableUserApiModel.toReadableUserApiModel(user)));
         }
         return new ResponseModel(HttpStatusCode.OK, "Success", usersResponse);
       })
