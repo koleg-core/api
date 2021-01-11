@@ -27,7 +27,7 @@ export class AssetsService {
   public uploadVcard(userId: string, vcard: Buffer): URL {
 
     const filePath = this.getUserVCardPath(userId);
-    this.s3Client.uploadContent(vcard, filePath, "text/plain", "private").then(() => {
+    this.s3Client.uploadContent(vcard, filePath, "text/vcard", "private").then(() => {
       console.log("Vcard was uploaded");
     });
     return this.s3Client.getS3Url(filePath);
