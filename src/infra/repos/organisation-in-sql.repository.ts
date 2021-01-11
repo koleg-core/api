@@ -6,6 +6,7 @@ import { JobSerializer } from "../../infra/database/serializer/job.serializer";
 import { Sequelize } from "sequelize";
 import { StatelessUser } from "../../domain/user/StatelessUser";
 import { UserSerializer } from "infra/database/serializer/user.serializer";
+import { GroupSerializer } from "infra/database/serializer/group.serializer";
 
 export class OrganisationInSqlRepository implements OrganisationRepository {
 
@@ -60,12 +61,12 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
       }
     }
 
-    // const remoteGroups = await this._database.getGroups();
-    // if (Array.isArray(remoteGroups) && remoteGroups.length > 0) {
-    //   remoteGroups.forEach(remoteGroup => {
-    //     organisation.addGroup(GroupSerializer.deserialize(remoteGroup));
-    //   })
-    // }
+    const remoteGroups = await this._database.getGroups();
+    if (Array.isArray(remoteGroups) && remoteGroups.length > 0) {
+      for await (const remoteGroup of remoteGroups) {
+        organisation.addGroup(await GroupSerializer.prototype.deserialize(remoteGroup));
+      }
+    }
 
     const remoteUsers = await this._database.getUsers();
     if (Array.isArray(remoteUsers) && remoteUsers.length > 0) {

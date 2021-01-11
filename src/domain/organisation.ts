@@ -48,6 +48,10 @@ export class Organisation {
   // ###### GROUPS ######
   // ####################
 
+  public getGroups(): Group[] {
+    return Array.from(this._groups.values());
+  }
+
   public containsGroupById(groupId: string): boolean {
     if (this._groups.has(groupId)) {
       return true;
@@ -60,7 +64,18 @@ export class Organisation {
     return group.getReadableGroup();
   }
 
-  public addGroup(
+  public addGroup(newGroup: Group): string{
+    const groups: Group[] = Array.from(this._groups.values());
+
+    if (groups.some(group => newGroup.getId() === group.getId())) {
+      throw new Error('Group already exists.');
+    }
+
+    this._groups.set(newGroup.getId(), newGroup);
+    return newGroup.getId();
+  }
+
+  /*public addGroup(
     id: string,
     name: string,
     description: string,
@@ -98,7 +113,7 @@ export class Organisation {
 
     this._groups.set(newGroup.getId(), newGroup);
     return newGroup.getId();
-  }
+  }*/
 
   // ####################
   // ###### USERS #######

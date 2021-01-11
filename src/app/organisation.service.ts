@@ -4,6 +4,7 @@ import { Job } from "../domain/user/Job";
 import { ReturnCodes } from "../domain/enums/return-codes.enum";
 import { ReadableUser } from "../domain/user/ReadableUser";
 import { StatelessUser } from "../domain/user/StatelessUser";
+import { Group } from "domain/group/Group";
 
 export class OrganisationService {
 
@@ -147,8 +148,9 @@ export class OrganisationService {
   }
 
   // GROUPS
-  public getGroups() {
-    throw new Error("Method not implemented.");
+  public async getGroups(): Promise<Group[]> {
+    await this._updateOrganisation();
+    return this._organisation.getGroups();
   }
 
   public getGroup() {

@@ -334,6 +334,10 @@ export class Database {
     return UserModel.findAll();
   }
 
+  getGroups(): Promise<GroupsModel[]> {
+    return GroupsModel.findAll();
+  }
+
   getUser(uuid: string): Promise<UserModel> {
     return UserModel.findOne({ where: { uuid } });
   }

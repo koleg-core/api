@@ -9,15 +9,12 @@ export class Group {
       private _id: string,
       private _name: string,
       private _description: string = null,
-      private _parentGroup: Group = null,
-      private _childsGroups: Group[] = [],
+      private _parentGroup: string = null,
+      private _childsGroups: string[] = [],
       private _imgUrl: URL = null
   ) {
     if(!this._id) {
       this._id = uuid();
-    }
-    if(this._parentGroup){
-      this._parentGroup.addChild(this);
     }
   }
 
@@ -31,6 +28,14 @@ export class Group {
 
   public getDescription(): string {
     return this._description;
+  }
+
+  public getParentId(): string {
+    return this._parentGroup;
+  }
+
+  public getChildGroupsId(): string[] {
+    return this._childsGroups;
   }
 
   public setDescription(description: string): ReturnCodes {
@@ -54,7 +59,7 @@ export class Group {
     return ReturnCodes.UPDATED;
   }
 
-  public getParentId(): string {
+  /*public getParentId(): string {
     if(this._parentGroup) {
       return this._parentGroup.getId();
     }
@@ -71,7 +76,7 @@ export class Group {
       return true;
     }
     return false;
-  }
+  }*/
 
   public hasChilds(): boolean {
     if(this._childsGroups.length === 0) {
@@ -81,7 +86,7 @@ export class Group {
   }
 
   // Here use static to replace missing friend of
-  private static _canShareSameParent(
+  /*private static _canShareSameParent(
     inPlaceGroup: Group,
     concurrentGroup: Group): boolean {
     return inPlaceGroup._name === concurrentGroup.getName()
@@ -124,15 +129,15 @@ export class Group {
 
   public addChild(childGroup: Group): void {
     Group._addChild(this, childGroup);
-  }
+  }*/
 
   public getReadableGroup(): ReadableGroup {
     return new ReadableGroup(
       this._id,
       this._name,
       this._description,
-      this.getParentId(),
-      this.getChildsId(),
+      this._parentGroup,
+      this._childsGroups,
       this._imgUrl
     );
   }

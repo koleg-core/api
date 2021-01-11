@@ -20,6 +20,7 @@ import { OrganisationService } from "app/organisation.service";
 import { AssetsService } from "app/assets.service";
 import { AuthController } from "./controllers/auth.controller";
 import { AuthService } from "./auth/auth.service";
+import { GroupsController } from "./controllers/groups.controller";
 
 export class Api {
   private _app: Application;
@@ -67,7 +68,8 @@ export class Api {
       controllers: [
         UsersController,
         JobsController,
-        AuthController
+        AuthController,
+        GroupsController
       ]
     };
 
