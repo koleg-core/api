@@ -9,28 +9,29 @@ export const configModel = {
   },
   api: {
     port: {
-      doc: "The port that api listen",
+      doc: "The port that api listen.",
       format: "port",
       default: 8080,
-      env: "KOLEG_API_PORT",
+      arg: "port",
+      env: "KOLEG_API_LISTEN_PORT", // For strange reason  KOLEG_API_PORT have Nan value
     },
     jwt_secret: {
       doc: "JWT secret used to encrypt api session token.",
       format: String,
       env: "KOLEG_API_JWT_SECRET",
-      default: "25b041fe8615a8c8755ef5f6d5f447c8"
+      default: "25b041fe8615a8c8755ef5f6d5f447c8",
     },
     session_duration: {
       doc: "Time validity for api session.",
       format: String,
+      default: "10h",
       env: "KOLEG_API_SESSION_DURATION",
-      default: "10h"
     },
     page_size: {
       doc: "Number of item return per query page.",
       format: Number,
       env: "KOLEG_API_PAGE_SIZE",
-      default: 20
+      default: 20,
     },
   },
   s3: {

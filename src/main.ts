@@ -13,7 +13,7 @@ config.init();
 
 const dbConfig = config.getConfig("database");
 const apiConfig = config.getConfig("api");
-const s3config = config.getConfig("s3"); 
+const s3config = config.getConfig("s3");
 
 const s3Service = new AssetsService(
   new S3(
