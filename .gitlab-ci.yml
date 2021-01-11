@@ -6,7 +6,7 @@ stages:
   - 🐳login
   - 🏗build
   - 🔒security
-  - deploy
+  - 🚀deploy
 
 .docker_login:
   image: docker:stable
@@ -26,6 +26,9 @@ stages:
   script: |
     yarn
     yarn coverage
+  artifacts:
+    paths:
+      - coverage/
 
 🐳dockerfile_lint:
   stage: 📜tests
@@ -50,13 +53,26 @@ stages:
     docker push \
       $SCW_REGISTRY/$IMAGE_NAME:$CI_COMMIT_SHA
 
+pages:
+  stage: 🚀deploy
+  dependencies:
+    - 🛏️tests_coverage
+  script:
+    - rm -rf public/*
+    - cp -r coverage/lcov-report/* public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - develop
+
 ☸️production_deploy:
-  stage: deploy
+  stage: 🚀deploy
   image: google/cloud-sdk
-  # TODO: remove it when pipeline is validated
-  # only:
-  #   - master
-  #   - develop
+  only:
+    - master
+    - develop
   script: |
     echo "Deploy on branch: ${CI_COMMIT_BRANCH}"
     kubectl \
