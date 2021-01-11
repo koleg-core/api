@@ -4,6 +4,28 @@ REST API for koleg project
 
 ---
 
+## Index
+  * [Koleg API](#koleg-api)
+      * [Dev](#dev)
+         * [Dependencies](#dependencies)
+         * [Start dev <g-emoji class="g-emoji" alias="rocket" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f680.png">🚀</g-emoji>](#start-dev-)
+         * [With okteto](#with-okteto)
+         * [Tests](#tests)
+            * [Docker](#docker)
+            * [Benchmarks <g-emoji class="g-emoji" alias="chart_with_upwards_trend" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f4c8.png">📈</g-emoji>](#benchmarks-)
+               * [Code coverage <g-emoji class="g-emoji" alias="bed" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f6cf.png">🛏️</g-emoji>](#code-coverage-\xEF\xB8\x8F)
+               * [API latency <g-emoji class="g-emoji" alias="snail" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f40c.png">🐌</g-emoji>](#api-latency-)
+                  * [Results](#results)
+            * [API](#api)
+      * [Init production <g-emoji class="g-emoji" alias="wheel_of_dharma" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2638.png">☸️</g-emoji>](#init-production-\xEF\xB8\x8F)
+         * [Requirements](#requirements)
+      * [Documentation](#documentation)
+         * [Endpoints](#endpoints)
+      * [Configuration](#configuration)
+      * [Presentation fac](#presentation-fac)
+
+---
+
 ## Dev
 ### Dependencies
 This is dependencies required for local dev.
@@ -69,15 +91,19 @@ To build container run:
 make docker-build
 ```
 
-#### Node
-run this:
+#### Benchmarks 📈
+##### Code coverage 🛏️
+You can find code coverage at gitlab pages:
+[**`coverage.koleg.tk`**](https://coverage.koleg.tk/)
+
+you can also run this:
 ```bash
 npm run coverage
 ```
 
 And open coverage report in your browser `./coverage/lcov-report/index.html` file.
 
-#### Benchmark
+##### API latency 🐌
 To benchmark api, you can install `autocannon`:
 ```bash
 npm i -g autocannon
@@ -88,7 +114,7 @@ And run:
 autocannon http://api.dev.koleg.tk/users
 ```
 
-##### Results
+###### Results
 On `/users` endpoint:
 ```bash
 autocannon http://api.dev.koleg.tk/users
