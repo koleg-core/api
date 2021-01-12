@@ -24,8 +24,10 @@ import {
     @IsOptional()
     public readonly parentGroupId: string;
 
+    @IsOptional()
     public readonly childGroupsId: string[];
 
+    @IsOptional()
     public readonly imgUrl: string;
   
     constructor(

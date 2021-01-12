@@ -157,8 +157,13 @@ export class OrganisationService {
     throw new Error("Method not implemented.");
   }
 
-  public createGroup() {
-    throw new Error("Method not implemented.");
+  public async createGroup(group: Group): Promise<string> {
+    await this._updateOrganisation();
+    const groupId = this._organisation.addGroup(group);
+    if (groupId) {
+      this.repository.createGroup(group);
+    }
+    return groupId;
   }
 
   public updateGroup() {

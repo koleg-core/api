@@ -11,7 +11,8 @@ import {
   HasManyCreateAssociationMixin,
   Optional,
   BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin
+  BelongsToSetAssociationMixin,
+  HasManySetAssociationsMixin
 } from "sequelize";
 
   interface GroupsModelAttributes{
@@ -33,7 +34,9 @@ export class GroupsModel extends Model<GroupsModelAttributes, GroupsModelCreatio
     public description!: string;
     public imgUrl: string;
     public parentGroup?: GroupsModel | GroupsModel['id'];
+    public childGroups?: GroupsModel[] | GroupsModel['id'][];
     getGroups: HasManyGetAssociationsMixin<GroupsModel>;
+    setGroups: HasManySetAssociationsMixin<GroupsModel,GroupsModel['id']>;
     getParentGroup: BelongsToGetAssociationMixin<GroupsModel>;
     setParentGroup: BelongsToSetAssociationMixin<GroupsModel,GroupsModel['id']>;
 
@@ -44,6 +47,7 @@ export class GroupsModel extends Model<GroupsModelAttributes, GroupsModelCreatio
     async saveGroup(){
       const record = await this.save();
       await record.setParentGroup(this.parentGroup);
+      await record.setGroups(this.childGroups);
     }
     
 }

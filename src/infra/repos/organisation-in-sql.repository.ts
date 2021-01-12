@@ -7,6 +7,7 @@ import { Sequelize } from "sequelize";
 import { StatelessUser } from "../../domain/user/StatelessUser";
 import { UserSerializer } from "infra/database/serializer/user.serializer";
 import { GroupSerializer } from "infra/database/serializer/group.serializer";
+import { Group } from "domain/group/Group";
 
 export class OrganisationInSqlRepository implements OrganisationRepository {
 
@@ -108,8 +109,8 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     this._database.deleteUser(userId);
   }
 
-  createGroup(organisation: Organisation, groupId: string): void {
-    throw new Error("Method not implemented.");
+  async createGroup(group: Group): Promise<void> {
+    (await GroupSerializer.prototype.serialize(group)).saveGroup();
   }
 
   updateGroup(organisation: Organisation, groupId: string): void {

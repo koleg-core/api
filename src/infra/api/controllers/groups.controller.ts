@@ -76,11 +76,11 @@ export class GroupsController {
 
           const realPage = page || 1;
           const realItemsNumber = itemsNumber || this._pageSize;
-          /*if (realPage * realItemsNumber <= groupsResponse.length) {
+          if (realPage * realItemsNumber <= groupsResponse.length) {
             groupsResponse = groupsResponse.slice((realPage - 1) * realItemsNumber, realPage * realItemsNumber);
           } else {
             groupsResponse = groupsResponse.slice((realPage - 1) * realItemsNumber, groupsResponse.length);
-          }*/
+          }
         }
         return new ResponseModel(HttpStatusCode.OK, 'Success', groupsResponse);
       })
@@ -89,37 +89,37 @@ export class GroupsController {
       });
   }
 
-  /*@OpenAPI({
-    description: "Create new job.",
+  @OpenAPI({
+    description: "Create new group.",
     security: [{ bearerAuth: [] }], // Applied to each method
   })
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
-    description: "Response model with job id",
+    description: "Response model with group id",
     statusCode: "200"})
-  @Post("/jobs")
+  @Post("/groups")
   @UseBefore(CheckJwtMiddleware)
-  async post(@Body() job: JobApiModel): Promise<ResponseModel | ApiError> {
-    return this._organisationService.createJob(job.toJob())
-      .then(jobId => {
-        if (!jobId) {
+  async post(@Body() group: GroupApiModel): Promise<ResponseModel | ApiError> {
+    return this._organisationService.createGroup(group.toGroup())
+      .then(groupId => {
+        if (!groupId) {
           throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Job with this name already exist');
         }
-        return new ResponseModel(HttpStatusCode.OK, `Job created with id : ${jobId}.`);
+        return new ResponseModel(HttpStatusCode.OK, `Group created with id : ${groupId}.`);
       })
       .catch(error => {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       });
   }
-
+/*
   @OpenAPI({
     // description: "Delete jon using his id.",
-    description: "Request job using his id.",
+    description: "Request group using his id.",
     security: [{ bearerAuth: [] }],
   })
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
-    description: "Response of job query.",
+    description: "Response of groupquery.",
     statusCode: "200"
   })
   @HttpCode(HttpStatusCode.OK)

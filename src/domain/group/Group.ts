@@ -6,36 +6,36 @@ import { ReadableGroup } from "./readableGroup";
 
 export class Group {
   constructor(
-      private _id: string,
-      private _name: string,
-      private _description: string = null,
-      private _parentGroup: string = null,
-      private _childsGroups: string[] = [],
-      private _imgUrl: URL = null
+      private id: string,
+      private name: string,
+      private description: string = null,
+      private parentGroup: string = null,
+      private childsGroups: string[] = [],
+      private imgUrl: URL = null
   ) {
-    if(!this._id) {
-      this._id = uuid();
+    if(!this.id) {
+      this.id = uuid();
     }
   }
 
   public getId(): string {
-    return this._id;
+    return this.id;
   }
 
   public getName(): string {
-    return this._name;
+    return this.name;
   }
 
   public getDescription(): string {
-    return this._description;
+    return this.description;
   }
 
   public getParentId(): string {
-    return this._parentGroup;
+    return this.parentGroup;
   }
 
   public getChildGroupsId(): string[] {
-    return this._childsGroups;
+    return this.childsGroups;
   }
 
   public setDescription(description: string): ReturnCodes {
@@ -43,19 +43,19 @@ export class Group {
       throw new Error("Invalid argument description: string");
     }
 
-    this._description = description;
+    this.description = description;
     return ReturnCodes.UPDATED;
   }
 
   public getImgUrl(): URL {
-    return this._imgUrl;
+    return this.imgUrl;
   }
 
   public updateImgUrl(imgUrl: URL): ReturnCodes {
     if(!imgUrl) {
       throw new Error("Invalid argument imgUrl: URL");
     }
-    this._imgUrl = imgUrl;
+    this.imgUrl = imgUrl;
     return ReturnCodes.UPDATED;
   }
 
@@ -79,7 +79,7 @@ export class Group {
   }*/
 
   public hasChilds(): boolean {
-    if(this._childsGroups.length === 0) {
+    if(this.childsGroups.length === 0) {
       return false;
     }
     return true;
@@ -133,12 +133,12 @@ export class Group {
 
   public getReadableGroup(): ReadableGroup {
     return new ReadableGroup(
-      this._id,
-      this._name,
-      this._description,
-      this._parentGroup,
-      this._childsGroups,
-      this._imgUrl
+      this.id,
+      this.name,
+      this.description,
+      this.parentGroup,
+      this.childsGroups,
+      this.imgUrl
     );
   }
 }
