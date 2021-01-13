@@ -75,6 +75,40 @@ export class Organisation {
     return newGroup.getId();
   }
 
+  public getGroup(groupId: string): Group {
+    const requestedGroup = this._groups.get(groupId);
+
+    if (!requestedGroup) {
+      throw new Error("Group not found");
+    }
+
+    return requestedGroup;
+  }
+
+  public updateGroup(updatedGroup: Group): ReturnCodes {
+    console.log(this._groups);
+    console.log(updatedGroup);
+    const groupToUpdate = this._groups.get(updatedGroup.getId());
+    
+    //console.log(groupToUpdate.getId());
+    if (groupToUpdate) {
+      const newUpdatedGroup: Group = new Group(
+        groupToUpdate.getId(),
+        updatedGroup.getName(),
+        updatedGroup.getDescription(),
+        updatedGroup.getParentId(),
+        updatedGroup.getChildGroupsId(),
+        updatedGroup.getImgUrl()
+      );
+
+      this._groups.set(groupToUpdate.getId(), newUpdatedGroup);
+      return ReturnCodes.UPDATED;
+    } else {
+      
+      return ReturnCodes.NOT_FOUND;
+    }
+  }
+
   /*public addGroup(
     id: string,
     name: string,

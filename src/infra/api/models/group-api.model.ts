@@ -63,12 +63,15 @@ import {
     }
   
     public toGroup(id: string = null): Group {
+      if (id && !this.id){
+        throw new Error("Invalid argument parameter id.");
+      }
       if (this.id && id && id !== this.id) {
         throw new Error("Invalid argument parameter id can't be different than this.id.");
       }
   
       return new Group(
-        this.id,
+        id,
         this.name,
         this.description,
         this.parentGroupId,

@@ -25,6 +25,6 @@ export interface OrganisationRepository {
 
     // Group
     createGroup(group: Group): void;
-    updateGroup(organisation: Organisation, groupId: string): void;
+    updateGroup(group: Group): void;
     deleteGroup(organisation: Organisation, groupId: string): void;
 }

@@ -26,9 +26,9 @@ export class OrganisationService {
     return this._organisation.getJobs();
   }
 
-  public async getJob(name: string): Promise<Job> {
+  public async getJob(id: string): Promise<Job> {
     await this._updateOrganisation();
-    return this._organisation.getJob(name);
+    return this._organisation.getJob(id);
   }
 
   public async createJob(job: Job): Promise<string> {
@@ -153,8 +153,9 @@ export class OrganisationService {
     return this._organisation.getGroups();
   }
 
-  public getGroup() {
-    throw new Error("Method not implemented.");
+  public async getGroup(id: string): Promise<Group> {
+    await this._updateOrganisation();
+    return this._organisation.getGroup(id);
   }
 
   public async createGroup(group: Group): Promise<string> {
@@ -166,9 +167,13 @@ export class OrganisationService {
     return groupId;
   }
 
-  public updateGroup() {
-    throw new Error("Method not implemented.");
-
+  public async updateGroup(group: Group): Promise<ReturnCodes> {
+    await this._updateOrganisation();
+    const returnCode = this._organisation.updateGroup(group);
+    if (returnCode === ReturnCodes.UPDATED) {
+      this.repository.updateGroup(group);
+    }
+    return returnCode;
   }
 
   public deleteGroup() {

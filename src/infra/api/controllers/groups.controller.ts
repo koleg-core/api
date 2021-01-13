@@ -111,7 +111,7 @@ export class GroupsController {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       });
   }
-/*
+
   @OpenAPI({
     // description: "Delete jon using his id.",
     description: "Request group using his id.",
@@ -123,15 +123,15 @@ export class GroupsController {
     statusCode: "200"
   })
   @HttpCode(HttpStatusCode.OK)
-  @Get('/jobs/:id')
+  @Get('/groups/:id')
   @UseBefore(CheckJwtMiddleware)
-  async get(@Param('id') jobId: string): Promise<ResponseModel | ApiError> {
-    return this._organisationService.getJob(jobId)
-      .then(job => {
-        if (!job) {
-          throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, `There is not job with name: ${job.getName()}`);
+  async get(@Param('id') groupId: string): Promise<ResponseModel | ApiError> {
+    return this._organisationService.getGroup(groupId)
+      .then(group => {
+        if (!group) {
+          throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, `There is not group with id: ${group.getId()}`);
         }
-        return new ResponseModel(HttpStatusCode.OK, 'Success', JobApiModel.toJobModel(job));
+        return new ResponseModel(HttpStatusCode.OK, 'Success', GroupApiModel.toGroupModel(group));
       })
       .catch(error => {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
@@ -140,32 +140,35 @@ export class GroupsController {
 
   @OpenAPI({
     // description: "Delete jon using his id.",
-    description: "Delete job using his name.",
+    description: "Delete group using his name.",
     security: [{ bearerAuth: [] }],
   })
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
-    description: "Response of delete job query.",
+    description: "Response of delete groupquery.",
     statusCode: "200"
   })
   @HttpCode(HttpStatusCode.OK)
-  @Put('/jobs/:id')
+  @Put('/groups/:id')
   @UseBefore(CheckJwtMiddleware)
-  async update(@Param('id') jobId: string, @Body() job: JobApiModel): Promise<ResponseModel | ApiError> {
-    return this._organisationService.updateJob(job.toJob(jobId))
+  async update(@Param('id') groupId: string, @Body() group: GroupApiModel): Promise<ResponseModel | ApiError> {
+    console.log(groupId);
+    const testGroup = group.toGroup(groupId);
+    console.log(testGroup);
+    return this._organisationService.updateGroup(testGroup)
       .then(returnCode => {
         if (returnCode === ReturnCodes.CONFLICTING) {
-          throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Job with this name already exist');
+          throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Group with this name already exist');
         } else if (returnCode === ReturnCodes.NOT_FOUND) {
-          throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Job with this id not found');
+          throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Group with this id not found');
         }
-        return new ResponseModel(returnCode, `Request returns with status : ${returnCode}.`);
+        return new ResponseModel(HttpStatusCode.OK, `Request returns with status : ${returnCode}.`);
       })
       .catch(error => {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       });
   }
-
+/*
   @HttpCode(HttpStatusCode.OK)
   @Delete('/jobs/:id')
   @UseBefore(CheckJwtMiddleware)

@@ -113,8 +113,8 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     (await GroupSerializer.prototype.serialize(group)).saveGroup();
   }
 
-  updateGroup(organisation: Organisation, groupId: string): void {
-    throw new Error("Method not implemented.");
+  async updateGroup(group: Group): Promise<void> {
+    (await GroupSerializer.prototype.serialize(group)).saveGroup();
   }
 
   deleteGroup(organisation: Organisation, groupId: string): void {
