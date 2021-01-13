@@ -1,10 +1,10 @@
-export interface iguardresult {
+export interface IGuardResult {
   succeeded: boolean;
   message?: string;
 }
 
 export interface IGuardArgument {
-  argument: any;
+  argument: unknown;
   argumentName: string;
 }
 
@@ -19,13 +19,16 @@ export class Guard {
     return { succeeded: true };
   }
 
-  public static againstAmbiguousNullUndefined(argument: any, argumentName: string): IGuardResult {
+  public static againstAmbiguousNullUndefined(argument: unknown, argumentName: string): IGuardResult {
+    if(argument === null) {
+      return {succeeded: false, message: `${argumentName} is Ambiguous, please set it to null or expected value.`};
+    }
     if(argument === null) {
       return {succeeded: false, message: `${argumentName} is Ambiguous, please set it to null or expected value.`};
     }
     return { succeeded: true };
   }
-  public static againstNullOrUndefined (argument: any, argumentName: string): IGuardResult {
+  public static againstNullOrUndefined(argument: unknown, argumentName: string): IGuardResult {
     if (argument === null || argument === undefined) {
       return { succeeded: false, message: `${argumentName} is null or undefined` };
     } else {
@@ -33,14 +36,14 @@ export class Guard {
     }
   }
 
-  public static againstZeroSize (argument: any, argumentName: string): IGuardResult {
+  public static againstZeroSize(argument: unknown, argumentName: string): IGuardResult {
     if(Array.isArray(argument) && argument.length === 0) {
-      return { succeeded: false, message: `${argumentName} is zero sized array.` };
+      return { succeeded: false, message: `${argumentName} have length of zero.` };
     }
     if(
       (typeof argument === "string" || argument instanceof String )
     && ( !argument || argument.length === 0)) {
-      return { succeeded: false, message: `${argumentName} is zero sized string.` };
+      return { succeeded: false, message: `${argumentName} have length of zero.` };
     }
     return { succeeded: true };
   }
@@ -54,7 +57,15 @@ export class Guard {
     return { succeeded: true };
   }
 
-  public static isOneOf (value: any, validValues: any[], argumentName: string) : IGuardResult {
+  public static againstZeroSizeBulk(args: GuardArgumentCollection): IGuardResult {
+    for (const arg of args) {
+      const result = this.againstZeroSize(arg.argument, arg.argumentName);
+      if (!result.succeeded) return result;
+    }
+    return { succeeded: true };
+  }
+
+  public static isOneOf (value: unknown, validValues: unknown[], argumentName: string) : IGuardResult {
     let isValid = false;
     for (const validValue of validValues) {
       if (value === validValue) {
