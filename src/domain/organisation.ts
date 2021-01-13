@@ -204,7 +204,7 @@ export class Organisation {
         foundUser = user;
         return;
       }
-    })
+    });
     if (foundUser) {
       return foundUser.getId();
     }
@@ -364,7 +364,7 @@ export class Organisation {
     const jobs: Job[] = Array.from(this._jobs.values());
 
     if (jobs.some(job => newJob.hasSameName(job))) {
-      throw new Error('Job already exists.');
+      throw new Error("Job already exists.");
     }
 
     this._jobs.set(newJob.getId(), newJob);

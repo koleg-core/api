@@ -1,27 +1,55 @@
 import { default as slugify } from "slugify";
 import { v4 as uuid } from "uuid";
 
+import { Guard } from "core/guard";
+import { Result } from "core/result";
+
 export class Job {
 
-  private readonly descriptionMaxLength = 255;
-
+  private readonly descriptionMaxLength: string;
   constructor(
     private id: string,
     private name: string,
     private description: string,
     private iconUrl: URL
-  ) {
-    if (!this.name) {
-      throw new Error("Invalid argument name: string");
+  ) {}
+
+  public static factory(
+    id: string,
+    name: string,
+    description: string,
+    iconUrl: URL
+  ): Result<Job> {
+    const nameGuardResult = Guard.againstNullOrUndefined(name, "name");
+    if (!nameGuardResult.succeeded) {
+      return Result.fail<Job>(nameGuardResult.message);
+    }
+    const nameSizeGuardResult = Guard.againstZeroSize(name, "name");
+    if (!nameSizeGuardResult.succeeded) {
+      return Result.fail<Job>(nameSizeGuardResult.message);
     }
 
-    if (!this.id) {
-      this.id = uuid();
+    const idGuardResult = Guard.againstAmbiguousNullUndefined(id, "id");
+    if(!idGuardResult.succeeded) {
+      return Result.fail<Job>(idGuardResult.message);
+    }
+    const descriptionGuardResult = Guard.againstAmbiguousNullUndefined(description, "description");
+    if(!descriptionGuardResult.succeeded) {
+      return Result.fail<Job>(descriptionGuardResult.message);
+    }
+    const iconUrlGuardResult = Guard.againstAmbiguousNullUndefined(iconUrl, "iconUrl");
+    if(!iconUrlGuardResult.succeeded) {
+      return Result.fail<Job>(iconUrlGuardResult.message);
     }
 
-    if (description && description.length > this.descriptionMaxLength) {
-      throw new Error("Description max length is: " + this.descriptionMaxLength);
+    if (id === null) {
+      id = uuid();
     }
+    const descriptionMaxLength = 255;
+    if (description && description.length > descriptionMaxLength) {
+      return Result.fail<Job>(`description: "${description}" is grater than maximum description size: ${descriptionMaxLength}`);
+    }
+    return Result.ok<Job>(new Job(id, name, description, iconUrl));
   }
 
   public getId(): string {

@@ -1,3 +1,5 @@
+import {Guard} from "core/guard";
+import {Result} from "core/result";
 
 export class Password {
 
@@ -6,15 +8,22 @@ export class Password {
     constructor(
         private value: string,
         private dateLimit: Date = null
-    ) {
+    ) {}
 
-      /*if (this._dateLimit) {
-            if (this.isExpired()) {
-                throw new Error('Invalid arguement dateLimit: cannot be in past');
-            }
-        } else {
-            this._initializeDateLimit();
-        }*/
+    public static factory(value: string, dateLimit: Date): Result<Password> {
+      const valueGuardResult = Guard.againstNullOrUndefined(value, "value");
+      if(!valueGuardResult.succeeded) {
+        return Result.fail<Password>(valueGuardResult.message);
+      }
+      const dateLimitGuardResult = Guard.againstNullOrUndefined(dateLimit, "dateLimit");
+      if(!dateLimitGuardResult.succeeded) {
+        return Result.fail<Password>(dateLimitGuardResult.message);
+      }
+      const valueLengthGuardResult = Guard.againstZeroSize(value, "value");
+      if(!valueLengthGuardResult.succeeded) {
+        return Result.fail<Password>(valueLengthGuardResult.message);
+      }
+      return Result.ok<Password>(new Password(value, dateLimit));
     }
 
     public getValue(): string {

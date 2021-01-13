@@ -5,6 +5,7 @@
         "indent": ["error", 2],
         "semi": ["error", "always"],
         "camelcase": ["error", {"properties": "always"}],
+        "@typescript-eslint/no-namespace": "off",
         "quotes": ["error", "double"]
     },
     "plugins": [

@@ -1,4 +1,6 @@
 import { PhoneType } from "../enums/phone-type.enum";
+import { Guard } from "core/guard";
+import { Result } from "core/result";
 
 export class PhoneNumber {
 
@@ -7,18 +9,18 @@ export class PhoneNumber {
     constructor(
       public readonly type: PhoneType,
       public readonly value: string
-    ) {
-      if (!type) {
-        throw new Error("Invalid argument type: PhoneType");
-      }
+    ) {}
 
-      if (this.value) {
-        if (!this.isPhoneNumberValid(value)) {
-          throw new Error("Invalid argument number: Don't respect constraint");
-        }
-      } else {
-        throw new Error("Invalid argument value: string");
+    public static factory(type: PhoneType, value: string): Result<PhoneNumber> {
+      const typeGuardResult = Guard.againstNullOrUndefined(type, "type");
+      if(!typeGuardResult.succeeded) {
+        return Result.fail<PhoneNumber>(typeGuardResult.message);
       }
+      const valueGuardResult = Guard.againstNullOrUndefined(value, "value");
+      if(!valueGuardResult.succeeded) {
+        return Result.fail<PhoneNumber>(valueGuardResult.message);
+      }
+      return Result.ok<PhoneNumber>(new PhoneNumber(type, value));
     }
 
     public hasSameValue(phoneNumber: PhoneNumber): boolean {

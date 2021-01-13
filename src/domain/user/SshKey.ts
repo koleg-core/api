@@ -13,4 +13,8 @@ export class SshKey {
       throw new Error("Invalid argument publicKey: string");
     }
   }
+
+  // TODO: we stop working here
+  public static factory()
+
 }
