@@ -8,7 +8,9 @@ export class Password {
     constructor(
         private value: string,
         private dateLimit: Date = null
-    ) {}
+    ) {
+      Object.freeze(this);
+    }
 
     public static factory(value: string, dateLimit: Date): Result<Password> {
       const valueGuardResult = Guard.againstNullOrUndefined(value, "value");

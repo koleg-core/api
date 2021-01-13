@@ -4,30 +4,38 @@ import { Result } from "core/result";
 
 export class PhoneNumber {
 
-    private readonly PHONE_NUMBER_REGEX = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/;
-
-    constructor(
+  constructor(
       public readonly type: PhoneType,
       public readonly value: string
-    ) {}
+  ) {}
 
-    public static factory(type: PhoneType, value: string): Result<PhoneNumber> {
-      const typeGuardResult = Guard.againstNullOrUndefined(type, "type");
-      if(!typeGuardResult.succeeded) {
-        return Result.fail<PhoneNumber>(typeGuardResult.message);
+  public static factory(type: PhoneType, value: string): Result<PhoneNumber> {
+    const nonNullGuardResult = Guard.againstNullOrUndefinedBulk([
+      {
+        argument:  type,
+        argumentName: "type",
+      },
+      {
+        argument:  value,
+        argumentName: "value",
       }
-      const valueGuardResult = Guard.againstNullOrUndefined(value, "value");
-      if(!valueGuardResult.succeeded) {
-        return Result.fail<PhoneNumber>(valueGuardResult.message);
-      }
-      return Result.ok<PhoneNumber>(new PhoneNumber(type, value));
+    ]);
+    if(!nonNullGuardResult.succeeded) {
+      return Result.fail<PhoneNumber>(nonNullGuardResult.message);
+    }
+    if(!this._isPhoneNumberValid(value)) {
+      return Result.fail<PhoneNumber>(`value ${value} is not in correct phoneNumber format.`);
     }
 
-    public hasSameValue(phoneNumber: PhoneNumber): boolean {
-      return this.value === phoneNumber.value;
-    }
+    return Result.ok<PhoneNumber>(new PhoneNumber(type, value));
+  }
 
-    private isPhoneNumberValid(value: string): boolean {
-      return this.PHONE_NUMBER_REGEX.test(value);
-    }
+  public hasSameValue(phoneNumber: PhoneNumber): boolean {
+    return this.value === phoneNumber.value;
+  }
+
+  private static _isPhoneNumberValid(value: string): boolean {
+    const PHONE_NUMBER_REGEX = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/;
+    return PHONE_NUMBER_REGEX.test(value);
+  }
 }

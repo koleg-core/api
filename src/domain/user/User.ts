@@ -8,80 +8,100 @@ import { UserIdentity } from "./UserIdentity";
 import { ReturnCodes } from "../enums/return-codes.enum";
 import { ReadableUser } from "./ReadableUser";
 import { StatelessUser } from "./StatelessUser";
+import {Guard} from "core/guard";
+import {Result} from "core/result";
 
 export class User {
 
-  private _id: string;
-  private _creationDate: Date
-  private _updateDate: Date;
-  private _identity: UserIdentity;
-  private _password: Password;
-  private _birthdate: Date;
-  private _passwordHistory: Password[] = [];
-  private _phoneNumbers: PhoneNumber[] = [];
-  private _groupsIds: string[] = [];
-  private _jobId: string = null;
-  private _disableDate: Date = null;
-  private _profilePictureUrl: URL = null;
-  private _sshKey: SshKey = null;
-  private _expirationDate: Date = null;
+
+  constructor(
+    private _id: string,
+    private _creationDate: Date,
+    private _updateDate: Date,
+    private _identity: UserIdentity,
+    private _password: Password,
+    private _birthdate: Date,
+    private _passwordHistory: Password[],
+    private _phoneNumbers: PhoneNumber[],
+    private _groupsIds: string[] = [],
+    private _jobId: string,
+    private _disableDate: Date,
+    private _profilePictureUrl: URL,
+    private _sshKey: SshKey,
+    private _expirationDate: Date,
+  ){}
   // TODO: Add activation date, apply it into _isEditable
 
-  constructor(statelessUser: StatelessUser) {
-    if (!statelessUser) {
-      throw new Error("Invalid argument parameter, statelessUser.");
-    }
-
-    if (!statelessUser.identity) {
-      throw new Error("Invalid argument parameter, statelessUser.identity.");
-    }
-
-    if (!statelessUser.birthdate) {
-      throw new Error("Invalid argument parameter, statelessUser.birthdate");
+  factory(statelessUser: StatelessUser): Result<User> {
+    const nonNullArgumentGuardResult = Guard.againstZeroSizeBulk([
+      {
+        argument: statelessUser,
+        argumentName: "statelessUser",
+      },
+      {
+        argument: statelessUser.identity,
+        argumentName: "statelessUser.identity",
+      },
+      {
+        argument: statelessUser.birthdate,
+        argumentName: "statelessUser.birthdate",
+      },
+      {
+        argument: statelessUser.creationDate,
+        argumentName: "statelessUser",
+      },
+    ]);
+    if(!nonNullArgumentGuardResult.succeeded) {
+      return Result.fail<User>(nonNullArgumentGuardResult.message);
     }
 
     if (statelessUser.birthdate > new Date()) {
-      throw new Error("Negative age, birthdate is into the future");
+      return Result.fail<User>(`Negative age, statelessUser.birthdate: ${statelessUser.birthdate} is into the future.`);
     }
 
-    if (statelessUser.id) {
-      this._id = statelessUser.id;
-    } else {
-      this._id = uuid();
-    }
+    const id = statelessUser.id || uuid();
 
-    this._identity = statelessUser.identity;
-    this._password = statelessUser.password;
-    this._birthdate = statelessUser.birthdate;
-    this._passwordHistory = statelessUser.passwordHistory;
-    if (Array.isArray(statelessUser.phoneNumbers) && statelessUser.phoneNumbers.length > 0) {
-      this._phoneNumbers = statelessUser.phoneNumbers;
-    }
-    if (Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0) {
-      this._groupsIds = statelessUser.groupsIds;
-    }
-    this._jobId = statelessUser.jobId;
-    this._disableDate = statelessUser.disableDate;
-    this._profilePictureUrl = statelessUser.profilePictureUrl;
-    this._sshKey = statelessUser.sshKey;
-    this._expirationDate = statelessUser.expirationDate;
+    const phoneNumbers = Array.isArray(statelessUser.phoneNumbers) && statelessUser.phoneNumbers.length > 0
+      ? statelessUser.phoneNumbers
+      : [];
 
+    const groupsIds = Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0
+      ? statelessUser.groupsIds
+      : [];
+
+    let passwordHistory: Password[];
     if (!statelessUser.passwordHistory) {
-      this._passwordHistory = [];
+      passwordHistory = [];
     } else {
       if (statelessUser.passwordHistory.length === 0) {
-        this._passwordHistory.push(this._password);
-      } else if (statelessUser.passwordHistory
+        passwordHistory.push(statelessUser.password);
+      } else if (!statelessUser.passwordHistory
         .some(password => {
           password.hasSameValue(statelessUser.password);
         }
         )) {
-        throw new Error("Your given password was not into history");
+        return Result.fail<User>("Incoherent password history: `statelessUser.password` was not into `statelessUser.passwordHistory`.");
       }
     }
 
-    this._creationDate = new Date();
-    this._updateDate = this._creationDate;
+    const creationDate = new Date();
+    const updateDate = creationDate;
+    return Result.ok<User>(
+      new User(id,
+        creationDate,
+        updateDate,
+        statelessUser.identity,
+        statelessUser.password,
+        statelessUser.birthdate,
+        passwordHistory,
+        phoneNumbers || [],
+        groupsIds || [],
+        statelessUser.jobId || null,
+        statelessUser.disableDate ||  null,
+        statelessUser.profilePictureUrl || null,
+        statelessUser.sshKey || null,
+        statelessUser.expirationDate || null,
+      ));
   }
 
   // Id =======
@@ -210,13 +230,14 @@ export class User {
   }
 
   // Groups =======
-  public addGroup(newGroupId: string): ReturnCodes {
-    if (!newGroupId) {
-      throw new Error("Invalid argument newGroup: Group");
+  public addGroup(newGroupId: string): Result<string> {
+    const newGroupIdGuardResult = Guard.againstNullOrUndefined(newGroupId, "newGroupId");
+    if (!newGroupIdGuardResult.succeeded) {
+      return Result.fail(newGroupIdGuardResult.message);
     }
 
     if (!this._isEditable()) {
-      return ReturnCodes.NOT_EDITABLE;
+      return Result.fail<ReturnCodes>(`User ${this.id}is not editable.`);
     }
 
     if (this._groupsIds.includes(newGroupId)) {
