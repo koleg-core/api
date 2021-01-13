@@ -111,7 +111,7 @@ export class GroupsController {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       });
   }
-/*
+
   @OpenAPI({
     // description: "Delete jon using his id.",
     description: "Request group using his id.",
