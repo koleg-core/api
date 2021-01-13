@@ -39,11 +39,11 @@ export class Result<T> {
     return new Result<U>(true, null, value);
   }
 
-  public static fail<U> (error: any): Result<U> {
+  public static fail<U> (error: U | string, code?: number): Result<U> {
     return new Result<U>(false, error);
   }
 
-  public static combine (results: Result<any>[]) : Result<any> {
+  public static combine (results: Result<unknown>[]) : Result<unknown> {
     for (const result of results) {
       if (result.isFailure) return result;
     }
