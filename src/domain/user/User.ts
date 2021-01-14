@@ -1,6 +1,5 @@
 import { v4 as uuid } from "uuid";
 
-import { Job } from "./Job";
 import { Password } from "./Password";
 import { PhoneNumber } from "./PhoneNumber";
 import { SshKey } from "./SshKey";
@@ -124,38 +123,41 @@ export class User {
     return this._identity;
   }
 
-  public updateIdentity(identity: UserIdentity): ReturnCodes {
-    if (!identity) {
-      throw new Error("Invalid argument identity: UserIdentity");
+  public updateIdentity(identity: UserIdentity): Result<string> {
+    const identityGuardResult = Guard.againstNullOrUndefined(identity, "identity");
+    if(!identityGuardResult.succeeded) {
+      return Result.fail(identityGuardResult.message);
     }
 
     if (!this._isEditable()) {
-      return ReturnCodes.NOT_EDITABLE;
+      return this._getNotEditableResult();
     }
 
     this._identity = identity;
     this._update();
-    return ReturnCodes.UPDATED;
+    return Result.ok(this._id);
   }
 
   // Password =======
-  public updatePassword(password: Password): ReturnCodes {
-    if (!password) {
-      throw new Error("Invalid argument password: Password");
+  public updatePassword(password: Password): Result<string> {
+    const passwordGuardResult = Guard.againstNullOrUndefined(password, "password");
+    if (!passwordGuardResult.succeeded) {
+      return Result.fail(passwordGuardResult.message);
     }
 
     if (!this._isEditable()) {
-      return ReturnCodes.NOT_EDITABLE;
+      return this._getNotEditableResult();
     }
 
     if (this._wasPasswordAlreadyUsed(password)) {
-      return ReturnCodes.WAS_ALREADY_USED;
+      // TODO: ~28 Replace comment by UseCaseError.
+      return Result.fail("Password was already used.");
     }
 
     this._password = password;
     this._passwordHistory.push(this._password);
     this._update();
-    return ReturnCodes.UPDATED;
+    return Result.ok("User Was updated");
   }
 
   public getPassword(): Password {
@@ -168,22 +170,26 @@ export class User {
   }
 
 
-  public updateBirthDate(birthdayDate: Date): ReturnCodes {
-    if (!birthdayDate) {
-      throw new Error("Invalid argument birthdayDate: Date.");
+  public updateBirthDate(birthdayDate: Date): Result<string> {
+    const birthdayDateGuardResult = Guard.againstNullOrUndefined(birthdayDate, "birthdayDate");
+    if (!birthdayDateGuardResult) {
+      // TODO: ~28 Replace comment by UseCaseError.
+      return Result.fail(birthdayDateGuardResult.message);
     }
 
     if (birthdayDate > new Date()) {
-      throw new Error("Invalid argument you birthdayDate is in future.");
+      // TODO: ~28 Replace comment by UseCaseError.
+      return Result.fail("Invalid argument you birthdayDate is in future.");
     }
 
     if (!this._isEditable()) {
-      return ReturnCodes.NOT_EDITABLE;
+      // TODO: ~28 Replace comment by UseCaseError.
+      return this._getNotEditableResult();
     }
 
     this._birthdate = birthdayDate;
     this._update();
-    return ReturnCodes.UPDATED;
+    return Result.ok("BirthDate was updated");
   }
 
   // PhoneNumber =======
@@ -191,26 +197,24 @@ export class User {
     return this._phoneNumbers;
   }
 
-  public addPhoneNumber(phoneNumber: PhoneNumber): ReturnCodes {
-    if (!phoneNumber) {
-      throw new Error("Invalid argument phoneNumber: is null.");
+  public addPhoneNumber(phoneNumber: PhoneNumber): Result<string> {
+    const phoneNumberGuardResult = Guard.againstNullOrUndefined(phoneNumber, "phoneNumber");
+    if (!phoneNumberGuardResult.succeeded) {
+      throw new Error(phoneNumberGuardResult.message);
     }
 
     if (!this._isEditable()) {
-      return ReturnCodes.NOT_EDITABLE;
+      return this._getNotEditableResult();
     }
 
-    let returnCode: ReturnCodes = ReturnCodes.CREATED;
-
-    const phoneNumberIndex = this._findPhoneNumberIndexInList(phoneNumber);
-
-    if (phoneNumberIndex >= 0) {
-      returnCode = ReturnCodes.DUPLICATED;
+    if (this._findPhoneNumberIndexInList(phoneNumber) >= 0) {
+      // TODO: ~28 Replace comment by UseCaseError.
+      return Result.fail("Phone number already exist into user.");
     }
 
     this._phoneNumbers.push(phoneNumber);
     this._update();
-    return returnCode;
+    return Result.ok("Phone number was updated");
   }
 
   public removePhoneNumber(phoneNumber: PhoneNumber): ReturnCodes {
@@ -237,42 +241,48 @@ export class User {
     }
 
     if (!this._isEditable()) {
-      return Result.fail<ReturnCodes>(`User ${this.id}is not editable.`);
+      return this._getNotEditableResult();
     }
 
     if (this._groupsIds.includes(newGroupId)) {
-      return ReturnCodes.NOTHING_CHANGED;
+      return Result.ok("Group is always into user.");
     }
 
     this._groupsIds.push(newGroupId);
-    return ReturnCodes.UPDATED;
+    return Result.ok("User group updated.");
   }
 
   public getGroupIds(): string[] {
     return this._groupsIds;
   }
 
-  public removeGroup(groupId: string): ReturnCodes {
-    if (!groupId) {
-      throw new Error("Invalid argument newGroup: Group");
+  public removeGroup(groupId: string): Result<string> {
+    const groupIdGuardResult = Guard.againstNullOrUndefined(groupId, "groupId");
+    if (!groupIdGuardResult.succeeded) {
+      return Result.fail(groupIdGuardResult.message);
     }
 
     if (!this._isEditable()) {
-      return ReturnCodes.NOT_EDITABLE;
+      return this._getNotEditableResult();
     }
 
     const groupIndex: number = this._groupsIds.indexOf(groupId);
     if (groupIndex) {
       delete this._groupsIds[groupIndex];
-      return ReturnCodes.REMOVED;
+      return Result.ok("Group was removed.");
     }
 
-    return ReturnCodes.NOT_FOUND;
+    return Result.fail("Not found.");
   }
 
-  public updateGroups(groupsIds: string[]): ReturnCodes {
+  public updateGroups(groupsIds: string[]): Result<string> {
+    const groupsIdsGuardResult = Guard.againstNullOrUndefined(groupsIds, "groupsIds");
+    if(!groupsIdsGuardResult) {
+      return Result.fail(groupsIdsGuardResult.message);
+    }
+
     this._groupsIds = groupsIds;
-    return ReturnCodes.UPDATED;
+    return Result.ok("Groups was updated.");
   }
 
   // Jobs =======
@@ -280,15 +290,23 @@ export class User {
     return this._jobId;
   }
 
-  public updateJobId(jobId: string): ReturnCodes {
+  public updateJobId(jobId: string): Result<string> {
+    const jobIdGuardResult = Guard.againstNullOrUndefined(jobId, "jobId");
+    if(!jobIdGuardResult.succeeded) {
+      return Result.fail(jobIdGuardResult.message);
+    }
+    const jobIdLengthGuardResult = Guard.againstZeroSize(jobId, "jobId");
+    if(!jobIdLengthGuardResult.succeeded) {
+      return Result.fail(jobIdLengthGuardResult.message);
+    }
 
     if (!this._isEditable()) {
-      return ReturnCodes.NOT_EDITABLE;
+      return this._getNotEditableResult();
     }
 
     this._jobId = jobId;
     this._update();
-    return ReturnCodes.UPDATED;
+    return Result.ok("User job is was updated.");
   }
 
   // Disable =======
@@ -299,28 +317,29 @@ export class User {
     return this._disableDate <= new Date();
   }
 
-  public disable(): number {
-    let returnCode: ReturnCodes = ReturnCodes.NOTHING_CHANGED;
+  public disable(): Result<string> {
+    const returnCode: ReturnCodes = ReturnCodes.NOTHING_CHANGED;
     // TODO: Edit expiration notion,
     // It's might be redondant with disabling notion
     // Can expiration be disableDate in the future ?
     if (!this._disableDate) {
-      returnCode = ReturnCodes.UPDATED;
       this._disableDate = new Date();
       this._update();
+      return Result.ok(`User: ${this._id} was disabled at: ${this._disableDate}`);
     }
-    return returnCode;
+    return Result.ok(`User: ${this._id} was already disabled at: ${this._disableDate}`);
   }
 
-  public enable(): ReturnCodes {
+  public enable(): Result<string> {
     let returnCode: ReturnCodes = ReturnCodes.NOTHING_CHANGED;
 
     if (this._disableDate) {
       returnCode = ReturnCodes.UPDATED;
       this._disableDate = null;
       this._update();
+      return Result.ok(`User: ${this._id} was re-enabled at: ${this._updateDate}`);
     }
-    return returnCode;
+    return Result.ok(`User: ${this._id} was already enable.`);
   }
 
   // ProfilePictureUrl =======
@@ -328,40 +347,44 @@ export class User {
     return this._profilePictureUrl;
   }
 
-  public updateProfilePictureUrl(profilePictureUrl: URL): ReturnCodes {
-    if (!profilePictureUrl) {
-      throw new Error("Invalid argument profilePictureUrl: URL");
+  public updateProfilePictureUrl(profilePictureUrl: URL): Result<string> {
+    const profilePictureUrlGuardResult = Guard.againstNullOrUndefined(
+      profilePictureUrl,
+      "profilePictureUrlGuardResult"
+    );
+    if(profilePictureUrlGuardResult) {
+      return Result.fail(profilePictureUrlGuardResult.message);
     }
 
     if (!this._isEditable()) {
-      return ReturnCodes.NOT_EDITABLE;
+      return this._getNotEditableResult();
     }
 
     this._profilePictureUrl = profilePictureUrl;
     this._update();
-    return ReturnCodes.UPDATED;
+    return Result.ok("Profile picture was updated.");
   }
 
   // SshKey =======
-  public updateSshKey(sshKey: SshKey): ReturnCodes {
-    if (!sshKey) {
-      throw new Error("Invalid argument sshKay: SshKey");
+  public updateSshKey(sshKey: SshKey): Result<string> {
+    const sshKeyGuardResult = Guard.againstNullOrUndefined(sshKey, "sshKey");
+    if (!sshKeyGuardResult.message) {
+      return Result.ok(sshKeyGuardResult.message);
     }
 
     if (!this._isEditable()) {
-      return ReturnCodes.NOT_EDITABLE;
+      return this._getNotEditableResult();
     }
 
-    let returnCode: ReturnCodes = ReturnCodes.UPDATED;
-    if (!this._sshKey) {
-      returnCode = ReturnCodes.CREATED;
-    }
+    // TODO: maybe use ternary to define message
+    // if (!this._sshKey) {
+    // return Result.ok("Ssh key was added.");
+    // }
 
     this._sshKey = sshKey;
     this._update();
-    return returnCode;
+    return Result.ok("Ssh key was updated.");
   }
-
 
 
   // Expiration =======
@@ -434,7 +457,12 @@ export class User {
   }
 
   private _isEditable(): boolean {
+    // TODO: ~28 Replace comment by UseCaseError.
     return !this.isExpired() && !this.isDisabled();
+  }
+
+  private _getNotEditableResult(): Result<string> {
+    return Result.fail(`User: ${this._id} is not editable.`);
   }
 
   private _update(): void {
