@@ -86,11 +86,8 @@ export class Organisation {
   }
 
   public updateGroup(updatedGroup: Group): ReturnCodes {
-    console.log(this._groups);
-    console.log(updatedGroup);
     const groupToUpdate = this._groups.get(updatedGroup.getId());
-    
-    //console.log(groupToUpdate.getId());
+
     if (groupToUpdate) {
       const newUpdatedGroup: Group = new Group(
         groupToUpdate.getId(),
@@ -100,7 +97,18 @@ export class Organisation {
         updatedGroup.getChildGroupsId(),
         updatedGroup.getImgUrl()
       );
-
+      if(Array.isArray(newUpdatedGroup.getChildGroupsId()) && newUpdatedGroup.getChildGroupsId().length > 0){
+        for(const groupId of newUpdatedGroup.getChildGroupsId()){
+          if(this._groups.get(groupId)){
+            this._groups.get(groupId).setParentId(newUpdatedGroup.getId());
+          }
+        }
+      }
+      if(newUpdatedGroup.getParentId()){
+        if(this._groups.get(newUpdatedGroup.getParentId()).getChildGroupsId().indexOf(newUpdatedGroup.getId()) == -1){
+          this._groups.get(newUpdatedGroup.getParentId()).addChild(newUpdatedGroup.getId());
+        }
+      }
       this._groups.set(groupToUpdate.getId(), newUpdatedGroup);
       return ReturnCodes.UPDATED;
     } else {

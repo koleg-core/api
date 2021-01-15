@@ -18,6 +18,14 @@ export class Group {
     }
   }
 
+  public setParentId(parentId: string){
+    this.parentGroup = parentId;
+  }
+
+  public addChild(child: string){
+    this.childsGroups.push(child);
+  }
+
   public getId(): string {
     return this.id;
   }
