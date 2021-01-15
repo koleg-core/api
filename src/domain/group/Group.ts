@@ -133,10 +133,6 @@ export class Group {
 
     parentGroup._childsGroups.push(newChild);
     return ReturnCodes.UPDATED;
-  }
-
-  public addChild(childGroup: Group): void {
-    Group._addChild(this, childGroup);
   }*/
 
   public getReadableGroup(): ReadableGroup {
