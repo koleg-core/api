@@ -152,9 +152,7 @@ export class GroupsController {
   @Put('/groups/:id')
   @UseBefore(CheckJwtMiddleware)
   async update(@Param('id') groupId: string, @Body() group: GroupApiModel): Promise<ResponseModel | ApiError> {
-    console.log(groupId);
     const testGroup = group.toGroup(groupId);
-    console.log(testGroup);
     return this._organisationService.updateGroup(testGroup)
       .then(returnCode => {
         if (returnCode === ReturnCodes.CONFLICTING) {
@@ -163,6 +161,19 @@ export class GroupsController {
           throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Group with this id not found');
         }
         return new ResponseModel(HttpStatusCode.OK, `Request returns with status : ${returnCode}.`);
+      })
+      .catch(error => {
+        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+      });
+  }
+
+  @HttpCode(HttpStatusCode.OK)
+  @Get('/groups/:id/users/number')
+  @UseBefore(CheckJwtMiddleware)
+  async getUsersNumberByJob(@Param('id') groupId: string): Promise<ResponseModel | ApiError> {
+    return this._organisationService.getUsersNumberByGroup(groupId)
+      .then(usersNumber => {
+        return new ResponseModel(HttpStatusCode.OK, `Success`, usersNumber);
       })
       .catch(error => {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);

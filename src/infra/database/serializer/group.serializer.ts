@@ -32,19 +32,16 @@ export class GroupSerializer implements SerializerRoot<Group, GroupsModel> {
   }
 
   public async deserialize(groupModel: GroupsModel): Promise<Group> {
-    console.log(groupModel.uuid);
     const parentGroupModel = await groupModel.getParentGroup();
     const childGroupModel = await groupModel.getGroups();
     let childGroupsId: string[] = [];
     if (Array.isArray(childGroupModel) && childGroupModel.length > 0) {
       for (let childGroup of childGroupModel) {
         if (childGroup) {
-          console.log(childGroup);
           childGroupsId.push(childGroup.uuid);
         }
       }
     }
-    //const parentGroup = new Group(parentGroupModel.uuid,parentGroupModel.name,parentGroupModel.description,null,[],new URL(parentGroupModel.imgUrl));
     return new Group(
       groupModel.uuid,
       groupModel.name,

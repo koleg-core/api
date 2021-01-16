@@ -176,6 +176,11 @@ export class OrganisationService {
     return returnCode;
   }
 
+  public async getUsersNumberByGroup(id: string): Promise<string> {
+    await this._updateOrganisation();
+    return this._organisation.getUsersNumberByGroup(id)
+  }
+
   public deleteGroup() {
     throw new Error("Method not implemented.");
   }

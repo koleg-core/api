@@ -65,7 +65,7 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     const remoteGroups = await this._database.getGroups();
     if (Array.isArray(remoteGroups) && remoteGroups.length > 0) {
       for await (const remoteGroup of remoteGroups) {
-        organisation.addGroup(await GroupSerializer.prototype.deserialize(remoteGroup));
+        organisation.addGroupWithoutCheck(await GroupSerializer.prototype.deserialize(remoteGroup));
       }
     }
 

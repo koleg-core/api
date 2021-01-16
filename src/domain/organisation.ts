@@ -64,11 +64,42 @@ export class Organisation {
     return group.getReadableGroup();
   }
 
+  public addGroupWithoutCheck(newGroup: Group): string{
+    this._groups.set(newGroup.getId(), newGroup);
+    return newGroup.getId();
+  }
+
   public addGroup(newGroup: Group): string{
     const groups: Group[] = Array.from(this._groups.values());
 
-    if (groups.some(group => newGroup.getId() === group.getId())) {
+    if (groups.some(group => newGroup.getId() === group.getId() || newGroup.getName() === group.getName())) {
       throw new Error('Group already exists.');
+    }
+
+    if(newGroup.getParentId() && newGroup.getParentId() != null){
+      if(!this._groups.has(newGroup.getParentId())){
+        throw new Error('Parent doesnt exists.');
+      }
+    }
+
+    if(Array.isArray(newGroup.getChildGroupsId()) && newGroup.getChildGroupsId().length > 0){
+      for(const groupId of newGroup.getChildGroupsId()){
+        if(this._groups.get(groupId)){
+          this._groups.get(groupId).setParentId(newGroup.getId());
+        }
+        else{
+          throw new Error('Childs doesnt exists.');
+        }
+        if(groupId === newGroup.getParentId()){
+          throw new Error('Cannot have same group as parent and child');
+        }
+      }
+    }
+
+    if(newGroup.getParentId()){
+      if(this._groups.get(newGroup.getParentId()).getChildGroupsId().indexOf(newGroup.getId()) == -1){
+        this._groups.get(newGroup.getParentId()).addChild(newGroup.getId());
+      }
     }
 
     this._groups.set(newGroup.getId(), newGroup);
@@ -97,17 +128,60 @@ export class Organisation {
         updatedGroup.getChildGroupsId(),
         updatedGroup.getImgUrl()
       );
+
+      const groups: Group[] = Array.from(this._groups.values());
+
+      if(newUpdatedGroup.getParentId() && newUpdatedGroup.getParentId() != null){
+        if(!this._groups.has(newUpdatedGroup.getParentId())){
+          throw new Error('Parent doesnt exists.');
+        }
+        if(newUpdatedGroup.getParentId() === newUpdatedGroup.getId()){
+          throw new Error('Group cant be his self parent');
+        }
+      }
+      
       if(Array.isArray(newUpdatedGroup.getChildGroupsId()) && newUpdatedGroup.getChildGroupsId().length > 0){
         for(const groupId of newUpdatedGroup.getChildGroupsId()){
+          if(groupId === newUpdatedGroup.getId()){
+            throw new Error('This group cant have himself as child');
+          }
           if(this._groups.get(groupId)){
             this._groups.get(groupId).setParentId(newUpdatedGroup.getId());
           }
+          else{
+            throw new Error('Childs doesnt exists.');
+          }
+          if(groupId === newUpdatedGroup.getParentId()){
+            throw new Error('Cannot have same group as parent and child');
+          }
         }
       }
+      
+      else{
+        groups.forEach(group => {
+          if(group.getParentId() === newUpdatedGroup.getId()){
+            group.setParentId(null);
+          }
+        });
+      }
+      
+
       if(newUpdatedGroup.getParentId()){
         if(this._groups.get(newUpdatedGroup.getParentId()).getChildGroupsId().indexOf(newUpdatedGroup.getId()) == -1){
           this._groups.get(newUpdatedGroup.getParentId()).addChild(newUpdatedGroup.getId());
         }
+      }
+      else{
+        groups.forEach(group => {
+          if(Array.isArray(group.getChildGroupsId()) && group.getChildGroupsId().length > 0){
+            const childGroups = group.getChildGroupsId();
+            const index = childGroups.indexOf(groupToUpdate.getId());
+            if(index > -1){
+              childGroups.splice(index,1);
+            }
+          }
+          
+        });
       }
       this._groups.set(groupToUpdate.getId(), newUpdatedGroup);
       return ReturnCodes.UPDATED;
@@ -463,6 +537,14 @@ export class Organisation {
 
     return users
       .filter(user => jobId === user.getJobId())
+      .length
+      .toString();
+  }
+
+  public getUsersNumberByGroup(groupId: string): string {
+    const users: User[] = Array.from(this._users.values());
+    return users
+      .filter(user => user.getGroupIds().indexOf(groupId)>-1)
       .length
       .toString();
   }
