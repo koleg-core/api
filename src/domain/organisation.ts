@@ -97,8 +97,9 @@ export class Organisation {
     }
 
     if(newGroup.getParentId()){
-      if(this._groups.get(newGroup.getParentId()).getChildGroupsId().indexOf(newGroup.getId()) == -1){
-        this._groups.get(newGroup.getParentId()).addChild(newGroup.getId());
+      const group = this._groups.get(newGroup.getParentId());
+      if(group.getChildGroupsId().indexOf(newGroup.getId()) === -1 ){
+        group.addChild(newGroup.getId());
       }
     }
 
@@ -162,12 +163,12 @@ export class Organisation {
             group.setParentId(null);
           }
         });
-      }
-      
+      } 
 
       if(newUpdatedGroup.getParentId()){
-        if(this._groups.get(newUpdatedGroup.getParentId()).getChildGroupsId().indexOf(newUpdatedGroup.getId()) == -1){
-          this._groups.get(newUpdatedGroup.getParentId()).addChild(newUpdatedGroup.getId());
+        const group = this._groups.get(newUpdatedGroup.getParentId());
+        if(group.getChildGroupsId().indexOf(newUpdatedGroup.getId()) === -1 ){
+          group.addChild(newUpdatedGroup.getId());
         }
       }
       else{

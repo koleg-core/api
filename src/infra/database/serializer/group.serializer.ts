@@ -48,6 +48,7 @@ export class GroupSerializer implements SerializerRoot<Group, GroupsModel> {
       groupModel.description,
       parentGroupModel ? parentGroupModel.uuid : null,
       childGroupsId,
-      new URL(groupModel.imgUrl));
+      groupModel.imgUrl ? new URL(groupModel.imgUrl) : null
+      );
   }
 }

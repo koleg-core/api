@@ -58,7 +58,6 @@ export class JobsController {
     @QueryParam("page") page?: number,
     @QueryParam("itemsNumber") itemsNumber?: number
   ): Promise<ResponseModel | ApiError> {
-    console.log(this._pageSize);
     return this._organisationService.getJobs()
       .then(jobs => {
 

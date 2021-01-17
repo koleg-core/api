@@ -19,7 +19,6 @@ import {
 } from "routing-controllers-openapi";
 
 import { ReturnCodes } from "domain/enums/return-codes.enum";
-import { Job } from "domain/user/Job";
 import { AssetsService } from "app/assets.service";
 
 import { Inject, Service } from "typedi";
@@ -42,7 +41,9 @@ export class GroupsController {
   private readonly _organisationService: OrganisationService;
   private readonly _fuseOptions: Fuse.IFuseOptions<Group> = {
     includeScore: false,
-    keys: ['name'] // This break private things, but don't care
+    keys: ['name',
+    "id",
+    "description"] // This break private things, but don't care
   }
 
   @Inject("assets.service")
@@ -107,7 +108,7 @@ export class GroupsController {
     return this._organisationService.createGroup(group.toGroup())
       .then(groupId => {
         if (!groupId) {
-          throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Job with this name already exist');
+          throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Group with this name already exist');
         }
         return new ResponseModel(HttpStatusCode.OK, `Group created with id : ${groupId}.`);
       })
@@ -156,8 +157,8 @@ export class GroupsController {
   @Put('/groups/:id')
   @UseBefore(CheckJwtMiddleware)
   async update(@Param('id') groupId: string, @Body() group: GroupApiModel): Promise<ResponseModel | ApiError> {
-    const testGroup = group.toGroup(groupId);
-    return this._organisationService.updateGroup(testGroup)
+    const groupToUpdate = group.toGroup(groupId);
+    return this._organisationService.updateGroup(groupToUpdate)
       .then(returnCode => {
         if (returnCode === ReturnCodes.CONFLICTING) {
           throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Group with this name already exist');
@@ -174,7 +175,7 @@ export class GroupsController {
   @HttpCode(HttpStatusCode.OK)
   @Get('/groups/:id/users/number')
   @UseBefore(CheckJwtMiddleware)
-  async getUsersNumberByJob(@Param('id') groupId: string): Promise<ResponseModel | ApiError> {
+  async getUsersNumberByGroup(@Param('id') groupId: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUsersNumberByGroup(groupId)
       .then(usersNumber => {
         return new ResponseModel(HttpStatusCode.OK, `Success`, usersNumber);
@@ -191,7 +192,7 @@ export class GroupsController {
     return this._organisationService.deleteGroup(groupsId)
       .then(returnCode => {
         if (returnCode === ReturnCodes.NOT_FOUND) {
-          throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, 'Job not found');
+          throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, 'Group not found');
         }
         return new ResponseModel(returnCode, `Request returns with status : ${returnCode}.`);
       })
