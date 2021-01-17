@@ -179,12 +179,12 @@ export class GroupsController {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       });
   }
-/*
+
   @HttpCode(HttpStatusCode.OK)
-  @Delete('/jobs/:id')
+  @Delete('/groups/:id')
   @UseBefore(CheckJwtMiddleware)
-  async delete(@Param('id') jobId: string): Promise<ResponseModel | ApiError> {
-    return this._organisationService.deleteJob(jobId)
+  async delete(@Param('id') groupsId: string): Promise<ResponseModel | ApiError> {
+    return this._organisationService.deleteGroup(groupsId)
       .then(returnCode => {
         if (returnCode === ReturnCodes.NOT_FOUND) {
           throw new ApiError(HttpStatusCode.NOT_FOUND, ReturnCodes.NOT_FOUND, 'Job not found');
@@ -195,7 +195,7 @@ export class GroupsController {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       });
   }
-
+/*
   @HttpCode(HttpStatusCode.OK)
   @Get('/jobs/:id/users/number')
   @UseBefore(CheckJwtMiddleware)

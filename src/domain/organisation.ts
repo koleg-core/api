@@ -191,45 +191,30 @@ export class Organisation {
     }
   }
 
-  /*public addGroup(
-    id: string,
-    name: string,
-    description: string,
-    parentGroupId: string = null,
-    childsGroupsId?: string[],
-    imgUrl?: URL
-  ): string {
+  public deleteGroup(groupId: string): ReturnCodes {
+    const isGroupDeleted = this._groups.delete(groupId);
 
-    if (id === undefined) {
-      throw new Error("Child group should be defined or null.");
-    }
-    const parentGroup: Group = this._groups.get(parentGroupId);
-    const childsGroups: Group[] = [];
+    if (!isGroupDeleted) {
+      return ReturnCodes.NOT_FOUND;
+    } else {
+      const groups: Group[] = Array.from(this._groups.values());
 
-    if (childsGroupsId) {
-      childsGroupsId.forEach(childsGroupId => {
-        if (!this._groups.has(childsGroupId)) {
-          throw new Error(`Child group ${childsGroupId} does not exist.`);
+      groups.forEach(group => {
+        if(Array.isArray(group.getChildGroupsId()) && group.getChildGroupsId().length > 0){
+          const childGroups = group.getChildGroupsId();
+          const index = childGroups.indexOf(groupId);
+          if(index > -1){
+            childGroups.splice(index,1);
+          }
         }
-        const childGroup: Group = this._groups.get(childsGroupId);
-        childsGroups.push(childGroup);
+        if(group.getParentId() === groupId){
+          group.setParentId(null);
+        }
       });
-    }
-    const newGroup: Group = new Group(
-      id,
-      name,
-      description,
-      parentGroup,
-      childsGroups,
-      imgUrl || null
-    );
-    if (!newGroup) {
-      throw new Error("Group was not created");
-    }
 
-    this._groups.set(newGroup.getId(), newGroup);
-    return newGroup.getId();
-  }*/
+      return ReturnCodes.REMOVED;
+    }
+  }
 
   // ####################
   // ###### USERS #######

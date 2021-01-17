@@ -91,6 +91,10 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
     this._database.deleteJob(name);
   }
 
+  deleteGroup(groupId: string): void {
+    this._database.deleteGroup(groupId);
+  }
+
   async createUser(user: StatelessUser): Promise<void> {
     const userModel = await UserSerializer.prototype.serialize(user);
     userModel.saveUser();
@@ -115,10 +119,6 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
 
   async updateGroup(group: Group): Promise<void> {
     (await GroupSerializer.prototype.serialize(group)).saveGroup();
-  }
-
-  deleteGroup(organisation: Organisation, groupId: string): void {
-    throw new Error("Method not implemented.");
   }
 
 }

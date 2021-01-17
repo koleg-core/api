@@ -181,8 +181,13 @@ export class OrganisationService {
     return this._organisation.getUsersNumberByGroup(id)
   }
 
-  public deleteGroup() {
-    throw new Error("Method not implemented.");
+  public async deleteGroup(groupId: string): Promise<ReturnCodes> {
+    await this._updateOrganisation();
+    const returnCode = this._organisation.deleteGroup(groupId);
+    if (returnCode === ReturnCodes.REMOVED) {
+      this.repository.deleteGroup(groupId);
+    }
+    return returnCode;
   }
 
   private async _updateOrganisation() {

@@ -53,7 +53,7 @@ class OrganisationInMemoryRepository implements OrganisationRepository {
   updateGroup(group: Group): void {
     console.log("group updated");
   }
-  deleteGroup(organisation: Organisation, groupId: string): void {
+  deleteGroup(groupId: string): void {
     console.log("group deleted");
   }
 }

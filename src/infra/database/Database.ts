@@ -317,6 +317,14 @@ export class Database {
     });
   }
 
+  deleteGroup(groupId: string){
+    GroupsModel.destroy({
+      where: {
+        uuid: groupId
+      }
+    });
+  }
+
   createJob(job: JobModel) {
     job.save();
   }
