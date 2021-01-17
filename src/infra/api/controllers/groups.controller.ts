@@ -140,7 +140,7 @@ export class GroupsController {
 
   @OpenAPI({
     // description: "Delete jon using his id.",
-    description: "Delete group using his name.",
+    description: "update group using his id.",
     security: [{ bearerAuth: [] }],
   })
   @ResponseSchema(ResponseModel, {

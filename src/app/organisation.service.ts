@@ -181,11 +181,11 @@ export class OrganisationService {
     return this._organisation.getUsersNumberByGroup(id)
   }
 
-  public async deleteGroup(groupId: string): Promise<ReturnCodes> {
+  public async deleteGroup(name: string): Promise<ReturnCodes> {
     await this._updateOrganisation();
-    const returnCode = this._organisation.deleteGroup(groupId);
+    const returnCode = this._organisation.deleteGroup(name);
     if (returnCode === ReturnCodes.REMOVED) {
-      this.repository.deleteGroup(groupId);
+      this.repository.deleteGroup(name);
     }
     return returnCode;
   }
