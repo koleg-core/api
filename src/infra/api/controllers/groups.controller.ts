@@ -2,6 +2,7 @@ import Fuse from "fuse.js";
 
 import {
   QueryParam,
+  UploadedFile,
   Body,
   Delete,
   Get,
@@ -19,12 +20,12 @@ import {
 
 import { ReturnCodes } from "domain/enums/return-codes.enum";
 import { Job } from "domain/user/Job";
+import { AssetsService } from "app/assets.service";
 
 import { Inject, Service } from "typedi";
 import { ApiError } from "../errors/api-error";
 import { ResponseModel } from "../models/response.model";
 import HttpStatusCode from "../models/http-status-code.enum";
-import { JobApiModel } from "../models/job-api.model";
 import { OrganisationService } from "../../../app/organisation.service";
 import { CheckJwtMiddleware } from "../auth/check-jwt-middleware";
 import { Group } from "domain/group/Group";
@@ -43,6 +44,9 @@ export class GroupsController {
     includeScore: false,
     keys: ['name'] // This break private things, but don't care
   }
+
+  @Inject("assets.service")
+  private _assetService: AssetsService;
 
   @OpenAPI({
     description: "Query all groups using filter or not.",
@@ -195,17 +199,30 @@ export class GroupsController {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
       });
   }
-/*
-  @HttpCode(HttpStatusCode.OK)
-  @Get('/jobs/:id/users/number')
-  @UseBefore(CheckJwtMiddleware)
-  async getUsersNumberByJob(@Param('id') jobId: string): Promise<ResponseModel | ApiError> {
-    return this._organisationService.getUsersNumberByJob(jobId)
-      .then(usersNumber => {
-        return new ResponseModel(HttpStatusCode.OK, `Success`, usersNumber);
-      })
-      .catch(error => {
-        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+
+  @OpenAPI({
+    description: "Upload new profile picture on s3.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response ",
+    statusCode: "200"
+  })
+  @HttpCode(HttpStatusCode.ACCEPTED)
+  @Post("/groups/:id/upload_image")
+  async uploadImage(@Param("id") id: string, @UploadedFile("profilePicture") profilePicture: Express.Multer.File): Promise<ResponseModel | ApiError> {
+    if (profilePicture.size > 4000000) {
+      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, "File is too large. Limit is 4MB");
+    }
+
+    const newProfilePictureUrl: URL = this._assetService.uploadProfilePicture(id, profilePicture);
+    this._organisationService.updateGroupProfilePictureUrl(id, newProfilePictureUrl)
+      .then(returnCode => {
+        if (returnCode < 0) {
+          throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, "Profile picture was not updated");
+        }
       });
-  }*/
+    return new ResponseModel(HttpStatusCode.ACCEPTED, "Group profile picture will be updated", newProfilePictureUrl.href);
+  }
 }

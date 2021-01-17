@@ -171,7 +171,8 @@ export class OrganisationService {
     await this._updateOrganisation();
     const returnCode = this._organisation.updateGroup(group);
     if (returnCode === ReturnCodes.UPDATED) {
-      this.repository.updateGroup(group);
+      const groupToSave: Group = this._organisation.getGroupById(group.getId());
+      this.repository.updateGroup(groupToSave);
     }
     return returnCode;
   }
@@ -186,6 +187,17 @@ export class OrganisationService {
     const returnCode = this._organisation.deleteGroup(name);
     if (returnCode === ReturnCodes.REMOVED) {
       this.repository.deleteGroup(name);
+    }
+    return returnCode;
+  }
+
+  public async updateGroupProfilePictureUrl(groupId: string, profilePictureUrl: URL) {
+    await this._updateOrganisation();
+
+    const returnCode = this._organisation.updateGroupProfilePictureUrl(groupId, profilePictureUrl);
+    if (returnCode === ReturnCodes.UPDATED) {
+      const groupToSave: Group = this._organisation.getGroupById(groupId);
+      this.repository.updateGroup(groupToSave);
     }
     return returnCode;
   }

@@ -125,12 +125,11 @@ export class Organisation {
         updatedGroup.getName(),
         updatedGroup.getDescription(),
         updatedGroup.getParentId(),
-        updatedGroup.getChildGroupsId(),
+        updatedGroup.getChildGroupsId() ? updatedGroup.getChildGroupsId() : groupToUpdate.getChildGroupsId(),
         updatedGroup.getImgUrl()
       );
-
       const groups: Group[] = Array.from(this._groups.values());
-
+      
       if(newUpdatedGroup.getParentId() && newUpdatedGroup.getParentId() != null){
         if(!this._groups.has(newUpdatedGroup.getParentId())){
           throw new Error('Parent doesnt exists.');
@@ -214,6 +213,21 @@ export class Organisation {
 
       return ReturnCodes.REMOVED;
     }
+  }
+
+  public getGroupById(groupId: string): Group {
+    if (!groupId) {
+      throw new Error("Invalid argument userId: string");
+    }
+    if (!this._groups.has(groupId)) {
+      throw new Error("There is no user with this id");
+    }
+    return this._groups.get(groupId);
+  }
+
+  public updateGroupProfilePictureUrl(id: string, profilePictureUrl: URL): ReturnCodes {
+    const group = this._groups.get(id);
+    return group.updateImgUrl(profilePictureUrl);
   }
 
   // ####################
