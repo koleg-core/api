@@ -5,11 +5,11 @@ export class SshKey {
         readonly privateKey: string,
         readonly publicKey: string
   ) {
-    if (!privateKey) {
+    if (!privateKey && publicKey) {
       throw new Error("Invalid argument privateKey: string");
     }
 
-    if (!publicKey) {
+    if (!publicKey && privateKey) {
       throw new Error("Invalid argument publicKey: string");
     }
   }

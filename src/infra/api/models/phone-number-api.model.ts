@@ -2,18 +2,22 @@ import {
   IsDefined,
   IsPhoneNumber,
   IsEnum,
+  IsString,
 } from "class-validator";
 
 import { PhoneNumber } from "domain/user/PhoneNumber";
 import { PhoneType } from "domain/enums/phone-type.enum";
 
 export class PhoneNumberApiModel {
+
   @IsDefined()
   @IsEnum(PhoneType)
   public readonly type: string;
+
   @IsDefined()
-  @IsPhoneNumber(null)
+  @IsString() // TODO: user @IsPhoneNumber() instead
   public readonly value: string;
+
   constructor(
     type: string,
     value: string
@@ -34,8 +38,8 @@ export class PhoneNumberApiModel {
 
   public toPhoneNumber(): PhoneNumber {
     return new PhoneNumber(
-            this.type as PhoneType,
-            this.value
+      this.type as PhoneType,
+      this.value
     );
   }
 }

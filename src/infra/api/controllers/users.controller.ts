@@ -76,7 +76,8 @@ export class UsersController {
     contentType: "application/json",
     description: "A list of users",
     isArray: true,
-    statusCode: "200"})
+    statusCode: "200"
+  })
   @Get("/users")
   @HttpCode(HttpStatusCode.OK)
   async getAll(
@@ -94,7 +95,7 @@ export class UsersController {
             const fuzeUsers = fuse.search(filter);
             fuzeUsers.forEach(user => usersResponse.push(ReadableUserApiModel.toReadableUserApiModel(user.item)));
           } else {
-            users.forEach(user=> usersResponse.push(ReadableUserApiModel.toReadableUserApiModel(user)));
+            users.forEach(user => usersResponse.push(ReadableUserApiModel.toReadableUserApiModel(user)));
           }
 
           const realPage = page || 1;
@@ -120,7 +121,8 @@ export class UsersController {
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response model with user id",
-    statusCode: "200"})
+    statusCode: "200"
+  })
   @Post("/users")
   @HttpCode(HttpStatusCode.CREATED)
   async post(@Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
@@ -146,7 +148,8 @@ export class UsersController {
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Requested user",
-    statusCode: "200"})
+    statusCode: "200"
+  })
   @Get("/users/:id")
   async get(@Param("id") id: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUserById(id)
@@ -168,7 +171,8 @@ export class UsersController {
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response ",
-    statusCode: "200"})
+    statusCode: "200"
+  })
   @Put("/users/:id")
   @HttpCode(HttpStatusCode.OK)
   async put(@Param("id") id: string, @Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
@@ -193,7 +197,8 @@ export class UsersController {
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response ",
-    statusCode: "200"})
+    statusCode: "200"
+  })
   @Delete("/users/:id")
   async remove(@Param("id") id: string): Promise<ResponseModel | ApiError> {
 
@@ -214,10 +219,12 @@ export class UsersController {
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response ",
-    statusCode: "200"})
+    statusCode: "200"
+  })
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Put("/users/:id/update-password")
   async updatePassword(@Param("id") userId: string, @BodyParam("password") password: string): Promise<ResponseModel | ApiError> {
+    console.log(password);
 
     if (!password) {
       throw new ApiError(HttpStatusCode.BAD_REQUEST, HttpStatusCode.BAD_REQUEST, "The password must not be null or empty");
@@ -253,13 +260,17 @@ export class UsersController {
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response ",
-    statusCode: "200"})
+    statusCode: "200"
+  })
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Post("/users/:id/upload_image")
   async uploadImage(@Param("id") id: string, @UploadedFile("profilePicture") profilePicture: Express.Multer.File): Promise<ResponseModel | ApiError> {
+    if (profilePicture.size > 4000000) {
+      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, "File is too large. Limit is 4MB");
+    }
+
     const newProfilePictureUrl: URL = this._assetService.uploadProfilePicture(id, profilePicture);
-    const statelessUser = new StatelessUser(id, null, null, null, null, null, null, null, null, null, null, newProfilePictureUrl);
-    this._organisationService.updateUser(statelessUser)
+    this._organisationService.updateUserProfilePictureUrl(id, newProfilePictureUrl)
       .then(returnCode => {
         if (returnCode < 0) {
           throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, "Profile picture was not updated");
@@ -275,7 +286,8 @@ export class UsersController {
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response ",
-    statusCode: "200"})
+    statusCode: "200"
+  })
   @HttpCode(HttpStatusCode.OK)
   @Get("/users/:id/vcard")
   async getVcardTemporaryUrl(@Param("id") id: string): Promise<ResponseModel | ApiError> {

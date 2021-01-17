@@ -338,6 +338,14 @@ export class Database {
     return UserModel.findOne({ where: { uuid } });
   }
 
+  deleteUser(userId: string) {
+    UserModel.destroy({
+      where: {
+        uuid: userId
+      }
+    })
+  }
+
   /*createUserPhone(uuid:string,phone:string,type:string){
         this.getUser(uuid)
         .then(response=>{
