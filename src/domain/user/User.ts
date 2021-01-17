@@ -80,7 +80,7 @@ export class User {
       }
     }
 
-    this._creationDate = new Date();
+    this._creationDate = statelessUser.creationDate ? statelessUser.creationDate : new Date();
     this._updateDate = this._creationDate;
   }
 
@@ -348,7 +348,7 @@ export class User {
 
     // TODO: we set !this._expirationDate cuz we don't want to return null
     //   !null => true
-    return !(!this._expirationDate || this._expirationDate < new Date());
+    return this._expirationDate && this._expirationDate < new Date();
   }
 
   public getExpirationDate(): Date {

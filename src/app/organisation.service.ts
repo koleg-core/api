@@ -104,6 +104,18 @@ export class OrganisationService {
     }
   }
 
+  public async updateUserProfilePictureUrl(userId: string, profilePictureUrl: URL) {
+    await this._updateOrganisation();
+
+    const returnCode = this._organisation.updateUserProfilePictureUrl(userId, profilePictureUrl);
+    if (returnCode === ReturnCodes.UPDATED) {
+      const userToSave: StatelessUser = this._organisation.getStatelessUserById(userId);
+      this.repository.createUser(userToSave);
+    }
+    return returnCode;
+
+  }
+
   public async findUserByIdentifier(identifier: string): Promise<string> {
     await this._updateOrganisation();
     return this._organisation.findUserByIdentifier(identifier);

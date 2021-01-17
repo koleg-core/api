@@ -292,16 +292,6 @@ export class Organisation {
       }
     }
 
-    if (statelessUser.profilePictureUrl
-      && statelessUser.profilePictureUrl !== user.getProfilePictureUrl()
-    ) {
-      returnCode = user.updateProfilePictureUrl(statelessUser.profilePictureUrl);
-      if (returnCode < 0) {
-        return returnCode;
-      }
-      returnCode = ReturnCodes.UPDATED;
-    }
-
     if (statelessUser.sshKey) {
       returnCode = user.updateSshKey(statelessUser.sshKey);
       if (returnCode < 0) {
@@ -334,6 +324,8 @@ export class Organisation {
   }
 
   public updateUserPassword(userId: string, newPassword: string): ReturnCodes {
+    console.log(userId)
+    console.log(newPassword)
     const user: User = this._users.get(userId);
     if (!user) {
       return ReturnCodes.NOT_FOUND;

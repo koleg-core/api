@@ -104,7 +104,7 @@ export class OrganisationInSqlRepository implements OrganisationRepository {
   }
 
   deleteUser(userId: string): void {
-    throw new Error("Method not implemented.");
+    this._database.deleteUser(userId);
   }
 
   createGroup(organisation: Organisation, groupId: string): void {
