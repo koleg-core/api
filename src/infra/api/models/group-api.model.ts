@@ -25,7 +25,7 @@ import {
     public readonly parentGroupId: string;
 
     @IsOptional()
-    public readonly childGroupsId: string[];
+    public readonly childrenGroupsId: string[];
 
     @IsOptional()
     public readonly imgUrl: string;
@@ -35,7 +35,7 @@ import {
       name: string,
       description: string,
       parentGroupId: string,
-      childGroupsId: string[],
+      childrenGroupsId: string[],
       imgUrl: string
     ) {
       // IMPORTANT:
@@ -47,7 +47,7 @@ import {
       this.name = name;
       this.description = description;
       this.parentGroupId = parentGroupId;
-      this.childGroupsId = childGroupsId;
+      this.childrenGroupsId = childrenGroupsId;
       this.imgUrl = imgUrl;
     }
   
@@ -57,7 +57,7 @@ import {
         group.getName(),
         group.getDescription(),
         group.getParentId(),
-        group.getChildGroupsId(),
+        group.getChildrenGroupsId(),
         group.getImgUrl() ? group.getImgUrl().toString() : null
       );
     }
@@ -75,7 +75,7 @@ import {
         this.name,
         this.description,
         this.parentGroupId,
-        this.childGroupsId,
+        this.childrenGroupsId,
         this.imgUrl ? new URL(this.imgUrl) : null
       );
     }

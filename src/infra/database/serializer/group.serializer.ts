@@ -15,30 +15,30 @@ export class GroupSerializer implements SerializerRoot<Group, GroupsModel> {
     if(parentGroup){
       groupModel.parentGroup = parentGroup;
     }
-    const childGroupsIds = group.getChildGroupsId();
-    let childGroupsModel: GroupsModel[] = [];
-    if(Array.isArray(childGroupsIds) && childGroupsIds.length > 0){
-      for await (let childGroupId of childGroupsIds){
-        const childGroup = await GroupsModel.findOne({ where: { uuid: childGroupId } });
-        if(childGroup){
-          childGroupsModel.push(childGroup);
+    const childrenGroupsIds = group.getChildrenGroupsId();
+    let childrenGroupsModel: GroupsModel[] = [];
+    if(Array.isArray(childrenGroupsIds) && childrenGroupsIds.length > 0){
+      for await (let childrenGroupId of childrenGroupsIds){
+        const childrenGroup = await GroupsModel.findOne({ where: { uuid: childrenGroupId } });
+        if(childrenGroup){
+          childrenGroupsModel.push(childrenGroup);
         }
       }
     }
-    if(Array.isArray(childGroupsModel) && childGroupsModel.length > 0){
-      groupModel.childGroups = childGroupsModel;
+    if(Array.isArray(childrenGroupsModel) && childrenGroupsModel.length > 0){
+      groupModel.childrenGroups = childrenGroupsModel;
     }
     return groupModel;
   }
 
   public async deserialize(groupModel: GroupsModel): Promise<Group> {
     const parentGroupModel = await groupModel.getParentGroup();
-    const childGroupModel = await groupModel.getGroups();
-    let childGroupsId: string[] = [];
-    if (Array.isArray(childGroupModel) && childGroupModel.length > 0) {
-      for (let childGroup of childGroupModel) {
-        if (childGroup) {
-          childGroupsId.push(childGroup.uuid);
+    const childrenGroupsModel = await groupModel.getGroups();
+    let childrenGroupsId: string[] = [];
+    if (Array.isArray(childrenGroupsModel) && childrenGroupsModel.length > 0) {
+      for (let childrenGroup of childrenGroupsModel) {
+        if (childrenGroup) {
+          childrenGroupsId.push(childrenGroup.uuid);
         }
       }
     }
@@ -47,7 +47,7 @@ export class GroupSerializer implements SerializerRoot<Group, GroupsModel> {
       groupModel.name,
       groupModel.description,
       parentGroupModel ? parentGroupModel.uuid : null,
-      childGroupsId,
+      childrenGroupsId,
       groupModel.imgUrl ? new URL(groupModel.imgUrl) : null
       );
   }

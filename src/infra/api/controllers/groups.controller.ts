@@ -110,7 +110,7 @@ export class GroupsController {
         if (!groupId) {
           throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Group with this name already exist');
         }
-        return new ResponseModel(HttpStatusCode.OK, `Group created with id : ${groupId}.`);
+        return new ResponseModel(HttpStatusCode.OK, `Group created with id : ${groupId}.`,groupId);
       })
       .catch(error => {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);

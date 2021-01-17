@@ -82,8 +82,8 @@ export class Organisation {
       }
     }
 
-    if(Array.isArray(newGroup.getChildGroupsId()) && newGroup.getChildGroupsId().length > 0){
-      for(const groupId of newGroup.getChildGroupsId()){
+    if(Array.isArray(newGroup.getChildrenGroupsId()) && newGroup.getChildrenGroupsId().length > 0){
+      for(const groupId of newGroup.getChildrenGroupsId()){
         if(this._groups.get(groupId)){
           this._groups.get(groupId).setParentId(newGroup.getId());
         }
@@ -98,7 +98,7 @@ export class Organisation {
 
     if(newGroup.getParentId()){
       const group = this._groups.get(newGroup.getParentId());
-      if(group.getChildGroupsId().indexOf(newGroup.getId()) === -1 ){
+      if(group.getChildrenGroupsId().indexOf(newGroup.getId()) === -1 ){
         group.addChild(newGroup.getId());
       }
     }
@@ -126,7 +126,7 @@ export class Organisation {
         updatedGroup.getName(),
         updatedGroup.getDescription(),
         updatedGroup.getParentId(),
-        updatedGroup.getChildGroupsId() ? updatedGroup.getChildGroupsId() : groupToUpdate.getChildGroupsId(),
+        updatedGroup.getChildrenGroupsId() ? updatedGroup.getChildrenGroupsId() : groupToUpdate.getChildrenGroupsId(),
         updatedGroup.getImgUrl()
       );
       const groups: Group[] = Array.from(this._groups.values());
@@ -140,8 +140,8 @@ export class Organisation {
         }
       }
       
-      if(Array.isArray(newUpdatedGroup.getChildGroupsId()) && newUpdatedGroup.getChildGroupsId().length > 0){
-        for(const groupId of newUpdatedGroup.getChildGroupsId()){
+      if(Array.isArray(newUpdatedGroup.getChildrenGroupsId()) && newUpdatedGroup.getChildrenGroupsId().length > 0){
+        for(const groupId of newUpdatedGroup.getChildrenGroupsId()){
           if(groupId === newUpdatedGroup.getId()){
             throw new Error('This group cant have himself as child');
           }
@@ -167,14 +167,14 @@ export class Organisation {
 
       if(newUpdatedGroup.getParentId()){
         const group = this._groups.get(newUpdatedGroup.getParentId());
-        if(group.getChildGroupsId().indexOf(newUpdatedGroup.getId()) === -1 ){
+        if(group.getChildrenGroupsId().indexOf(newUpdatedGroup.getId()) === -1 ){
           group.addChild(newUpdatedGroup.getId());
         }
       }
       else{
         groups.forEach(group => {
-          if(Array.isArray(group.getChildGroupsId()) && group.getChildGroupsId().length > 0){
-            const childGroups = group.getChildGroupsId();
+          if(Array.isArray(group.getChildrenGroupsId()) && group.getChildrenGroupsId().length > 0){
+            const childGroups = group.getChildrenGroupsId();
             const index = childGroups.indexOf(groupToUpdate.getId());
             if(index > -1){
               childGroups.splice(index,1);
@@ -200,8 +200,8 @@ export class Organisation {
       const groups: Group[] = Array.from(this._groups.values());
 
       groups.forEach(group => {
-        if(Array.isArray(group.getChildGroupsId()) && group.getChildGroupsId().length > 0){
-          const childGroups = group.getChildGroupsId();
+        if(Array.isArray(group.getChildrenGroupsId()) && group.getChildrenGroupsId().length > 0){
+          const childGroups = group.getChildrenGroupsId();
           const index = childGroups.indexOf(groupId);
           if(index > -1){
             childGroups.splice(index,1);

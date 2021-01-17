@@ -103,7 +103,7 @@ export class JobsController {
         if (!jobId) {
           throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Job with this name already exist');
         }
-        return new ResponseModel(HttpStatusCode.OK, `Job created with id : ${jobId}.`);
+        return new ResponseModel(HttpStatusCode.OK, `Job created with id : ${jobId}.`,jobId);
       })
       .catch(error => {
         throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);

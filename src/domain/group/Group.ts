@@ -10,7 +10,7 @@ export class Group {
       private name: string,
       private description: string = null,
       private parentGroup: string = null,
-      private childsGroups: string[] = [],
+      private childrenGroups: string[] = [],
       private imgUrl: URL = null
   ) {
     if(!this.id) {
@@ -23,7 +23,7 @@ export class Group {
   }
 
   public addChild(child: string){
-    this.childsGroups.push(child);
+    this.childrenGroups.push(child);
   }
 
   public getId(): string {
@@ -42,8 +42,8 @@ export class Group {
     return this.parentGroup;
   }
 
-  public getChildGroupsId(): string[] {
-    return this.childsGroups;
+  public getChildrenGroupsId(): string[] {
+    return this.childrenGroups;
   }
 
   public setDescription(description: string): ReturnCodes {
@@ -68,7 +68,7 @@ export class Group {
   }
 
   public hasChilds(): boolean {
-    if(this.childsGroups.length === 0) {
+    if(this.childrenGroups.length === 0) {
       return false;
     }
     return true;
@@ -80,7 +80,7 @@ export class Group {
       this.name,
       this.description,
       this.parentGroup,
-      this.childsGroups,
+      this.childrenGroups,
       this.imgUrl
     );
   }
