@@ -51,7 +51,8 @@ const apiService: Api = new Api(
   s3Service,
   apiConfig.session_duration,
   apiConfig.page_size,
-  apiConfig.jwt_secret
+  apiConfig.jwt_secret,
+  apiConfig.cors_origin,
 );
 
 const application: App = new App(apiService, apiConfig.port);
