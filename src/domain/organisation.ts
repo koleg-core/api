@@ -48,6 +48,10 @@ export class Organisation {
   // ###### GROUPS ######
   // ####################
 
+  public getGroups(): Group[] {
+    return Array.from(this._groups.values());
+  }
+
   public containsGroupById(groupId: string): boolean {
     if (this._groups.has(groupId)) {
       return true;
@@ -60,44 +64,171 @@ export class Organisation {
     return group.getReadableGroup();
   }
 
-  public addGroup(
-    id: string,
-    name: string,
-    description: string,
-    parentGroupId: string = null,
-    childsGroupsId?: string[],
-    imgUrl?: URL
-  ): string {
+  public addGroupWithoutCheck(newGroup: Group): string{
+    this._groups.set(newGroup.getId(), newGroup);
+    return newGroup.getId();
+  }
 
-    if (id === undefined) {
-      throw new Error("Child group should be defined or null.");
+  public addGroup(newGroup: Group): string{
+    const groups: Group[] = Array.from(this._groups.values());
+
+    if (groups.some(group => newGroup.getId() === group.getId() || newGroup.getName() === group.getName())) {
+      throw new Error('Group already exists.');
     }
-    const parentGroup: Group = this._groups.get(parentGroupId);
-    const childsGroups: Group[] = [];
 
-    if (childsGroupsId) {
-      childsGroupsId.forEach(childsGroupId => {
-        if (!this._groups.has(childsGroupId)) {
-          throw new Error(`Child group ${childsGroupId} does not exist.`);
+    if(newGroup.getParentId() && newGroup.getParentId() != null){
+      if(!this._groups.has(newGroup.getParentId())){
+        throw new Error('Parent doesnt exists.');
+      }
+    }
+
+    if(Array.isArray(newGroup.getChildrenGroupsId()) && newGroup.getChildrenGroupsId().length > 0){
+      for(const groupId of newGroup.getChildrenGroupsId()){
+        if(this._groups.get(groupId)){
+          this._groups.get(groupId).setParentId(newGroup.getId());
         }
-        const childGroup: Group = this._groups.get(childsGroupId);
-        childsGroups.push(childGroup);
-      });
+        else{
+          throw new Error('Childs doesnt exists.');
+        }
+        if(groupId === newGroup.getParentId()){
+          throw new Error('Cannot have same group as parent and child');
+        }
+      }
     }
-    const newGroup: Group = new Group(
-      id,
-      name,
-      description,
-      parentGroup,
-      childsGroups,
-      imgUrl || null
-    );
-    if (!newGroup) {
-      throw new Error("Group was not created");
+
+    if(newGroup.getParentId()){
+      const group = this._groups.get(newGroup.getParentId());
+      if(group.getChildrenGroupsId().indexOf(newGroup.getId()) === -1 ){
+        group.addChild(newGroup.getId());
+      }
     }
 
     this._groups.set(newGroup.getId(), newGroup);
     return newGroup.getId();
+  }
+
+  public getGroup(groupId: string): Group {
+    const requestedGroup = this._groups.get(groupId);
+
+    if (!requestedGroup) {
+      throw new Error("Group not found");
+    }
+
+    return requestedGroup;
+  }
+
+  public updateGroup(updatedGroup: Group): ReturnCodes {
+    const groupToUpdate = this._groups.get(updatedGroup.getId());
+
+    if (groupToUpdate) {
+      const newUpdatedGroup: Group = new Group(
+        groupToUpdate.getId(),
+        updatedGroup.getName(),
+        updatedGroup.getDescription(),
+        updatedGroup.getParentId(),
+        updatedGroup.getChildrenGroupsId() ? updatedGroup.getChildrenGroupsId() : groupToUpdate.getChildrenGroupsId(),
+        updatedGroup.getImgUrl()
+      );
+      const groups: Group[] = Array.from(this._groups.values());
+      
+      if(newUpdatedGroup.getParentId() && newUpdatedGroup.getParentId() != null){
+        if(!this._groups.has(newUpdatedGroup.getParentId())){
+          throw new Error('Parent doesnt exists.');
+        }
+        if(newUpdatedGroup.getParentId() === newUpdatedGroup.getId()){
+          throw new Error('Group cant be his self parent');
+        }
+      }
+      
+      if(Array.isArray(newUpdatedGroup.getChildrenGroupsId()) && newUpdatedGroup.getChildrenGroupsId().length > 0){
+        for(const groupId of newUpdatedGroup.getChildrenGroupsId()){
+          if(groupId === newUpdatedGroup.getId()){
+            throw new Error('This group cant have himself as child');
+          }
+          if(this._groups.get(groupId)){
+            this._groups.get(groupId).setParentId(newUpdatedGroup.getId());
+          }
+          else{
+            throw new Error('Childs doesnt exists.');
+          }
+          if(groupId === newUpdatedGroup.getParentId()){
+            throw new Error('Cannot have same group as parent and child');
+          }
+        }
+      }
+      
+      else{
+        groups.forEach(group => {
+          if(group.getParentId() === newUpdatedGroup.getId()){
+            group.setParentId(null);
+          }
+        });
+      } 
+
+      if(newUpdatedGroup.getParentId()){
+        const group = this._groups.get(newUpdatedGroup.getParentId());
+        if(group.getChildrenGroupsId().indexOf(newUpdatedGroup.getId()) === -1 ){
+          group.addChild(newUpdatedGroup.getId());
+        }
+      }
+      else{
+        groups.forEach(group => {
+          if(Array.isArray(group.getChildrenGroupsId()) && group.getChildrenGroupsId().length > 0){
+            const childGroups = group.getChildrenGroupsId();
+            const index = childGroups.indexOf(groupToUpdate.getId());
+            if(index > -1){
+              childGroups.splice(index,1);
+            }
+          }
+          
+        });
+      }
+      this._groups.set(groupToUpdate.getId(), newUpdatedGroup);
+      return ReturnCodes.UPDATED;
+    } else {
+      
+      return ReturnCodes.NOT_FOUND;
+    }
+  }
+
+  public deleteGroup(groupId: string): ReturnCodes {
+    const isGroupDeleted = this._groups.delete(groupId);
+
+    if (!isGroupDeleted) {
+      return ReturnCodes.NOT_FOUND;
+    } else {
+      const groups: Group[] = Array.from(this._groups.values());
+
+      groups.forEach(group => {
+        if(Array.isArray(group.getChildrenGroupsId()) && group.getChildrenGroupsId().length > 0){
+          const childGroups = group.getChildrenGroupsId();
+          const index = childGroups.indexOf(groupId);
+          if(index > -1){
+            childGroups.splice(index,1);
+          }
+        }
+        if(group.getParentId() === groupId){
+          group.setParentId(null);
+        }
+      });
+
+      return ReturnCodes.REMOVED;
+    }
+  }
+
+  public getGroupById(groupId: string): Group {
+    if (!groupId) {
+      throw new Error("Invalid argument userId: string");
+    }
+    if (!this._groups.has(groupId)) {
+      throw new Error("There is no user with this id");
+    }
+    return this._groups.get(groupId);
+  }
+
+  public updateGroupProfilePictureUrl(id: string, profilePictureUrl: URL): ReturnCodes {
+    const group = this._groups.get(id);
+    return group.updateImgUrl(profilePictureUrl);
   }
 
   // ####################
@@ -406,6 +537,14 @@ export class Organisation {
 
     return users
       .filter(user => jobId === user.getJobId())
+      .length
+      .toString();
+  }
+
+  public getUsersNumberByGroup(groupId: string): string {
+    const users: User[] = Array.from(this._users.values());
+    return users
+      .filter(user => user.getGroupIds().indexOf(groupId)>-1)
       .length
       .toString();
   }

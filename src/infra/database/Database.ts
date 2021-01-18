@@ -317,6 +317,14 @@ export class Database {
     });
   }
 
+  deleteGroup(groupId: string){
+    GroupsModel.destroy({
+      where: {
+        uuid: groupId
+      }
+    });
+  }
+
   createJob(job: JobModel) {
     job.save();
   }
@@ -332,6 +340,10 @@ export class Database {
 
   getUsers(): Promise<UserModel[]> {
     return UserModel.findAll();
+  }
+
+  getGroups(): Promise<GroupsModel[]> {
+    return GroupsModel.findAll();
   }
 
   getUser(uuid: string): Promise<UserModel> {
