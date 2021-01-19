@@ -21,6 +21,8 @@ import {
     name: string;
     description: string;
     imgUrl: string;
+    creationDate: Date;
+    updateDate: Date;
     groups?: GroupsModel[] | GroupsModel["id"][];
     parentGroup?: GroupsModel | GroupsModel["id"];
   }
@@ -33,6 +35,8 @@ export class GroupsModel extends Model<GroupsModelAttributes, GroupsModelCreatio
     public name!:string;
     public description!: string;
     public imgUrl: string;
+    public creationDate!: Date;
+    public updateDate!: Date;
     public parentGroup?: GroupsModel | GroupsModel['id'];
     public childrenGroups?: GroupsModel[] | GroupsModel['id'][];
     getGroups: HasManyGetAssociationsMixin<GroupsModel>;

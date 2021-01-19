@@ -11,23 +11,41 @@ export class Group {
       private description: string = null,
       private parentGroup: string = null,
       private childrenGroups: string[] = [],
-      private imgUrl: URL = null
+      private imgUrl: URL = null,
+      private creationDate: Date = null,
+      private updateDate: Date = null
   ) {
     if(!this.id) {
       this.id = uuid();
     }
+    this.creationDate = creationDate ? creationDate : new Date();
+  }
+
+  private update(){
+    //TO DO : better implementation with database
+    this.updateDate = new Date();
   }
 
   public setParentId(parentId: string){
     this.parentGroup = parentId;
+    this.update();
   }
 
   public addChild(child: string){
     this.childrenGroups.push(child);
+    this.update();
   }
 
   public getId(): string {
     return this.id;
+  }
+
+  public getCreationDate(): Date {
+    return this.creationDate;
+  }
+
+  public getUpdateDate(): Date {
+    return this.updateDate;
   }
 
   public getName(): string {
@@ -64,6 +82,7 @@ export class Group {
       throw new Error("Invalid argument imgUrl: URL");
     }
     this.imgUrl = imgUrl;
+    this.update();
     return ReturnCodes.UPDATED;
   }
 
@@ -72,6 +91,16 @@ export class Group {
       return false;
     }
     return true;
+  }
+
+  public deleteChildren(childrenId: string) {
+    if(Array.isArray(this.childrenGroups) && this.childrenGroups.length > 0){
+      const index = this.childrenGroups.indexOf(childrenId);
+      if(index > -1){
+        this.childrenGroups.splice(index,-1);
+        this.update();
+      }
+    }
   }
 
   public getReadableGroup(): ReadableGroup {

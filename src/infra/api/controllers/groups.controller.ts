@@ -67,7 +67,6 @@ export class GroupsController {
   ): Promise<ResponseModel | ApiError> {
     return this._organisationService.getGroups()
       .then(groups => {
-        console.log(groups);
         let groupsResponse: GroupApiModel[] = [];
         if (Array.isArray(groups) && groups.length > 0) {
 

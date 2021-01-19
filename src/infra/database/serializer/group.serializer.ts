@@ -5,7 +5,14 @@ import { GroupsModel } from "../models/GroupsModel";
 export class GroupSerializer implements SerializerRoot<Group, GroupsModel> {
 
   public async serialize(group: Group): Promise<GroupsModel> {
-    const groupModel = new GroupsModel({uuid : group.getId(), name: group.getName(), description: group.getDescription(), imgUrl: group.getImgUrl() ? group.getImgUrl().toString() : null});
+    const groupModel = new GroupsModel({
+      uuid : group.getId(),
+      name: group.getName(),
+      description: group.getDescription(),
+      creationDate: group.getCreationDate(),
+      updateDate: group.getUpdateDate(),
+      imgUrl: group.getImgUrl() ? group.getImgUrl().toString() : null});
+
     const groupExist = await GroupsModel.findOne({ where: { uuid: group.getId() } });
     if(groupExist){
       groupModel.id = groupExist.id;
@@ -48,7 +55,9 @@ export class GroupSerializer implements SerializerRoot<Group, GroupsModel> {
       groupModel.description,
       parentGroupModel ? parentGroupModel.uuid : null,
       childrenGroupsId,
-      groupModel.imgUrl ? new URL(groupModel.imgUrl) : null
+      groupModel.imgUrl ? new URL(groupModel.imgUrl) : null,
+      groupModel.creationDate ? new Date(groupModel.creationDate) : null,
+      groupModel.updateDate ? new Date(groupModel.updateDate) : null 
       );
   }
 }
