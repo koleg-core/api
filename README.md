@@ -30,8 +30,7 @@ REST API for koleg project
 ### Dependencies
 This is dependencies required for local dev.
 
-
-- WSL (if you dev on windows)
+- WSL (if you are on windows)
 - gnumake: `sudo apt install make`
 - okteto: `curl https://get.okteto.com/ -sSfL | sh` [okteto documentation](https://okteto.com/docs/getting-started/index.html)
 - kubernetes: `curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"`
@@ -210,8 +209,11 @@ export NODE_ENV=development
 Your config file must looks like this.
 ```yaml
 api:
-  jwt_secret:
-  port: 8081
+  jwt_secret: LE CONEMAARAAA
+  session_duration: 1h
+  page_size: 20
+  port: 8080
+  cors_origin: "*"
 database:
   enable: true
   host: You database host

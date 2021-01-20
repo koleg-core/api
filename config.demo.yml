@@ -2,13 +2,15 @@ api:
   jwt_secret: Don't stop me now
   port: 8081
   session_duration: "10h"
+  page_size: 20
+  cors_origin: "*"
 database:
   enable: true
   host: You database host
   port: 5432
   user: user
   password: P@ssw0rd
-  schema: kolegdb
+  schema: koleg
 s3:
   bucket:
   port: 443
