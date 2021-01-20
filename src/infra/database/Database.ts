@@ -195,6 +195,14 @@ export class Database {
           type: DataTypes.STRING
           // allowNull defaults to true
         },
+        creationDate: {
+          type: DataTypes.DATE,
+          field: 'creation_date'
+        },
+        updateDate: {
+          type: DataTypes.DATE,
+          field: 'update_date'
+        },
         imgUrl: {
           type: DataTypes.STRING,
           field: 'img_url'

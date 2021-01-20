@@ -2,6 +2,7 @@ import {
     IsDefined,
     IsOptional,
     IsString,
+    IsDateString,
     IsUUID
   } from "class-validator";
   import { Group } from "domain/group/Group";
@@ -29,6 +30,14 @@ import {
 
     @IsOptional()
     public readonly imgUrl: string;
+
+    @IsDateString()
+    @IsOptional()
+    public readonly updateDate: string;
+
+    @IsDateString()
+    @IsOptional()
+    public readonly creationDate: string;
   
     constructor(
       id: string,
@@ -36,7 +45,9 @@ import {
       description: string,
       parentGroupId: string,
       childrenGroupsId: string[],
-      imgUrl: string
+      imgUrl: string,
+      creationDate: string,
+      updateDate: string
     ) {
       // IMPORTANT:
       // The class validator fill object after creation,
@@ -49,6 +60,8 @@ import {
       this.parentGroupId = parentGroupId;
       this.childrenGroupsId = childrenGroupsId;
       this.imgUrl = imgUrl;
+      this.creationDate = creationDate;
+      this.updateDate = updateDate;
     }
   
     public static toGroupModel(group: Group): GroupApiModel {
@@ -58,7 +71,9 @@ import {
         group.getDescription(),
         group.getParentId(),
         group.getChildrenGroupsId(),
-        group.getImgUrl() ? group.getImgUrl().toString() : null
+        group.getImgUrl() ? group.getImgUrl().toString() : null,
+        group.getCreationDate() ? group.getCreationDate().toISOString() : null,
+        group.getUpdateDate() ? group.getUpdateDate().toISOString() : null
       );
     }
   

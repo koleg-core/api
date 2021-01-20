@@ -127,7 +127,9 @@ export class Organisation {
         updatedGroup.getDescription(),
         updatedGroup.getParentId(),
         updatedGroup.getChildrenGroupsId() ? updatedGroup.getChildrenGroupsId() : groupToUpdate.getChildrenGroupsId(),
-        updatedGroup.getImgUrl()
+        updatedGroup.getImgUrl(),
+        updatedGroup.getCreationDate(),
+        new Date()
       );
       const groups: Group[] = Array.from(this._groups.values());
       
@@ -173,14 +175,7 @@ export class Organisation {
       }
       else{
         groups.forEach(group => {
-          if(Array.isArray(group.getChildrenGroupsId()) && group.getChildrenGroupsId().length > 0){
-            const childGroups = group.getChildrenGroupsId();
-            const index = childGroups.indexOf(groupToUpdate.getId());
-            if(index > -1){
-              childGroups.splice(index,1);
-            }
-          }
-          
+          group.deleteChildren(groupToUpdate.getId());
         });
       }
       this._groups.set(groupToUpdate.getId(), newUpdatedGroup);
@@ -200,13 +195,7 @@ export class Organisation {
       const groups: Group[] = Array.from(this._groups.values());
 
       groups.forEach(group => {
-        if(Array.isArray(group.getChildrenGroupsId()) && group.getChildrenGroupsId().length > 0){
-          const childGroups = group.getChildrenGroupsId();
-          const index = childGroups.indexOf(groupId);
-          if(index > -1){
-            childGroups.splice(index,1);
-          }
-        }
+        group.deleteChildren(groupId);
         if(group.getParentId() === groupId){
           group.setParentId(null);
         }

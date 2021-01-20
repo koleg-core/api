@@ -81,7 +81,7 @@ export class User {
     }
 
     this._creationDate = statelessUser.creationDate ? statelessUser.creationDate : new Date();
-    this._updateDate = this._creationDate;
+    this._updateDate = statelessUser.updateDate ? statelessUser.updateDate : this._creationDate;
   }
 
   // Id =======
