@@ -50,7 +50,8 @@ export class JobsController {
     contentType: "application/json",
     description: "A list of jobs",
     isArray: true,
-    statusCode: "200"})
+    statusCode: "200"
+  })
   @Get("/jobs")
   @UseBefore(CheckJwtMiddleware)
   async getAll(
@@ -71,7 +72,7 @@ export class JobsController {
           } else {
             jobs.forEach(job => jobsResponse.push(JobApiModel.toJobModel(job)));
           }
-
+          console.log(this._pageSize);
           const realPage = page || 1;
           const realItemsNumber = itemsNumber || this._pageSize;
           if (realPage * realItemsNumber <= jobsResponse.length) {
@@ -94,19 +95,24 @@ export class JobsController {
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
     description: "Response model with job id",
-    statusCode: "200"})
+    statusCode: "200"
+  })
   @Post("/jobs")
   @UseBefore(CheckJwtMiddleware)
   async post(@Body() job: JobApiModel): Promise<ResponseModel | ApiError> {
     return this._organisationService.createJob(job.toJob())
-      .then(jobId => {
-        if (!jobId) {
-          throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Job with this name already exist');
+      .then(res => {
+        if (!res.id && res.error) {
+          throw new ApiError(HttpStatusCode.CONFLICT, res.error, 'Job with this name already exist');
         }
-        return new ResponseModel(HttpStatusCode.OK, `Job created with id : ${jobId}.`);
+        return new ResponseModel(HttpStatusCode.OK, `Job created with id : ${res.id}.`, res.id);
       })
       .catch(error => {
-        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+        throw new ApiError(
+          error.httpError ? error.httpError : HttpStatusCode.INTERNAL_SERVER_ERROR,
+          error.status ? error.status : ReturnCodes.SERVER_ERROR,
+          error?.message
+        );
       });
   }
 
@@ -160,7 +166,11 @@ export class JobsController {
         return new ResponseModel(returnCode, `Request returns with status : ${returnCode}.`);
       })
       .catch(error => {
-        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+        throw new ApiError(
+          error.httpError ? error.httpError : HttpStatusCode.INTERNAL_SERVER_ERROR,
+          error.status ? error.status : ReturnCodes.SERVER_ERROR,
+          error?.message
+        );
       });
   }
 

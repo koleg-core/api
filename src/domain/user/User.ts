@@ -80,8 +80,8 @@ export class User {
       }
     }
 
-    this._creationDate = new Date();
-    this._updateDate = this._creationDate;
+    this._creationDate = statelessUser.creationDate ? statelessUser.creationDate : new Date();
+    this._updateDate = statelessUser.updateDate ? statelessUser.updateDate : this._creationDate;
   }
 
   // Id =======
@@ -348,7 +348,7 @@ export class User {
 
     // TODO: we set !this._expirationDate cuz we don't want to return null
     //   !null => true
-    return !(!this._expirationDate || this._expirationDate < new Date());
+    return this._expirationDate && this._expirationDate < new Date();
   }
 
   public getExpirationDate(): Date {
@@ -413,7 +413,9 @@ export class User {
   }
 
   private _isEditable(): boolean {
-    return !this.isExpired() && !this.isDisabled();
+    // TODO : implement rights handler
+    // return !this.isExpired() && !this.isDisabled();
+    return true
   }
 
   private _update(): void {

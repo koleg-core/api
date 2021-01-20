@@ -5,6 +5,7 @@ import { OrganisationRepository } from "../../domain/repos/organisation.reposito
 import { Organisation } from "../../domain/organisation";
 import { Job } from "../../domain/user/Job";
 import { StatelessUser } from "../../domain/user/StatelessUser";
+import { Group } from "domain/group/Group";
 
 @Service("organisation.repository")
 class OrganisationInMemoryRepository implements OrganisationRepository {
@@ -46,13 +47,13 @@ class OrganisationInMemoryRepository implements OrganisationRepository {
   deleteUser(userId: string): void {
     console.log("user deleted");
   }
-  createGroup(organisation: Organisation, groupId: string): void {
+  createGroup(group: Group): void {
     console.log("group added");
   }
-  updateGroup(organisation: Organisation, groupId: string): void {
+  updateGroup(group: Group): void {
     console.log("group updated");
   }
-  deleteGroup(organisation: Organisation, groupId: string): void {
+  deleteGroup(groupId: string): void {
     console.log("group deleted");
   }
 }

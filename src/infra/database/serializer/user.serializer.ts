@@ -12,6 +12,7 @@ import { PhoneTypeSerializer } from "./phone-type.serializer";
 import { GroupsModel } from "../models/GroupsModel";
 import { Job } from "domain/user/Job";
 import { JobModel } from "../models/JobModel";
+import { use } from "passport";
 
 export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> {
 
@@ -120,11 +121,11 @@ export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> 
 
     return new StatelessUser(
       userModel.uuid,
-      userModel.creationDate,
-      userModel.updateDate,
+      userModel.creationDate ? new Date(userModel.creationDate) : null,
+      userModel.updateDate ? new Date(userModel.updateDate) : null,
       new UserIdentity(userModel.firstname, userModel.lastname, userModel.username, userModel.email),
       new Password(userModel.password, userModel.passwordDateLimit),
-      userModel.birthdate,
+      userModel.birthdate ? new Date(userModel.birthdate) : null,
       passwordHistory,
       phones,
       groupsIDs,
@@ -132,7 +133,7 @@ export class UserSerializer implements SerializerRoot<StatelessUser, UserModel> 
       userModel.disableDate,
       imageURL,
       sshKey,
-      userModel.expirationDate
+      userModel.expirationDate ? new Date(userModel.expirationDate) : null
     );
   }
 }

@@ -74,8 +74,10 @@ export class AuthController {
 
     return new ResponseModel(HttpStatusCode.OK, "Success",
       {
-        user: readableUser,
-        token: this.authService.generateJwt(readableUser.getId(), readableUser.getIdentity().username)
+        token: this.authService.generateJwt(
+          readableUser.getId(),
+          readableUser.getIdentity().username
+        )
       }
     );
   }

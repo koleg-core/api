@@ -100,12 +100,11 @@ describe("Group", () => {
     it("should be created without error", (done) => {
       try {
         const organisation:Organisation = genOrganisation();
-        const parentGroupId:string = genGroupId(organisation);
-        const childGroupId:string = genGroupId(organisation, parentGroupId);
+        const groupId:string = genGroupId(organisation);
 
         if(
-          !organisation.getGroupPropertiesById(parentGroupId)
-              || !organisation.getGroupPropertiesById(childGroupId)
+          !organisation.getGroupPropertiesById(groupId)
+              //|| !organisation.getGroupPropertiesById(childGroupId)
         ) {
           const err = "There is not group into organisation";
           done(err);

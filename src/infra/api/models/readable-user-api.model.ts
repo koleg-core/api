@@ -3,18 +3,16 @@ import {
   IsUUID,
   IsString,
   IsEmail,
-  IsDate,
+  IsDateString,
   IsUrl
 } from "class-validator";
 
 import { Type } from "class-transformer";
 
-import { Job } from "domain/user/Job";
 import { PhoneNumber } from "domain/user/PhoneNumber";
 import { UserIdentity } from "domain/user/UserIdentity";
 import { StatelessUser } from "domain/user/StatelessUser";
 import { ReadableUser } from "domain/user/ReadableUser";
-import { JobApiModel } from "./job-api.model";
 import { PhoneNumberApiModel } from "./phone-number-api.model";
 
 export class ReadableUserApiModel {
@@ -31,7 +29,7 @@ export class ReadableUserApiModel {
   @IsString()
   public readonly username: string;
 
-  @IsDate()
+  @IsDateString()
   public readonly birthdate: string;
 
   @IsEmail()
@@ -51,16 +49,16 @@ export class ReadableUserApiModel {
   @IsString()
   public readonly sshPublicKey: string;
 
-  @IsDate()
+  @IsDateString()
   public readonly expirationDate: string;
 
-  @IsDate()
+  @IsDateString()
   public readonly disableDate: string;
 
-  @IsDate()
+  @IsDateString()
   public readonly updateDate: string;
 
-  @IsDate()
+  @IsDateString()
   public readonly creationDate: string;
 
   constructor(
@@ -141,7 +139,7 @@ export class ReadableUserApiModel {
       identity.firstName,
       identity.lastName,
       identity.username,
-      user.getBirthDate()?.toISOString(),
+      user.getBirthDate() ? user.getBirthDate().toISOString() : null,
       identity.email,
       user.getGroupIds(),
       profilePictureUrl,
@@ -150,8 +148,8 @@ export class ReadableUserApiModel {
       sshPublicKey,
       expirationDate,
       disableDate,
-      user.getUpdateDate()?.toISOString(),
-      user.getCreationDate()?.toISOString()
+      user.getUpdateDate() ? user.getUpdateDate().toISOString() : null,
+      user.getCreationDate() ? user.getCreationDate().toISOString() : null
     );
   }
 

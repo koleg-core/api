@@ -4,6 +4,7 @@ import { Job } from "../domain/user/Job";
 import { ReturnCodes } from "../domain/enums/return-codes.enum";
 import { ReadableUser } from "../domain/user/ReadableUser";
 import { StatelessUser } from "../domain/user/StatelessUser";
+import { Group } from "domain/group/Group";
 
 export class OrganisationService {
 
@@ -25,18 +26,18 @@ export class OrganisationService {
     return this._organisation.getJobs();
   }
 
-  public async getJob(name: string): Promise<Job> {
+  public async getJob(id: string): Promise<Job> {
     await this._updateOrganisation();
-    return this._organisation.getJob(name);
+    return this._organisation.getJob(id);
   }
 
-  public async createJob(job: Job): Promise<string> {
+  public async createJob(job: Job): Promise<{ id: string, error: ReturnCodes }> {
     await this._updateOrganisation();
-    const jobId = this._organisation.addJob(job);
-    if (jobId) {
+    const res = this._organisation.addJob(job);
+    if (res.id && !res.error) {
       this.repository.createJob(job);
     }
-    return jobId;
+    return res;
   }
 
   public async updateJob(job: Job): Promise<ReturnCodes> {
@@ -104,6 +105,18 @@ export class OrganisationService {
     }
   }
 
+  public async updateUserProfilePictureUrl(userId: string, profilePictureUrl: URL) {
+    await this._updateOrganisation();
+
+    const returnCode = this._organisation.updateUserProfilePictureUrl(userId, profilePictureUrl);
+    if (returnCode === ReturnCodes.UPDATED) {
+      const userToSave: StatelessUser = this._organisation.getStatelessUserById(userId);
+      this.repository.createUser(userToSave);
+    }
+    return returnCode;
+
+  }
+
   public async findUserByIdentifier(identifier: string): Promise<string> {
     await this._updateOrganisation();
     return this._organisation.findUserByIdentifier(identifier);
@@ -135,25 +148,58 @@ export class OrganisationService {
   }
 
   // GROUPS
-  public getGroups() {
-    throw new Error("Method not implemented.");
+  public async getGroups(): Promise<Group[]> {
+    await this._updateOrganisation();
+    return this._organisation.getGroups();
   }
 
-  public getGroup() {
-    throw new Error("Method not implemented.");
+  public async getGroup(id: string): Promise<Group> {
+    await this._updateOrganisation();
+    return this._organisation.getGroup(id);
   }
 
-  public createGroup() {
-    throw new Error("Method not implemented.");
+  public async createGroup(group: Group): Promise<{ id: string, error: ReturnCodes }> {
+    await this._updateOrganisation();
+    const res = this._organisation.addGroup(group);
+    if (res.id && !res.error) {
+      this.repository.createGroup(group);
+    }
+    return res;
   }
 
-  public updateGroup() {
-    throw new Error("Method not implemented.");
-
+  public async updateGroup(group: Group): Promise<ReturnCodes> {
+    await this._updateOrganisation();
+    const returnCode = this._organisation.updateGroup(group);
+    if (returnCode === ReturnCodes.UPDATED) {
+      const groupToSave: Group = this._organisation.getGroupById(group.getId());
+      this.repository.updateGroup(groupToSave);
+    }
+    return returnCode;
   }
 
-  public deleteGroup() {
-    throw new Error("Method not implemented.");
+  public async getUsersNumberByGroup(id: string): Promise<string> {
+    await this._updateOrganisation();
+    return this._organisation.getUsersNumberByGroup(id)
+  }
+
+  public async deleteGroup(name: string): Promise<ReturnCodes> {
+    await this._updateOrganisation();
+    const returnCode = this._organisation.deleteGroup(name);
+    if (returnCode === ReturnCodes.REMOVED) {
+      this.repository.deleteGroup(name);
+    }
+    return returnCode;
+  }
+
+  public async updateGroupProfilePictureUrl(groupId: string, profilePictureUrl: URL) {
+    await this._updateOrganisation();
+
+    const returnCode = this._organisation.updateGroupProfilePictureUrl(groupId, profilePictureUrl);
+    if (returnCode === ReturnCodes.UPDATED) {
+      const groupToSave: Group = this._organisation.getGroupById(groupId);
+      this.repository.updateGroup(groupToSave);
+    }
+    return returnCode;
   }
 
   private async _updateOrganisation() {

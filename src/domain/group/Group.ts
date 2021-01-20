@@ -1,3 +1,4 @@
+import { default as slugify } from "slugify";
 import { v4 as uuid } from "uuid";
 
 import { ReturnCodes } from "../enums/return-codes.enum";
@@ -6,31 +7,62 @@ import { ReadableGroup } from "./readableGroup";
 
 export class Group {
   constructor(
-      private _id: string,
-      private _name: string,
-      private _description: string = null,
-      private _parentGroup: Group = null,
-      private _childsGroups: Group[] = [],
-      private _imgUrl: URL = null
+      private id: string,
+      private name: string,
+      private description: string = null,
+      private parentGroup: string = null,
+      private childrenGroups: string[] = [],
+      private imgUrl: URL = null,
+      private creationDate: Date = null,
+      private updateDate: Date = null
   ) {
-    if(!this._id) {
-      this._id = uuid();
+    if(!this.id) {
+      this.id = uuid();
     }
-    if(this._parentGroup){
-      this._parentGroup.addChild(this);
-    }
+    this.creationDate = creationDate ? creationDate : new Date();
+  }
+
+  private update(){
+    //TO DO : better implementation with database
+    this.updateDate = new Date();
+  }
+
+  public setParentId(parentId: string){
+    this.parentGroup = parentId;
+    this.update();
+  }
+
+  public addChild(child: string){
+    this.childrenGroups.push(child);
+    this.update();
   }
 
   public getId(): string {
-    return this._id;
+    return this.id;
+  }
+
+  public getCreationDate(): Date {
+    return this.creationDate;
+  }
+
+  public getUpdateDate(): Date {
+    return this.updateDate;
   }
 
   public getName(): string {
-    return this._name;
+    return this.name;
   }
 
   public getDescription(): string {
-    return this._description;
+    return this.description;
+  }
+
+  public getParentId(): string {
+    return this.parentGroup;
+  }
+
+  public getChildrenGroupsId(): string[] {
+    return this.childrenGroups;
   }
 
   public setDescription(description: string): ReturnCodes {
@@ -38,102 +70,68 @@ export class Group {
       throw new Error("Invalid argument description: string");
     }
 
-    this._description = description;
+    this.description = description;
     return ReturnCodes.UPDATED;
   }
 
   public getImgUrl(): URL {
-    return this._imgUrl;
+    return this.imgUrl;
   }
 
   public updateImgUrl(imgUrl: URL): ReturnCodes {
     if(!imgUrl) {
       throw new Error("Invalid argument imgUrl: URL");
     }
-    this._imgUrl = imgUrl;
+    this.imgUrl = imgUrl;
+    this.update();
     return ReturnCodes.UPDATED;
-  }
-
-  public getParentId(): string {
-    if(this._parentGroup) {
-      return this._parentGroup.getId();
-    }
-    return null;
-  }
-
-  public getChildsId(): string[] {
-    return this._childsGroups
-      .map(child => child.getId());
-  }
-
-  public isRoot(): boolean {
-    if(!this._parentGroup) {
-      return true;
-    }
-    return false;
   }
 
   public hasChilds(): boolean {
-    if(this._childsGroups.length === 0) {
+    if(this.childrenGroups.length === 0) {
       return false;
     }
     return true;
   }
 
-  // Here use static to replace missing friend of
-  private static _canShareSameParent(
-    inPlaceGroup: Group,
-    concurrentGroup: Group): boolean {
-    return inPlaceGroup._name === concurrentGroup.getName()
-          || inPlaceGroup.getId() === concurrentGroup.getId();
-  }
-
-  public canShareSameParent(concurrentGroup: Group) {
-    return Group._canShareSameParent(
-      this,
-      concurrentGroup);
-  }
-
-  // Here use static to replace missing friend of
-  private static _canOwnThisChild(existingChild: Group, newChild: Group): boolean {
-    const inPlaceConfictingChilds = existingChild._childsGroups
-      .filter(
-        inPlaceChild => !inPlaceChild.canShareSameParent(newChild)
-      );
-
-    if(inPlaceConfictingChilds.length >= 0 ) {
-      return false;
+  public deleteChildren(childrenId: string) {
+    if(Array.isArray(this.childrenGroups) && this.childrenGroups.length > 0){
+      const index = this.childrenGroups.indexOf(childrenId);
+      if(index > -1){
+        this.childrenGroups.splice(index,-1);
+        this.update();
+      }
     }
-    return true;
-  }
-
-  public canOwnThisChild(newChild: Group): boolean {
-    return Group._canOwnThisChild(
-      this,
-      newChild);
-  }
-
-  private static _addChild(parentGroup:Group , newChild: Group): ReturnCodes {
-    if(!parentGroup.canOwnThisChild(newChild)) {
-      return ReturnCodes.CONFLICTING;
-    }
-
-    parentGroup._childsGroups.push(newChild);
-    return ReturnCodes.UPDATED;
-  }
-
-  public addChild(childGroup: Group): void {
-    Group._addChild(this, childGroup);
   }
 
   public getReadableGroup(): ReadableGroup {
     return new ReadableGroup(
-      this._id,
-      this._name,
-      this._description,
-      this.getParentId(),
-      this.getChildsId(),
-      this._imgUrl
+      this.id,
+      this.name,
+      this.description,
+      this.parentGroup,
+      this.childrenGroups,
+      this.imgUrl
     );
+  }
+
+  public getSlugifyName(): string {
+    return slugify(
+      this.getName(),
+      {
+        replacement: ".", // replace spaces with replacement character, defaults to `-`
+        lower: true,      // convert to lower case, defaults to `false`
+        remove: /[*+~.()'"!:@?%$]/g, // Remove these chartes matching regex
+        strict: true,    // strip special characters except replacement, defaults to `false`
+      }
+    );
+  }
+
+  public hasSameName(group: Group): boolean {
+
+    if (this.getSlugifyName() === group.getSlugifyName()) {
+      return true;
+    }
+    return false;
   }
 }

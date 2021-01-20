@@ -5,19 +5,17 @@ import {
   IsUUID,
   IsEmail,
   IsString,
-  IsDate,
   IsUrl,
+  IsDateString,
 } from "class-validator";
 import { Type } from "class-transformer";
 
 import { SshKey } from "domain/user/SshKey";
 import { UserIdentity } from "domain/user/UserIdentity";
-import { Job } from "domain/user/Job";
 import { PhoneNumber } from "domain/user/PhoneNumber";
 import { StatelessUser } from "domain/user/StatelessUser";
 
 import { PhoneNumberApiModel } from "./phone-number-api.model";
-import { JobApiModel } from "./job-api.model";
 import { SshKeyApiModel } from "./ssh-key-api.model";
 import { PasswordApiModel } from "./password-api.model";
 
@@ -33,8 +31,8 @@ export class WritableUserApiModel {
   @IsString()
   @IsOptional()
   public readonly lastName: string;
-  
-  @IsDate()
+
+  @IsDateString()
   @IsOptional()
   public readonly birthdate: string;
 
@@ -47,23 +45,17 @@ export class WritableUserApiModel {
   @Type(() => PasswordApiModel)
   public readonly password: PasswordApiModel = null;
 
-  @ValidateNested({ each: true })
   @IsOptional()
-  @IsUUID()
   public readonly groupIds: string[];
 
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => PhoneNumberApiModel)
-  public readonly phoneNumbers: PhoneNumberApiModel[] = [];
+  public readonly phoneNumbers: PhoneNumberApiModel[];
 
   @IsString()
   @IsOptional()
   public readonly username: string;
-
-  @IsUrl()
-  @IsOptional()
-  public readonly profilePictureUrl: URL;
 
   @IsUUID()
   @IsOptional()
@@ -74,11 +66,11 @@ export class WritableUserApiModel {
   @Type(() => SshKeyApiModel)
   public readonly sshKey: SshKeyApiModel = null;
 
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   public readonly expirationDate: string;
-  
-  @IsDate()
+
+  @IsDateString()
   @IsOptional()
   public readonly disableDate: string;
 
@@ -92,7 +84,6 @@ export class WritableUserApiModel {
     phoneNumbers: PhoneNumberApiModel[] = null, // TODO multiple phones numbers
     id: string = null,
     username: string = null,
-    profilePictureUrl: URL = null,
     jobId: string = null,
     sshKey: SshKeyApiModel = null,
     expirationDate: string = null,
@@ -111,7 +102,6 @@ export class WritableUserApiModel {
     this.username = username;
     this.password = password;
     this.groupIds = groupIds;
-    this.profilePictureUrl = plainToClass(URL, profilePictureUrl);
     this.expirationDate = expirationDate;
     this.disableDate = disableDate;
     this.jobId = jobId;
@@ -168,7 +158,6 @@ export class WritableUserApiModel {
       phoneNumberApiModel,
       user.identity.username,
       user.id,
-      user.profilePictureUrl,
       user.jobId,
       SshKeyApiModel.toSshKeyModel(sshKey),
       expirationDate,
@@ -204,21 +193,17 @@ export class WritableUserApiModel {
         ? plainToClass(SshKeyApiModel, this.sshKey).toSshKey()
         : null;
 
-    let phoneNumbers: PhoneNumber[] = [];
+    let phoneNumbers: PhoneNumber[] = null;
     if (Array.isArray(this.phoneNumbers)) {
+      phoneNumbers = [];
       this.phoneNumbers.forEach(phoneNumberApi => phoneNumbers.push(
-        plainToClass(PhoneNumberApiModel, phoneNumberApi)
-          .toPhoneNumber())
+        plainToClass(PhoneNumberApiModel, phoneNumberApi).toPhoneNumber())
       );
-    } else {
-      phoneNumbers = null;
     }
 
-    let groupIds: string[] = [];
+    let groupIds: string[] = null;
     if (Array.isArray(this.groupIds)) {
       groupIds = this.groupIds;
-    } else {
-      groupIds = null;
     }
 
     return new StatelessUser(
@@ -233,7 +218,7 @@ export class WritableUserApiModel {
       groupIds,
       this.jobId,
       disableDate,
-      this.profilePictureUrl,
+      null,
       sshKey,
       expirationDate
     );

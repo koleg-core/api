@@ -195,6 +195,14 @@ export class Database {
           type: DataTypes.STRING
           // allowNull defaults to true
         },
+        creationDate: {
+          type: DataTypes.DATE,
+          field: 'creation_date'
+        },
+        updateDate: {
+          type: DataTypes.DATE,
+          field: 'update_date'
+        },
         imgUrl: {
           type: DataTypes.STRING,
           field: 'img_url'
@@ -317,6 +325,14 @@ export class Database {
     });
   }
 
+  deleteGroup(groupId: string){
+    GroupsModel.destroy({
+      where: {
+        uuid: groupId
+      }
+    });
+  }
+
   createJob(job: JobModel) {
     job.save();
   }
@@ -334,8 +350,20 @@ export class Database {
     return UserModel.findAll();
   }
 
+  getGroups(): Promise<GroupsModel[]> {
+    return GroupsModel.findAll();
+  }
+
   getUser(uuid: string): Promise<UserModel> {
     return UserModel.findOne({ where: { uuid } });
+  }
+
+  deleteUser(userId: string) {
+    UserModel.destroy({
+      where: {
+        uuid: userId
+      }
+    })
   }
 
   /*createUserPhone(uuid:string,phone:string,type:string){

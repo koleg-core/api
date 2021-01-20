@@ -19,5 +19,5 @@ export class StatelessUser {
     public readonly profilePictureUrl?: URL,
     public readonly sshKey?: SshKey,
     public readonly expirationDate?: Date
-  ) {}
+  ) { }
 }

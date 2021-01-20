@@ -47,7 +47,7 @@ export class AuthService {
   }
 
   public generateJwt(userId: string, username: string) {
-    return jwt.sign({ data: { userId: userId, username: username } },
+    return jwt.sign({ data: { userId, username } },
       this._jwtSecret, { expiresIn: this._sessionDuration });
   }
 

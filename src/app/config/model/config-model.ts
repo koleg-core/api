@@ -33,6 +33,13 @@ export const configModel = {
       env: "KOLEG_API_PAGE_SIZE",
       default: 20,
     },
+    cors_origin: {
+      doc: "The cors origin allowed by cors.",
+      format: String,
+      default: "*",
+      arg: "origin",
+      env: "KOLEG_API_CORS_ORIGIN", // For strange reason  KOLEG_API_PORT have Nan value
+    },
   },
   s3: {
     bucket: {

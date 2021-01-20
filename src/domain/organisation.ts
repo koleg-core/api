@@ -48,6 +48,10 @@ export class Organisation {
   // ###### GROUPS ######
   // ####################
 
+  public getGroups(): Group[] {
+    return Array.from(this._groups.values());
+  }
+
   public containsGroupById(groupId: string): boolean {
     if (this._groups.has(groupId)) {
       return true;
@@ -60,44 +64,173 @@ export class Organisation {
     return group.getReadableGroup();
   }
 
-  public addGroup(
-    id: string,
-    name: string,
-    description: string,
-    parentGroupId: string = null,
-    childsGroupsId?: string[],
-    imgUrl?: URL
-  ): string {
+  public addGroupWithoutCheck(newGroup: Group): string {
+    this._groups.set(newGroup.getId(), newGroup);
+    return newGroup.getId();
+  }
 
-    if (id === undefined) {
-      throw new Error("Child group should be defined or null.");
+  public addGroup(newGroup: Group): { id: string, error: ReturnCodes } {
+    const groups: Group[] = Array.from(this._groups.values());
+
+    if (groups.some(group => newGroup.hasSameName(group))) {
+      return {
+        id: null,
+        error: ReturnCodes.CONFLICTING
+      };
     }
-    const parentGroup: Group = this._groups.get(parentGroupId);
-    const childsGroups: Group[] = [];
 
-    if (childsGroupsId) {
-      childsGroupsId.forEach(childsGroupId => {
-        if (!this._groups.has(childsGroupId)) {
-          throw new Error(`Child group ${childsGroupId} does not exist.`);
+    if (newGroup.getParentId() && newGroup.getParentId() != null) {
+      if (!this._groups.has(newGroup.getParentId())) {
+        throw new Error('Parent doesnt exists.');
+      }
+    }
+
+    if (Array.isArray(newGroup.getChildrenGroupsId()) && newGroup.getChildrenGroupsId().length > 0) {
+      for (const groupId of newGroup.getChildrenGroupsId()) {
+        if (this._groups.get(groupId)) {
+          this._groups.get(groupId).setParentId(newGroup.getId());
         }
-        const childGroup: Group = this._groups.get(childsGroupId);
-        childsGroups.push(childGroup);
-      });
+        else {
+          throw new Error('Childs doesnt exists.');
+        }
+        if (groupId === newGroup.getParentId()) {
+          throw new Error('Cannot have same group as parent and child');
+        }
+      }
     }
-    const newGroup: Group = new Group(
-      id,
-      name,
-      description,
-      parentGroup,
-      childsGroups,
-      imgUrl || null
-    );
-    if (!newGroup) {
-      throw new Error("Group was not created");
+
+    if (newGroup.getParentId()) {
+      const group = this._groups.get(newGroup.getParentId());
+      if (group.getChildrenGroupsId().indexOf(newGroup.getId()) === -1) {
+        group.addChild(newGroup.getId());
+      }
     }
 
     this._groups.set(newGroup.getId(), newGroup);
-    return newGroup.getId();
+    return {
+      id: newGroup.getId(),
+      error: null
+    };
+  }
+
+  public getGroup(groupId: string): Group {
+    const requestedGroup = this._groups.get(groupId);
+
+    if (!requestedGroup) {
+      throw new Error("Group not found");
+    }
+
+    return requestedGroup;
+  }
+
+  public updateGroup(updatedGroup: Group): ReturnCodes {
+
+    const groups: Group[] = Array.from(this._groups.values());
+
+    if (groups.some(group => updatedGroup.getId() !== group.getId() && updatedGroup.hasSameName(group))) {
+      return ReturnCodes.CONFLICTING;
+    }
+
+    const groupToUpdate = this._groups.get(updatedGroup.getId());
+
+    if (groupToUpdate) {
+      const newUpdatedGroup: Group = new Group(
+        groupToUpdate.getId(),
+        updatedGroup.getName(),
+        updatedGroup.getDescription(),
+        updatedGroup.getParentId(),
+        updatedGroup.getChildrenGroupsId() ? updatedGroup.getChildrenGroupsId() : groupToUpdate.getChildrenGroupsId(),
+        updatedGroup.getImgUrl(),
+        groupToUpdate.getCreationDate(),
+        new Date()
+      );
+      const groups: Group[] = Array.from(this._groups.values());
+
+      if (newUpdatedGroup.getParentId() && newUpdatedGroup.getParentId() != null) {
+        if (!this._groups.has(newUpdatedGroup.getParentId())) {
+          throw new Error('Parent doesnt exists.');
+        }
+        if (newUpdatedGroup.getParentId() === newUpdatedGroup.getId()) {
+          throw new Error('Group cant be his self parent');
+        }
+      }
+
+      if (Array.isArray(newUpdatedGroup.getChildrenGroupsId()) && newUpdatedGroup.getChildrenGroupsId().length > 0) {
+        for (const groupId of newUpdatedGroup.getChildrenGroupsId()) {
+          if (groupId === newUpdatedGroup.getId()) {
+            throw new Error('This group cant have himself as child');
+          }
+          if (this._groups.get(groupId)) {
+            this._groups.get(groupId).setParentId(newUpdatedGroup.getId());
+          }
+          else {
+            throw new Error('Childs doesnt exists.');
+          }
+          if (groupId === newUpdatedGroup.getParentId()) {
+            throw new Error('Cannot have same group as parent and child');
+          }
+        }
+      }
+
+      else {
+        groups.forEach(group => {
+          if (group.getParentId() === newUpdatedGroup.getId()) {
+            group.setParentId(null);
+          }
+        });
+      }
+
+      if (newUpdatedGroup.getParentId()) {
+        const group = this._groups.get(newUpdatedGroup.getParentId());
+        if (group.getChildrenGroupsId().indexOf(newUpdatedGroup.getId()) === -1) {
+          group.addChild(newUpdatedGroup.getId());
+        }
+      }
+      else {
+        groups.forEach(group => {
+          group.deleteChildren(groupToUpdate.getId());
+        });
+      }
+      this._groups.set(groupToUpdate.getId(), newUpdatedGroup);
+      return ReturnCodes.UPDATED;
+    } else {
+
+      return ReturnCodes.NOT_FOUND;
+    }
+  }
+
+  public deleteGroup(groupId: string): ReturnCodes {
+    const isGroupDeleted = this._groups.delete(groupId);
+
+    if (!isGroupDeleted) {
+      return ReturnCodes.NOT_FOUND;
+    } else {
+      const groups: Group[] = Array.from(this._groups.values());
+
+      groups.forEach(group => {
+        group.deleteChildren(groupId);
+        if(group.getParentId() === groupId){
+          group.setParentId(null);
+        }
+      });
+
+      return ReturnCodes.REMOVED;
+    }
+  }
+
+  public getGroupById(groupId: string): Group {
+    if (!groupId) {
+      throw new Error("Invalid argument userId: string");
+    }
+    if (!this._groups.has(groupId)) {
+      throw new Error("There is no user with this id");
+    }
+    return this._groups.get(groupId);
+  }
+
+  public updateGroupProfilePictureUrl(id: string, profilePictureUrl: URL): ReturnCodes {
+    const group = this._groups.get(id);
+    return group.updateImgUrl(profilePictureUrl);
   }
 
   // ####################
@@ -292,16 +425,6 @@ export class Organisation {
       }
     }
 
-    if (statelessUser.profilePictureUrl
-      && statelessUser.profilePictureUrl !== user.getProfilePictureUrl()
-    ) {
-      returnCode = user.updateProfilePictureUrl(statelessUser.profilePictureUrl);
-      if (returnCode < 0) {
-        return returnCode;
-      }
-      returnCode = ReturnCodes.UPDATED;
-    }
-
     if (statelessUser.sshKey) {
       returnCode = user.updateSshKey(statelessUser.sshKey);
       if (returnCode < 0) {
@@ -310,18 +433,17 @@ export class Organisation {
       returnCode = ReturnCodes.UPDATED;
     }
 
-    // Expiration date must be done last
-    // so as not to disrupt the other modifications.
-    if (statelessUser.expirationDate
-      && statelessUser.expirationDate !== user.getExpirationDate()
-    ) {
-      console.log("expirationDate");
-      returnCode = user.updateExpirationDate(statelessUser.expirationDate);
-      if (returnCode < 0) {
-        return returnCode;
-      }
-      returnCode = ReturnCodes.UPDATED;
+    if (statelessUser.disableDate) {
+      user.disable();
+    } else {
+      user.enable();
     }
+
+    returnCode = user.updateExpirationDate(statelessUser.expirationDate);
+    if (returnCode < 0) {
+      return returnCode;
+    }
+    returnCode = ReturnCodes.UPDATED;
 
     // console.log("NEW USER", user);
     this._users.set(user.getId(), user);
@@ -334,6 +456,8 @@ export class Organisation {
   }
 
   public updateUserPassword(userId: string, newPassword: string): ReturnCodes {
+    console.log(userId)
+    console.log(newPassword)
     const user: User = this._users.get(userId);
     if (!user) {
       return ReturnCodes.NOT_FOUND;
@@ -360,18 +484,27 @@ export class Organisation {
     return requestedJob;
   }
 
-  public addJob(newJob: Job): string {
+  public addJob(newJob: Job): { id: string, error: ReturnCodes } {
     const jobs: Job[] = Array.from(this._jobs.values());
 
     if (jobs.some(job => newJob.hasSameName(job))) {
-      throw new Error('Job already exists.');
+      return {
+        id: null,
+        error: ReturnCodes.CONFLICTING
+      };
     }
 
     this._jobs.set(newJob.getId(), newJob);
-    return newJob.getId();
+    return { id: newJob.getId(), error: null };
   }
 
   public updateJob(updatedJob: Job): ReturnCodes {
+
+    const jobs: Job[] = Array.from(this._jobs.values());
+
+    if (jobs.some(job => updatedJob.getId() !== job.getId() && updatedJob.hasSameName(job))) {
+      return ReturnCodes.CONFLICTING;
+    }
 
     const jobToUpdate = this._jobs.get(updatedJob.getId());
 
@@ -414,6 +547,14 @@ export class Organisation {
 
     return users
       .filter(user => jobId === user.getJobId())
+      .length
+      .toString();
+  }
+
+  public getUsersNumberByGroup(groupId: string): string {
+    const users: User[] = Array.from(this._users.values());
+    return users
+      .filter(user => user.getGroupIds().indexOf(groupId) > -1)
       .length
       .toString();
   }

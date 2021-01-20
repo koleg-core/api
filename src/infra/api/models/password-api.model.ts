@@ -30,7 +30,7 @@ export class PasswordApiModel {
   public static toPasswordModel(password: Password): PasswordApiModel {
     return new PasswordApiModel(
       password.getValue(),
-      password.getDateLimit().toISOString()
+      password.getDateLimit() ? password.getDateLimit().toISOString() : null
     );
   }
 

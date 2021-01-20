@@ -20,6 +20,7 @@ import { OrganisationService } from "app/organisation.service";
 import { AssetsService } from "app/assets.service";
 import { AuthController } from "./controllers/auth.controller";
 import { AuthService } from "./auth/auth.service";
+import { GroupsController } from "./controllers/groups.controller";
 
 export class Api {
   private _app: Application;
@@ -37,7 +38,8 @@ export class Api {
     private _assetsService: AssetsService,
     private _sessionDuration: string = "1h",
     private _pageSize: number = 5,
-    private _jwtSecret: string = "Secret"
+    private _jwtSecret: string = "Secret",
+    private _corsOrigin: string = "*",
   ) {
 
     if (!this._organisationService) {
@@ -61,13 +63,20 @@ export class Api {
     const authService = new AuthService(this._organisationService);
 
     this._routingControllersOptions = {
+      cors: {
+        origin: this._corsOrigin || "*",
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        preflightContinue: false,
+        optionsSuccessStatus: 204
+      },
       classTransformer: true,
       validation: { skipMissingProperties: true },
       currentUserChecker: async (action: Action) => { return await authService.currentUserChecker(action); },
       controllers: [
         UsersController,
         JobsController,
-        AuthController
+        AuthController,
+        GroupsController
       ]
     };
 
