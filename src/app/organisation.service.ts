@@ -31,13 +31,13 @@ export class OrganisationService {
     return this._organisation.getJob(id);
   }
 
-  public async createJob(job: Job): Promise<string> {
+  public async createJob(job: Job): Promise<{ id: string, error: ReturnCodes }> {
     await this._updateOrganisation();
-    const jobId = this._organisation.addJob(job);
-    if (jobId) {
+    const res = this._organisation.addJob(job);
+    if (res.id && !res.error) {
       this.repository.createJob(job);
     }
-    return jobId;
+    return res;
   }
 
   public async updateJob(job: Job): Promise<ReturnCodes> {
@@ -158,13 +158,13 @@ export class OrganisationService {
     return this._organisation.getGroup(id);
   }
 
-  public async createGroup(group: Group): Promise<string> {
+  public async createGroup(group: Group): Promise<{ id: string, error: ReturnCodes }> {
     await this._updateOrganisation();
-    const groupId = this._organisation.addGroup(group);
-    if (groupId) {
+    const res = this._organisation.addGroup(group);
+    if (res.id && !res.error) {
       this.repository.createGroup(group);
     }
-    return groupId;
+    return res;
   }
 
   public async updateGroup(group: Group): Promise<ReturnCodes> {

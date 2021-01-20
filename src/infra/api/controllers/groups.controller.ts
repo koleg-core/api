@@ -105,14 +105,19 @@ export class GroupsController {
   @UseBefore(CheckJwtMiddleware)
   async post(@Body() group: GroupApiModel): Promise<ResponseModel | ApiError> {
     return this._organisationService.createGroup(group.toGroup())
-      .then(groupId => {
-        if (!groupId) {
-          throw new ApiError(HttpStatusCode.CONFLICT, ReturnCodes.CONFLICTING, 'Group with this name already exist');
+      .then(res => {
+        if (!res.id && res.error) {
+          throw new ApiError(HttpStatusCode.CONFLICT, res.error, 'Group with this name already exist');
         }
-        return new ResponseModel(HttpStatusCode.OK, `Group created with id : ${groupId}.`,groupId);
+        return new ResponseModel(HttpStatusCode.OK, `Group created with id : ${res.id}.`,res.id);
       })
       .catch(error => {
-        throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
+        
+        throw new ApiError(
+          error.httpError ? error.httpError : HttpStatusCode.INTERNAL_SERVER_ERROR,
+          error.status ? error.status : ReturnCodes.SERVER_ERROR,
+          error?.message
+        );
       });
   }
 

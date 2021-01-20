@@ -1,3 +1,4 @@
+import { default as slugify } from "slugify";
 import { v4 as uuid } from "uuid";
 
 import { ReturnCodes } from "../enums/return-codes.enum";
@@ -112,5 +113,25 @@ export class Group {
       this.childrenGroups,
       this.imgUrl
     );
+  }
+
+  public getSlugifyName(): string {
+    return slugify(
+      this.getName(),
+      {
+        replacement: ".", // replace spaces with replacement character, defaults to `-`
+        lower: true,      // convert to lower case, defaults to `false`
+        remove: /[*+~.()'"!:@?%$]/g, // Remove these chartes matching regex
+        strict: true,    // strip special characters except replacement, defaults to `false`
+      }
+    );
+  }
+
+  public hasSameName(group: Group): boolean {
+
+    if (this.getSlugifyName() === group.getSlugifyName()) {
+      return true;
+    }
+    return false;
   }
 }
