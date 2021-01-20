@@ -140,7 +140,7 @@ export class Organisation {
         updatedGroup.getDescription(),
         updatedGroup.getParentId(),
         updatedGroup.getChildrenGroupsId() ? updatedGroup.getChildrenGroupsId() : groupToUpdate.getChildrenGroupsId(),
-        updatedGroup.getImgUrl(),
+        groupToUpdate.getImgUrl(), // TODO : change since cannot update image from group update endpoint
         groupToUpdate.getCreationDate(),
         new Date()
       );
@@ -209,9 +209,17 @@ export class Organisation {
 
       groups.forEach(group => {
         group.deleteChildren(groupId);
-        if(group.getParentId() === groupId){
+        if (group.getParentId() === groupId) {
           group.setParentId(null);
         }
+        this._groups.set(group.getId(), group);
+      });
+
+      const users: User[] = Array.from(this._users.values());
+
+      users.forEach(user => {
+        user.deleteGroupById(groupId);
+        this._users.set(user.getId(), user);
       });
 
       return ReturnCodes.REMOVED;
@@ -381,17 +389,21 @@ export class Organisation {
       returnCode = user.updateIdentity(statelessUser.identity);
     }
 
-    if (Array.isArray(statelessUser.groupsIds) && statelessUser.groupsIds.length > 0) {
+    if (Array.isArray(statelessUser.groupsIds)) {
 
-      statelessUser.groupsIds.some(groupId => {
-        if (!this._groups.has(groupId)) {
-          throw new Error(`Invalid groupId: ${groupId}`);
-        }
-      });
+      if (statelessUser.groupsIds.length > 0) {
+        statelessUser.groupsIds.some(groupId => {
+          if (!this._groups.has(groupId)) {
+            throw new Error(`Invalid groupId: ${groupId}`);
+          }
+        });
+      }
+
       returnCode = user.updateGroups(statelessUser.groupsIds);
       if (returnCode < 0) {
         return returnCode;
       }
+
       returnCode = ReturnCodes.UPDATED;
     }
 
@@ -456,8 +468,6 @@ export class Organisation {
   }
 
   public updateUserPassword(userId: string, newPassword: string): ReturnCodes {
-    console.log(userId)
-    console.log(newPassword)
     const user: User = this._users.get(userId);
     if (!user) {
       return ReturnCodes.NOT_FOUND;

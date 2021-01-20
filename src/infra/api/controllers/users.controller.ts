@@ -238,7 +238,6 @@ export class UsersController {
   @Put("/users/:id/update-password")
   @UseBefore(CheckJwtMiddleware)
   async updatePassword(@Param("id") userId: string, @BodyParam("password") password: string): Promise<ResponseModel | ApiError> {
-    console.log(password);
 
     if (!password) {
       throw new ApiError(HttpStatusCode.BAD_REQUEST, HttpStatusCode.BAD_REQUEST, "The password must not be null or empty");

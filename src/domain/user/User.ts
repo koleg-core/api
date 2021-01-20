@@ -355,6 +355,15 @@ export class User {
     return this._expirationDate;
   }
 
+  public deleteGroupById(groupId: string) {
+    const index = this._groupsIds.indexOf(groupId);
+
+    if (index > -1) {
+      this._groupsIds.splice(index, 1);
+      this._update();
+    }
+  }
+
   public updateExpirationDate(expirationDate: Date): ReturnCodes {
     this._expirationDate = expirationDate;
     this._update();
