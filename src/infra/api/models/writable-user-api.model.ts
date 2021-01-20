@@ -19,11 +19,6 @@ import { PhoneNumberApiModel } from "./phone-number-api.model";
 import { SshKeyApiModel } from "./ssh-key-api.model";
 import { PasswordApiModel } from "./password-api.model";
 
-class GroupId {
-  @IsUUID()
-  id: string;
-}
-
 export class WritableUserApiModel {
   @IsUUID()
   @IsOptional()
@@ -50,15 +45,13 @@ export class WritableUserApiModel {
   @Type(() => PasswordApiModel)
   public readonly password: PasswordApiModel = null;
 
-  @ValidateNested({ each: true })
   @IsOptional()
-  @Type(() => GroupId)
   public readonly groupIds: string[];
 
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => PhoneNumberApiModel)
-  public readonly phoneNumbers: PhoneNumberApiModel[] = [];
+  public readonly phoneNumbers: PhoneNumberApiModel[];
 
   @IsString()
   @IsOptional()
@@ -200,14 +193,15 @@ export class WritableUserApiModel {
         ? plainToClass(SshKeyApiModel, this.sshKey).toSshKey()
         : null;
 
-    let phoneNumbers: PhoneNumber[] = [];
+    let phoneNumbers: PhoneNumber[] = null;
     if (Array.isArray(this.phoneNumbers)) {
+      phoneNumbers = [];
       this.phoneNumbers.forEach(phoneNumberApi => phoneNumbers.push(
         plainToClass(PhoneNumberApiModel, phoneNumberApi).toPhoneNumber())
       );
     }
 
-    let groupIds: string[] = [];
+    let groupIds: string[] = null;
     if (Array.isArray(this.groupIds)) {
       groupIds = this.groupIds;
     }

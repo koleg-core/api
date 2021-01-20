@@ -413,7 +413,9 @@ export class User {
   }
 
   private _isEditable(): boolean {
-    return !this.isExpired() && !this.isDisabled();
+    // TODO : implement rights handler
+    // return !this.isExpired() && !this.isDisabled();
+    return true
   }
 
   private _update(): void {

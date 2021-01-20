@@ -15,6 +15,7 @@ import {
   QueryParam,
   Param,
   BodyParam,
+  UseBefore,
 } from "routing-controllers";
 import {
   ResponseSchema,
@@ -34,9 +35,16 @@ import { WritableUserApiModel } from "../models/writable-user-api.model";
 import { ResponseModel } from "../models/response.model";
 import { HttpStatusCode } from "../models/http-status-code.enum";
 import { ReadableUserApiModel } from "../models/readable-user-api.model";
-import { AuthService } from "../auth/auth.service";
 import { VcardApiModel } from "infra/vcards/models/vcard-api-model";
 import { ReadableUser } from "domain/user/ReadableUser";
+import { CheckJwtMiddleware } from "../auth/check-jwt-middleware";
+
+export const fileUploadOptions = {
+  limits: {
+    fieldNameSize: 255,
+    fileSize: 4000000
+  }
+};
 
 @Service("user.controller")
 @JsonController()
@@ -80,6 +88,7 @@ export class UsersController {
   })
   @Get("/users")
   @HttpCode(HttpStatusCode.OK)
+  @UseBefore(CheckJwtMiddleware)
   async getAll(
     @QueryParam("filter") filter?: string,
     @QueryParam("page") page?: number,
@@ -125,6 +134,7 @@ export class UsersController {
   })
   @Post("/users")
   @HttpCode(HttpStatusCode.CREATED)
+  @UseBefore(CheckJwtMiddleware)
   async post(@Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
     const statelessUser: StatelessUser = user.toStatelessUser();
     return this._organisationService.createUser(statelessUser)
@@ -151,6 +161,7 @@ export class UsersController {
     statusCode: "200"
   })
   @Get("/users/:id")
+  @UseBefore(CheckJwtMiddleware)
   async get(@Param("id") id: string): Promise<ResponseModel | ApiError> {
     return this._organisationService.getUserById(id)
       .then(user => {
@@ -175,6 +186,7 @@ export class UsersController {
   })
   @Put("/users/:id")
   @HttpCode(HttpStatusCode.OK)
+  @UseBefore(CheckJwtMiddleware)
   async put(@Param("id") id: string, @Body() user: WritableUserApiModel): Promise<ResponseModel | ApiError> {
     const statelessUser = user.toStatelessUser(id);
     return this._organisationService.updateUser(statelessUser)
@@ -200,6 +212,7 @@ export class UsersController {
     statusCode: "200"
   })
   @Delete("/users/:id")
+  @UseBefore(CheckJwtMiddleware)
   async remove(@Param("id") id: string): Promise<ResponseModel | ApiError> {
 
     return this._organisationService.deleteUser(id)
@@ -223,6 +236,7 @@ export class UsersController {
   })
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Put("/users/:id/update-password")
+  @UseBefore(CheckJwtMiddleware)
   async updatePassword(@Param("id") userId: string, @BodyParam("password") password: string): Promise<ResponseModel | ApiError> {
     console.log(password);
 
@@ -243,7 +257,7 @@ export class UsersController {
           if (returnCode !== ReturnCodes.UPDATED) {
             throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, returnCode, "User password cannot be changed.");
           }
-          return new ResponseModel(HttpStatusCode.ACCEPTED, `Your password changment for user: ${userId} was aknoleged.`);
+          return new ResponseModel(HttpStatusCode.OK, `Your password changment for user: ${userId} was aknoleged.`);
         } catch (error) {
           throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, error?.message);
         }
@@ -264,10 +278,8 @@ export class UsersController {
   })
   @HttpCode(HttpStatusCode.ACCEPTED)
   @Post("/users/:id/upload_image")
-  async uploadImage(@Param("id") id: string, @UploadedFile("profilePicture") profilePicture: Express.Multer.File): Promise<ResponseModel | ApiError> {
-    if (profilePicture.size > 4000000) {
-      throw new ApiError(HttpStatusCode.INTERNAL_SERVER_ERROR, ReturnCodes.SERVER_ERROR, "File is too large. Limit is 4MB");
-    }
+  @UseBefore(CheckJwtMiddleware)
+  async uploadImage(@Param("id") id: string, @UploadedFile("profilePicture", { options: fileUploadOptions }) profilePicture: Express.Multer.File): Promise<ResponseModel | ApiError> {
 
     const newProfilePictureUrl: URL = this._assetService.uploadProfilePicture(id, profilePicture);
     this._organisationService.updateUserProfilePictureUrl(id, newProfilePictureUrl)
@@ -290,6 +302,7 @@ export class UsersController {
   })
   @HttpCode(HttpStatusCode.OK)
   @Get("/users/:id/vcard")
+  @UseBefore(CheckJwtMiddleware)
   async getVcardTemporaryUrl(@Param("id") id: string): Promise<ResponseModel | ApiError> {
     try {
       const vcardUrl = await this._assetService.getVcardTemporaryUrl(id);
