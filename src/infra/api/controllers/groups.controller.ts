@@ -122,7 +122,6 @@ export class GroupsController {
   }
 
   @OpenAPI({
-    // description: "Delete jon using his id.",
     description: "Request group using his id.",
     security: [{ bearerAuth: [] }],
   })
@@ -148,8 +147,7 @@ export class GroupsController {
   }
 
   @OpenAPI({
-    // description: "Delete jon using his id.",
-    description: "update group using his id.",
+    description: "Update group using his id.",
     security: [{ bearerAuth: [] }],
   })
   @ResponseSchema(ResponseModel, {
@@ -176,6 +174,15 @@ export class GroupsController {
       });
   }
 
+  @OpenAPI({
+    description: "Get users number by group.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "A number of users",
+    statusCode: "200"
+  })
   @HttpCode(HttpStatusCode.OK)
   @Get('/groups/:id/users/number')
   @UseBefore(CheckJwtMiddleware)
@@ -189,6 +196,15 @@ export class GroupsController {
       });
   }
 
+  @OpenAPI({
+    description: "Delete group by id.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response",
+    statusCode: "200"
+  })
   @HttpCode(HttpStatusCode.OK)
   @Delete('/groups/:id')
   @UseBefore(CheckJwtMiddleware)

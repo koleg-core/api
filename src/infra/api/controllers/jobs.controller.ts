@@ -173,6 +173,15 @@ export class JobsController {
       });
   }
 
+  @OpenAPI({
+    description: "Delete job by id.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "Response",
+    statusCode: "200"
+  })
   @HttpCode(HttpStatusCode.OK)
   @Delete('/jobs/:id')
   @UseBefore(CheckJwtMiddleware)
@@ -189,6 +198,15 @@ export class JobsController {
       });
   }
 
+  @OpenAPI({
+    description: "Get users number by job.",
+    security: [{ bearerAuth: [] }], // Applied to each method
+  })
+  @ResponseSchema(ResponseModel, {
+    contentType: "application/json",
+    description: "A number of users",
+    statusCode: "200"
+  })
   @HttpCode(HttpStatusCode.OK)
   @Get('/jobs/:id/users/number')
   @UseBefore(CheckJwtMiddleware)

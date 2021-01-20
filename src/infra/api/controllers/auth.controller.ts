@@ -55,8 +55,8 @@ export class AuthController {
     }
 
     const statelessUser: StatelessUser = await this._organisationService.getUserByIdWithPassword(userId);
-
-    if (!statelessUser.password || (statelessUser.password && !statelessUser.password.getValue())) {
+    
+    if (statelessUser.disableDate || !statelessUser.password || (statelessUser.password && !statelessUser.password.getValue())) {
       throw new ApiError(HttpStatusCode.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED, 'Invalid argument username or/and password');
     }
 

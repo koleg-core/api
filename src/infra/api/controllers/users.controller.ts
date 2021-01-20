@@ -125,7 +125,8 @@ export class UsersController {
   }
 
   @OpenAPI({
-    description: "Create new user."
+    description: "Create new user.",
+    security: [{ bearerAuth: [] }], // Applied to each method
   })
   @ResponseSchema(ResponseModel, {
     contentType: "application/json",
