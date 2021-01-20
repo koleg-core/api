@@ -15,7 +15,7 @@ export class PhoneNumberApiModel {
   public readonly type: string;
 
   @IsDefined()
-  @IsString() // TODO: user @IsPhoneNumber() instead
+  @IsString() // TODO: use @IsPhoneNumber() instead
   public readonly value: string;
 
   constructor(

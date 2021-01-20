@@ -7,32 +7,32 @@ import { ReadableGroup } from "./readableGroup";
 
 export class Group {
   constructor(
-      private id: string,
-      private name: string,
-      private description: string = null,
-      private parentGroup: string = null,
-      private childrenGroups: string[] = [],
-      private imgUrl: URL = null,
-      private creationDate: Date = null,
-      private updateDate: Date = null
+    private id: string,
+    private name: string,
+    private description: string = null,
+    private parentGroup: string = null,
+    private childrenGroups: string[] = [],
+    private imgUrl: URL = null,
+    private creationDate: Date = null,
+    private updateDate: Date = null
   ) {
-    if(!this.id) {
+    if (!this.id) {
       this.id = uuid();
     }
     this.creationDate = creationDate ? creationDate : new Date();
   }
 
-  private update(){
+  private update() {
     //TO DO : better implementation with database
     this.updateDate = new Date();
   }
 
-  public setParentId(parentId: string){
+  public setParentId(parentId: string) {
     this.parentGroup = parentId;
     this.update();
   }
 
-  public addChild(child: string){
+  public addChild(child: string) {
     this.childrenGroups.push(child);
     this.update();
   }
@@ -66,7 +66,7 @@ export class Group {
   }
 
   public setDescription(description: string): ReturnCodes {
-    if(!description) {
+    if (!description) {
       throw new Error("Invalid argument description: string");
     }
 
@@ -79,7 +79,7 @@ export class Group {
   }
 
   public updateImgUrl(imgUrl: URL): ReturnCodes {
-    if(!imgUrl) {
+    if (!imgUrl) {
       throw new Error("Invalid argument imgUrl: URL");
     }
     this.imgUrl = imgUrl;
@@ -88,17 +88,17 @@ export class Group {
   }
 
   public hasChilds(): boolean {
-    if(this.childrenGroups.length === 0) {
+    if (this.childrenGroups.length === 0) {
       return false;
     }
     return true;
   }
 
   public deleteChildren(childrenId: string) {
-    if(Array.isArray(this.childrenGroups) && this.childrenGroups.length > 0){
+    if (Array.isArray(this.childrenGroups) && this.childrenGroups.length > 0) {
       const index = this.childrenGroups.indexOf(childrenId);
-      if(index > -1){
-        this.childrenGroups.splice(index,-1);
+      if (index > -1) {
+        this.childrenGroups.splice(index, 1);
         this.update();
       }
     }
