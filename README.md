@@ -1,6 +1,7 @@
 # Koleg API
 
 REST API for koleg project
+mirror of [koleg/api](https://gitlab.com/koleg1/api)
 
 ---
 
